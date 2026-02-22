@@ -1,10 +1,12 @@
 using QRDine.API.DependencyInjection;
+using QRDine.API.Filters;
+using QRDine.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== Service Registration =====
 builder.Services
-    .AddControllers()
+    .AddControllers(options => options.Filters.Add<ApiResponseFilter>())
     .Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
@@ -22,9 +24,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 //Seed data on startup
