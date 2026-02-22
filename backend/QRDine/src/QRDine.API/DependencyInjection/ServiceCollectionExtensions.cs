@@ -1,4 +1,5 @@
-﻿using QRDine.API.DependencyInjection.Infrastructure;
+﻿using QRDine.API.DependencyInjection.CrossCutting;
+using QRDine.API.DependencyInjection.Infrastructure;
 using QRDine.API.DependencyInjection.Security;
 
 namespace QRDine.API.DependencyInjection
@@ -38,6 +39,15 @@ namespace QRDine.API.DependencyInjection
         {
             services.AddIdentityServices(configuration);
             services.AddJwtAuthentication(configuration);
+            return services;
+        }
+
+        /// <summary>
+        /// Cross-cutting concerns: CORS, API Versioning, etc.
+        /// </summary>
+        public static IServiceCollection AddCrossCutting(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddApiVersioningConfig();
             return services;
         }
     }
