@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Identity\Commands\" />
+    <Folder Include="Features\Identity\DTOs\" />
+    <Folder Include="Features\Identity\Queries\" />
+  </ItemGroup>
+
 </Project>

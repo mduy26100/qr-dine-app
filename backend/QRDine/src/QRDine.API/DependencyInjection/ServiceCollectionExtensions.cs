@@ -37,6 +37,7 @@ namespace QRDine.API.DependencyInjection
             this IServiceCollection services, IConfiguration configuration)
         {
             services.AddIdentityServices(configuration);
+            services.AddJwtAuthentication(configuration);
             return services;
         }
     }
