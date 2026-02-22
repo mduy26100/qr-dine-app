@@ -1,7 +1,7 @@
 ﻿using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Persistence.Constants;
 
-namespace QRDine.Infrastructure.Persistence.Configurations.Auth
+namespace QRDine.Infrastructure.Persistence.Configurations.Identity
 {
     internal class PermissionConfiguration : IEntityTypeConfiguration<Permission>
     {

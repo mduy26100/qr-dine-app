@@ -2,7 +2,7 @@
 using QRDine.Domain.Catalog;
 using QRDine.Domain.Tenant;
 using QRDine.Infrastructure.Identity.Models;
-using QRDine.Infrastructure.Persistence.Configurations.Auth;
+using QRDine.Infrastructure.Persistence.Configurations.Identity;
 using QRDine.Infrastructure.Persistence.Configurations.Catalog;
 using QRDine.Infrastructure.Persistence.Configurations.Tenant;
 using QRDine.Infrastructure.Persistence.Constants;
