@@ -1,4 +1,4 @@
-﻿using QRDine.Infrastructure.Auth.Models;
+﻿using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Persistence.Seeding;
 
 namespace QRDine.API.DependencyInjection

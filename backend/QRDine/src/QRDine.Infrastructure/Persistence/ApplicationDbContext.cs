@@ -1,7 +1,7 @@
 ﻿using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Domain.Catalog;
 using QRDine.Domain.Tenant;
-using QRDine.Infrastructure.Auth.Models;
+using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Persistence.Configurations.Auth;
 using QRDine.Infrastructure.Persistence.Configurations.Catalog;
 using QRDine.Infrastructure.Persistence.Configurations.Tenant;

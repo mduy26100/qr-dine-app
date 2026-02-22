@@ -1,5 +1,5 @@
-﻿using QRDine.Infrastructure.Auth.Constants;
-using QRDine.Infrastructure.Auth.Models;
+﻿using QRDine.Infrastructure.Identity.Constants;
+using QRDine.Infrastructure.Identity.Models;
 
 namespace QRDine.Infrastructure.Persistence.Seeding
 {

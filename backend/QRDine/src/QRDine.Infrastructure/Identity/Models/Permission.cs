@@ -1,4 +1,4 @@
-﻿namespace QRDine.Infrastructure.Auth.Models
+﻿namespace QRDine.Infrastructure.Identity.Models
 {
     public class Permission
     {

@@ -1,4 +1,4 @@
-﻿using QRDine.Infrastructure.Auth.Models;
+﻿using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Persistence.Constants;
 
 namespace QRDine.Infrastructure.Persistence.Configurations.Auth

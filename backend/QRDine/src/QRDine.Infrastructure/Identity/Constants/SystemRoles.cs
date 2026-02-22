@@ -1,4 +1,4 @@
-﻿namespace QRDine.Infrastructure.Auth.Constants
+﻿namespace QRDine.Infrastructure.Identity.Constants
 {
     public static class SystemRoles
     {
