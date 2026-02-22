@@ -8,3 +8,6 @@ global using System.Text;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.IdentityModel.Tokens;
 global using Asp.Versioning;
+global using MediatR;
+global using System.Reflection.Metadata;
+global using FluentValidation;

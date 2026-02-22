@@ -1,4 +1,5 @@
-﻿using QRDine.API.DependencyInjection.CrossCutting;
+﻿using QRDine.API.DependencyInjection.Application;
+using QRDine.API.DependencyInjection.CrossCutting;
 using QRDine.API.DependencyInjection.Infrastructure;
 using QRDine.API.DependencyInjection.Security;
 
@@ -18,7 +19,9 @@ namespace QRDine.API.DependencyInjection
         {
             return services
                 .AddInfrastructure(configuration)
-                .AddSecurity(configuration);
+                .AddSecurity(configuration)
+                .AddCrossCutting(configuration)
+                .AddApplication();
         }
 
         /// <summary>
@@ -48,6 +51,15 @@ namespace QRDine.API.DependencyInjection
         public static IServiceCollection AddCrossCutting(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddApiVersioningConfig();
+            return services;
+        }
+
+        /// <summary>
+        /// Application layer: MediatR, Mapping, Behaviors
+        /// </summary>
+        public static IServiceCollection AddApplication(this IServiceCollection services)
+        {
+            services.AddMediatRPipeline();
             return services;
         }
     }

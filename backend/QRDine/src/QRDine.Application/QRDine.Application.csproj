@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Identity\Commands\" />
-    <Folder Include="Features\Identity\DTOs\" />
     <Folder Include="Features\Identity\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QRDine.Application.Common\QRDine.Application.Common.csproj" />
   </ItemGroup>
 
 </Project>

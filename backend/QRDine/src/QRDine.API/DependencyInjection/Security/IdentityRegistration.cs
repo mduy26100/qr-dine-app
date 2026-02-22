@@ -1,4 +1,6 @@
-﻿using QRDine.Infrastructure.Identity.Models;
+﻿using QRDine.Application.Features.Identity.Services;
+using QRDine.Infrastructure.Identity.Models;
+using QRDine.Infrastructure.Identity.Services;
 using QRDine.Infrastructure.Persistence;
 
 namespace QRDine.API.DependencyInjection.Security
@@ -15,6 +17,12 @@ namespace QRDine.API.DependencyInjection.Security
 
             // HTTP Context accessor for user claims
             services.AddHttpContextAccessor();
+
+            // JWT Token Generator
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            // Features Identity Services
+            services.AddScoped<ILoginService, LoginService>();
 
             return services;
         }
