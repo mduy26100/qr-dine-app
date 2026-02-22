@@ -1,9 +1,11 @@
 ﻿using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Domain.Catalog;
+using QRDine.Domain.Sales;
 using QRDine.Domain.Tenant;
 using QRDine.Infrastructure.Identity.Models;
-using QRDine.Infrastructure.Persistence.Configurations.Identity;
 using QRDine.Infrastructure.Persistence.Configurations.Catalog;
+using QRDine.Infrastructure.Persistence.Configurations.Identity;
+using QRDine.Infrastructure.Persistence.Configurations.Sales;
 using QRDine.Infrastructure.Persistence.Configurations.Tenant;
 using QRDine.Infrastructure.Persistence.Constants;
 
@@ -42,6 +44,10 @@ namespace QRDine.Infrastructure.Persistence
             builder.ApplyConfiguration(new CategoryConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new TableConfiguration());
+
+            // Sales tables
+            builder.ApplyConfiguration(new OrderConfiguration());
+            builder.ApplyConfiguration(new OrderItemConfiguration());
         }
 
 
@@ -57,5 +63,9 @@ namespace QRDine.Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Table> Tables { get; set; }
+
+        // Sales
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
     }
 }

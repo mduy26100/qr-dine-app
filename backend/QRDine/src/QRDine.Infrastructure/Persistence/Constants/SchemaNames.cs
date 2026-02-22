@@ -5,5 +5,6 @@
         public const string Identity = "identity";
         public const string Tenant = "tenant";
         public const string Catalog = "catalog";
+        public const string Sales = "sales";
     }
 }
