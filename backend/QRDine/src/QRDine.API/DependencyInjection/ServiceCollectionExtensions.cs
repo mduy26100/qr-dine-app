@@ -1,0 +1,43 @@
+﻿using QRDine.API.DependencyInjection.Infrastructure;
+using QRDine.API.DependencyInjection.Security;
+
+namespace QRDine.API.DependencyInjection
+{
+    /// <summary>
+    /// Main entry point for all service registrations.
+    /// Groups services by architectural layer for clarity.
+    /// </summary>
+    public static class ServiceCollectionExtensions
+    {
+        /// <summary>
+        /// Registers all application services in the correct order.
+        /// </summary>
+        public static IServiceCollection AddApplicationServices(
+            this IServiceCollection services, IConfiguration configuration)
+        {
+            return services
+                .AddInfrastructure(configuration)
+                .AddSecurity(configuration);
+        }
+
+        /// <summary>
+        /// Infrastructure layer: Database, Cache, External Services
+        /// </summary>
+        public static IServiceCollection AddInfrastructure(
+            this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddPersistence(configuration);
+            return services;
+        }
+
+        /// <summary>
+        /// Security layer: Identity, JWT Authentication
+        /// </summary>
+        public static IServiceCollection AddSecurity(
+            this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddIdentityServices(configuration);
+            return services;
+        }
+    }
+}
