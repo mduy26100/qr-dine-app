@@ -1,5 +1,6 @@
 ﻿using QRDine.API.DependencyInjection.Application;
 using QRDine.API.DependencyInjection.CrossCutting;
+using QRDine.API.DependencyInjection.Features;
 using QRDine.API.DependencyInjection.Infrastructure;
 using QRDine.API.DependencyInjection.Security;
 
@@ -21,7 +22,8 @@ namespace QRDine.API.DependencyInjection
                 .AddInfrastructure(configuration)
                 .AddSecurity(configuration)
                 .AddCrossCutting(configuration)
-                .AddApplication();
+                .AddApplication()
+                .AddFeatures();
         }
 
         /// <summary>
@@ -60,6 +62,16 @@ namespace QRDine.API.DependencyInjection
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddMediatRPipeline();
+            services.AddMapping();
+            return services;
+        }
+
+        /// <summary>
+        /// Feature modules: Auth, Products, Carts, etc.
+        /// </summary>
+        public static IServiceCollection AddFeatures(this IServiceCollection services)
+        {
+            services.AddCatalogsFeature();
             return services;
         }
     }

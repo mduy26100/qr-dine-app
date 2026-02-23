@@ -2,3 +2,5 @@
 global using MediatR;
 global using FluentValidation;
 global using System.Text.RegularExpressions;
+global using AutoMapper;
+global using Ardalis.Specification;

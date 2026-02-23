@@ -20,9 +20,15 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
                    .HasForeignKey(x => x.MerchantId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(x => x.MerchantId);
+            builder.HasOne(x => x.Parent)
+                   .WithMany(x => x.Children)
+                   .HasForeignKey(x => x.ParentId)
+                   .IsRequired(false)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
+            builder.HasIndex(x => new { x.MerchantId, x.ParentId, x.DisplayOrder });
+            builder.HasIndex(x => new { x.MerchantId, x.ParentId, x.Name })
+                   .IsUnique();
         }
     }
 }
