@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Common.Abstractions.Persistence;
+using QRDine.Application.Common.Exceptions;
 using QRDine.Domain.Catalog;
 using QRDine.Domain.Sales;
 using QRDine.Domain.Tenant;
@@ -50,6 +51,24 @@ namespace QRDine.Infrastructure.Persistence
             builder.ApplyConfiguration(new OrderItemConfiguration());
         }
 
+        public async Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            var transaction = await Database.BeginTransactionAsync(cancellationToken);
+
+            return new DatabaseTransaction(transaction);
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await base.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ConcurrencyException("The data has been changed by someone else. Please try again.");
+            }
+        }
 
         // Identity
         public DbSet<RefreshToken> RefreshTokens { get; set; }
