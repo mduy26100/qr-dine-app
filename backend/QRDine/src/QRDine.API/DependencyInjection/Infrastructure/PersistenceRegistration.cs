@@ -1,5 +1,6 @@
 ﻿using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Infrastructure.Persistence;
+using QRDine.Infrastructure.Persistence.Repositories;
 
 namespace QRDine.API.DependencyInjection.Infrastructure
 {
@@ -13,6 +14,8 @@ namespace QRDine.API.DependencyInjection.Infrastructure
 
             services.AddScoped<IApplicationDbContext>(provider =>
                 provider.GetRequiredService<ApplicationDbContext>());
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
         }
