@@ -5,7 +5,7 @@ using QRDine.Domain.Tenant;
 
 namespace QRDine.Domain.Sales
 {
-    public class Order : BaseEntity
+    public class Order : BaseEntity, IMustHaveMerchant
     {
         public Guid MerchantId { get; set; }
         public Guid TableId { get; set; }

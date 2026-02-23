@@ -1,6 +1,8 @@
-﻿using QRDine.Application.Common.Abstractions.Persistence;
+﻿using QRDine.Application.Common.Abstractions.Identity;
+using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Application.Common.Exceptions;
 using QRDine.Domain.Catalog;
+using QRDine.Domain.Common;
 using QRDine.Domain.Sales;
 using QRDine.Domain.Tenant;
 using QRDine.Infrastructure.Identity.Models;
@@ -14,13 +16,18 @@ namespace QRDine.Infrastructure.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
+        private readonly ICurrentUserService _currentUserService = null!;
+
+        public ApplicationDbContext(DbContextOptions options, ICurrentUserService currentUserService) : base(options)
         {
+            _currentUserService = currentUserService;
         }
 
         protected ApplicationDbContext()
         {
         }
+
+        public Guid? CurrentMerchantId => _currentUserService.MerchantId;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -49,6 +56,12 @@ namespace QRDine.Infrastructure.Persistence
             // Sales tables
             builder.ApplyConfiguration(new OrderConfiguration());
             builder.ApplyConfiguration(new OrderItemConfiguration());
+
+            //Global query filters
+            builder.Entity<Category>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
+            builder.Entity<Product>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
+            builder.Entity<Table>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
+            builder.Entity<Order>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
         }
 
         public async Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -60,6 +73,19 @@ namespace QRDine.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            var merchantId = _currentUserService.MerchantId;
+
+            if (merchantId.HasValue)
+            {
+                var entries = ChangeTracker.Entries<IMustHaveMerchant>()
+                                           .Where(e => e.State == EntityState.Added);
+
+                foreach (var entry in entries)
+                {
+                    entry.Entity.MerchantId = merchantId.Value;
+                }
+            }
+
             try
             {
                 return await base.SaveChangesAsync(cancellationToken);

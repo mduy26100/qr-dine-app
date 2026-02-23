@@ -3,7 +3,7 @@ using QRDine.Domain.Tenant;
 
 namespace QRDine.Domain.Catalog
 {
-    public class Table : BaseEntity
+    public class Table : BaseEntity, IMustHaveMerchant
     {
         public Guid MerchantId { get; set; }
         public virtual Merchant Merchant { get; set; } = default!;
