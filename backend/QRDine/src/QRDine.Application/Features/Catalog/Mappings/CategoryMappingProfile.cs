@@ -7,8 +7,9 @@ namespace QRDine.Application.Features.Catalog.Mappings
     {
         public CategoryMappingProfile()
         {
-            CreateMap<CreateCategoryDto, Category>();
-            CreateMap<Category, CategoryResponseDto>();
+            CreateMap<Category, CreateCategoryDto>().ReverseMap();
+            CreateMap<Category, CategoryResponseDto>().ReverseMap();
+            CreateMap<Category, CategoryTreeDto>().ReverseMap();
         }
     }
 }
