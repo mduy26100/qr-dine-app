@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
+using QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -22,6 +23,16 @@ namespace QRDine.API.Controllers.Management.Catalog
             var result = await _mediator.Send(command, cancellationToken);
 
             return Created(string.Empty, result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMyCategories(CancellationToken cancellationToken)
+        {
+            var query = new GetCategoriesByMerchantQuery();
+
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
         }
     }
 }
