@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Features.Identity.Services;
+﻿using QRDine.Application.Common.Abstractions.Identity;
+using QRDine.Application.Features.Identity.Services;
 using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Identity.Services;
 using QRDine.Infrastructure.Persistence;
@@ -32,6 +33,9 @@ namespace QRDine.API.DependencyInjection.Security
 
             // JWT Token Generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            // Current User Service
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             // Features Identity Services
             services.AddScoped<ILoginService, LoginService>();
