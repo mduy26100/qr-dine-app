@@ -1,5 +1,6 @@
 ﻿using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
+using QRDine.Infrastructure.Identity.Constants;
 using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Identity.Settings;
 using QRDine.Infrastructure.Persistence;
@@ -64,7 +65,7 @@ namespace QRDine.Infrastructure.Identity.Services
 
             if (user.MerchantId.HasValue)
             {
-                claims.Add(new Claim("MerchantId", user.MerchantId.Value.ToString()));
+                claims.Add(new Claim(AppClaimTypes.MerchantId, user.MerchantId.Value.ToString()));
             }
 
             foreach (var role in roles)
