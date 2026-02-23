@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
+﻿using QRDine.API.Constants;
+using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
 using QRDine.Application.Features.Identity.Commands.RegisterStaff;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -7,6 +8,7 @@ namespace QRDine.API.Controllers.Identity
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/users")]
+    [ApiExplorerSettings(GroupName = SwaggerGroups.Management)]
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;

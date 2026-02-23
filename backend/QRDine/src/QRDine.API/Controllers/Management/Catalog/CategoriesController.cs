@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
+﻿using QRDine.API.Constants;
+using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
 using QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -8,6 +9,7 @@ namespace QRDine.API.Controllers.Management.Catalog
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/management/categories")]
     [Authorize(Roles = SystemRoles.Merchant)]
+    [ApiExplorerSettings(GroupName = SwaggerGroups.Management)]
     public class CategoriesController : ControllerBase
     {
         private readonly IMediator _mediator;

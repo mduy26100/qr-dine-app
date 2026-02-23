@@ -1,10 +1,12 @@
-﻿using QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant;
+﻿using QRDine.API.Constants;
+using QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant;
 
 namespace QRDine.API.Controllers.Storefront.Catalog
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/storefront/merchants/{merchantId:guid}/categories")]
+    [ApiExplorerSettings(GroupName = SwaggerGroups.Storefront)]
     public class CategoriesController : ControllerBase
     {
         private readonly IMediator _mediator;

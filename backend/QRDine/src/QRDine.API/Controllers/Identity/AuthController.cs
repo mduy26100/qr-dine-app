@@ -1,10 +1,12 @@
-﻿using QRDine.Application.Features.Identity.Commands.Login;
+﻿using QRDine.API.Constants;
+using QRDine.Application.Features.Identity.Commands.Login;
 
 namespace QRDine.API.Controllers.Identity
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/auth")]
+    [ApiExplorerSettings(GroupName = SwaggerGroups.Management)]
     public class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;
