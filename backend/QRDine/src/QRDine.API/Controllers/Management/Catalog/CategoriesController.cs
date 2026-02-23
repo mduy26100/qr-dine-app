@@ -1,7 +1,7 @@
 ﻿using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
 using QRDine.Infrastructure.Identity.Constants;
 
-namespace QRDine.API.Controllers.Management
+namespace QRDine.API.Controllers.Management.Catalog
 {
     [ApiController]
     [ApiVersion("1.0")]
