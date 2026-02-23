@@ -2,5 +2,5 @@
 
 namespace QRDine.Application.Features.Identity.Commands.RegisterMerchant
 {
-    public record RegisterMerchantCommand(RegisterRequestDto Dto) : IRequest<RegisterResponseDto>;
+    public record RegisterMerchantCommand(RegisterMerchantDto Dto) : IRequest<RegisterResponseDto>;
 }

@@ -19,7 +19,7 @@ namespace QRDine.Infrastructure.Identity.Services
             _dbContext = dbContext;
         }
 
-        public async Task<RegisterResponseDto> RegisterMerchantAsync(RegisterRequestDto request, CancellationToken cancellationToken)
+        public async Task<RegisterResponseDto> RegisterMerchantAsync(RegisterMerchantDto request, CancellationToken cancellationToken)
         {
             await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
 

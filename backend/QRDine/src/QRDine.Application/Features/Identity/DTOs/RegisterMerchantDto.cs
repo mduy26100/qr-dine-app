@@ -1,6 +1,6 @@
 ﻿namespace QRDine.Application.Features.Identity.DTOs
 {
-    public class RegisterRequestDto
+    public class RegisterMerchantDto
     {
         public string MerchantName { get; set; } = default!;
         public string? MerchantAddress { get; set; }
