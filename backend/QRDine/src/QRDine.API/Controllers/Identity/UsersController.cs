@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
+using QRDine.Application.Features.Identity.Commands.RegisterStaff;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Identity
@@ -18,6 +19,14 @@ namespace QRDine.API.Controllers.Identity
         [HttpPost("register-merchant")]
         [Authorize(Roles = SystemRoles.SuperAdmin)]
         public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPost("register-staff")]
+        [Authorize(Roles = SystemRoles.Merchant)]
+        public async Task<IActionResult> RegisterStaff([FromBody] RegisterStaffCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
