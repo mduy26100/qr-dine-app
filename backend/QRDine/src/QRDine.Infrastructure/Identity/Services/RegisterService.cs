@@ -21,22 +21,6 @@ namespace QRDine.Infrastructure.Identity.Services
 
         public async Task<RegisterResponseDto> RegisterMerchantAsync(RegisterRequestDto request, CancellationToken cancellationToken)
         {
-            var existingUser = await _userManager.FindByEmailAsync(request.Email);
-            if (existingUser != null)
-            {
-                throw new ConflictException("This email address has already been registered.");
-            }
-
-            if (!string.IsNullOrEmpty(request.UserPhoneNumber))
-            {
-                var existingPhone = await _dbContext.Users
-                    .AnyAsync(u => u.PhoneNumber == request.UserPhoneNumber, cancellationToken);
-                if (existingPhone)
-                {
-                    throw new ConflictException("This phone number has already been registered.");
-                }
-            }
-
             await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
 
             try
@@ -45,7 +29,7 @@ namespace QRDine.Infrastructure.Identity.Services
                 {
                     Id = Guid.NewGuid(),
                     Name = request.MerchantName,
-                    Slug = GenerateSlug(request.MerchantName),
+                    Slug = await GenerateUniqueSlugAsync(request.MerchantName, cancellationToken),
                     Address = request.MerchantAddress,
                     PhoneNumber = request.MerchantPhoneNumber,
                     IsActive = true
@@ -54,29 +38,9 @@ namespace QRDine.Infrastructure.Identity.Services
                 _dbContext.Merchants.Add(merchant);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                var user = new ApplicationUser
-                {
-                    UserName = request.Email,
-                    Email = request.Email,
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    PhoneNumber = request.UserPhoneNumber,
-                    MerchantId = merchant.Id,
-                    EmailConfirmed = true
-                };
-
-                var createUserResult = await _userManager.CreateAsync(user, request.Password);
-                if (!createUserResult.Succeeded)
-                {
-                    var firstError = createUserResult.Errors.FirstOrDefault()?.Description;
-                    throw new BusinessRuleException(firstError ?? "Error creating account.");
-                }
-
-                var addToRoleResult = await _userManager.AddToRoleAsync(user, SystemRoles.Merchant);
-                if (!addToRoleResult.Succeeded)
-                {
-                    throw new BusinessRuleException("Error when assigning account permissions.");
-                }
+                var user = await CreateIdentityUserAsync(
+                    request.Email, request.Password, request.FirstName, request.LastName,
+                    request.UserPhoneNumber, merchant.Id, SystemRoles.Merchant, cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
 
@@ -84,8 +48,8 @@ namespace QRDine.Infrastructure.Identity.Services
                 {
                     MerchantId = merchant.Id,
                     MerchantName = merchant.Name,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
+                    FirstName = user.FirstName ?? string.Empty,
+                    LastName = user.LastName ?? string.Empty
                 };
             }
             catch (Exception)
@@ -95,15 +59,134 @@ namespace QRDine.Infrastructure.Identity.Services
             }
         }
 
+        public async Task<RegisterResponseDto> RegisterStaffAsync(RegisterStaffDto request, Guid merchantId, CancellationToken cancellationToken)
+        {
+            var user = await CreateIdentityUserAsync(
+                request.Email, request.Password, request.FirstName, request.LastName,
+                request.PhoneNumber, merchantId, SystemRoles.Staff, cancellationToken);
+
+            return new RegisterResponseDto
+            {
+                MerchantId = merchantId,
+                MerchantName = string.Empty,
+                FirstName = user.FirstName ?? string.Empty,
+                LastName = user.LastName ?? string.Empty
+            };
+        }
+
+        private async Task<ApplicationUser> CreateIdentityUserAsync(
+            string email, string password, string firstName, string lastName,
+            string? phoneNumber, Guid merchantId, string role, CancellationToken cancellationToken)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+                throw new ConflictException("This email address has already been registered.");
+
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                var existingPhone = await _dbContext.Users
+                    .AnyAsync(u => u.PhoneNumber == phoneNumber, cancellationToken);
+                if (existingPhone)
+                    throw new ConflictException("This phone number has already been registered.");
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                PhoneNumber = phoneNumber,
+                MerchantId = merchantId,
+                EmailConfirmed = true
+            };
+
+            var createUserResult = await _userManager.CreateAsync(user, password);
+            if (!createUserResult.Succeeded)
+            {
+                var firstError = createUserResult.Errors.FirstOrDefault()?.Description;
+                throw new BusinessRuleException(firstError ?? "Error creating account.");
+            }
+
+            var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!addToRoleResult.Succeeded)
+                throw new BusinessRuleException("Error when assigning account permissions.");
+
+            return user;
+        }
+
+
+        private async Task<string> GenerateUniqueSlugAsync(string merchantName, CancellationToken cancellationToken)
+        {
+            var baseSlug = GenerateSlug(merchantName);
+
+            var existingSlugs = await _dbContext.Merchants
+                .Where(m => m.Slug.StartsWith(baseSlug))
+                .Select(m => m.Slug)
+                .ToListAsync(cancellationToken);
+
+            if (!existingSlugs.Contains(baseSlug))
+            {
+                return baseSlug;
+            }
+
+            int counter = 1;
+            string uniqueSlug;
+
+            do
+            {
+                uniqueSlug = $"{baseSlug}-{counter}";
+                counter++;
+            }
+            while (existingSlugs.Contains(uniqueSlug));
+
+            return uniqueSlug;
+        }
+
         private static string GenerateSlug(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return string.Empty;
 
-            string str = text.ToLowerInvariant();
+            text = text.ToLowerInvariant();
 
-            str = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", "-");
-            str = System.Text.RegularExpressions.Regex.Replace(str, @"[^a-z0-9\-]", "");
-            return str.Trim('-');
+            text = RemoveVietnameseDiacritics(text);
+
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"[^a-z0-9\s-]", "");
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"\s+", "-").Trim('-');
+
+            return text;
+        }
+
+        private static string RemoveVietnameseDiacritics(string text)
+        {
+            string[] vietnameseSigns = new string[]
+            {
+                "aAeEoOuUiIdDyY",
+                "áàạảãâấầậẩẫăắằặẳẵ",
+                "ÁÀẠẢÃÂẤẦẬẨẪĂẮẰẶẲẴ",
+                "éèẹẻẽêếềệểễ",
+                "ÉÈẸẺẼÊẾỀỆỂỄ",
+                "óòọỏõôốồộổỗơớờợởỡ",
+                "ÓÒỌỎÕÔỐỒỘỔỖƠỚỜỢỞỠ",
+                "úùụủũưứừựửữ",
+                "ÚÙỤỦŨƯỨỪỰỬỮ",
+                "íìịỉĩ",
+                "ÍÌỊỈĨ",
+                "đ",
+                "Đ",
+                "ýỳỵỷỹ",
+                "ÝỲỴỶỸ"
+            };
+
+            for (int i = 1; i < vietnameseSigns.Length; i++)
+            {
+                for (int j = 0; j < vietnameseSigns[i].Length; j++)
+                {
+                    text = text.Replace(vietnameseSigns[i][j], vietnameseSigns[0][i - 1]);
+                }
+            }
+
+            return text;
         }
     }
 }
