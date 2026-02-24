@@ -9,6 +9,7 @@ namespace QRDine.API.DependencyInjection.Application
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<CategoryMappingProfile>();
+                cfg.AddProfile<ProductMappingProfile>();
             });
 
             return services;
