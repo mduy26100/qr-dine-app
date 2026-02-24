@@ -2,5 +2,5 @@
 
 namespace QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant
 {
-    public record GetCategoriesByMerchantQuery(Guid? MerchantId = null) : IRequest<List<CategoryTreeDto>>;
+    public record GetCategoriesByMerchantQuery(Guid MerchantId) : IRequest<List<CategoryTreeDto>>;
 }

@@ -1,14 +1,12 @@
-﻿using QRDine.Application.Common.Abstractions.Identity;
-
-namespace QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant
+﻿namespace QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant
 {
     public class GetCategoriesByMerchantQueryValidator : AbstractValidator<GetCategoriesByMerchantQuery>
     {
-        public GetCategoriesByMerchantQueryValidator(ICurrentUserService currentUserService)
+        public GetCategoriesByMerchantQueryValidator()
         {
             RuleFor(x => x.MerchantId)
-                .Must(merchantId => merchantId.HasValue || currentUserService.MerchantId.HasValue)
-                .WithMessage("MerchantId is required. Please provide it in the request or authenticate as a merchant.");
+                .NotEmpty()
+                .WithMessage("MerchantId is required for storefront catalog.");
         }
     }
 }

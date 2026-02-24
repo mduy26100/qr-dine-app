@@ -1,6 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
-using QRDine.Application.Features.Catalog.Categories.Queries.GetCategoriesByMerchant;
+using QRDine.Application.Features.Catalog.Categories.Queries.GetMyCategories;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -30,7 +30,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         [HttpGet]
         public async Task<IActionResult> GetMyCategories(CancellationToken cancellationToken)
         {
-            var query = new GetCategoriesByMerchantQuery();
+            var query = new GetMyCategoriesQuery();
 
             var result = await _mediator.Send(query, cancellationToken);
 
