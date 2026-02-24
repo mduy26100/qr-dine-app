@@ -13,3 +13,5 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Ardalis.Specification.EntityFrameworkCore;
+global using CloudinaryDotNet;
+global using CloudinaryDotNet.Actions;

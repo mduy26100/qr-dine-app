@@ -33,6 +33,7 @@ namespace QRDine.API.DependencyInjection
             this IServiceCollection services, IConfiguration configuration)
         {
             services.AddPersistence(configuration);
+            services.AddExternalServices(configuration);
             return services;
         }
 
