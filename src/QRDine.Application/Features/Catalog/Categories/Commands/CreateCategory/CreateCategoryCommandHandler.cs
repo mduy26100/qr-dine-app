@@ -1,5 +1,4 @@
-﻿using QRDine.Application.Common.Abstractions.Identity;
-using QRDine.Application.Common.Abstractions.Persistence;
+﻿using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Catalog.Categories.DTOs;
 using QRDine.Application.Features.Catalog.Categories.Specifications;
@@ -12,26 +11,20 @@ namespace QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
         private readonly IApplicationDbContext _context;
 
         public CreateCategoryCommandHandler(
             ICategoryRepository categoryRepository,
             IMapper mapper,
-            ICurrentUserService currentUserService,
             IApplicationDbContext context)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
-            _currentUserService = currentUserService;
             _context = context;
         }
 
         public async Task<CategoryResponseDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var merchantId = _currentUserService.MerchantId
-                ?? throw new UnauthorizedAccessException("Merchant context is missing.");
-
             if (request.Dto.ParentId.HasValue)
             {
                 var parentCategory = await _categoryRepository.GetByIdAsync(request.Dto.ParentId.Value, cancellationToken)
@@ -43,7 +36,7 @@ namespace QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory
                 }
             }
 
-            var spec = new CategoryByNameSpec(merchantId, request.Dto.Name);
+            var spec = new CategoryByNameSpec(request.Dto.Name);
             if (await _categoryRepository.AnyAsync(spec, cancellationToken))
             {
                 throw new ConflictException($"Category name '{request.Dto.Name}' already exists at this level.");
