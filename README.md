@@ -1,70 +1,206 @@
 # QR Dine App
 
 ![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
+![EF Core](https://img.shields.io/badge/EF%20Core-8.0-512BD4?logo=dotnet)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver)
 ![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?logo=redis)
-![License](https://img.shields.io/badge/License-Private-red)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-Image%20Upload-3448C5)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 **QR Dine API** is a modern **multi-tenant SaaS backend** built to power QR-based digital menu systems for restaurants, cafés, and retail stores.
 
-The system allows multiple businesses to **register, manage their profiles, and generate unique QR codes** that link to fully customizable online menus. Each store operates independently within a secure multi-tenant architecture, ensuring data isolation and scalability.
-
-Through a RESTful API, the platform supports:
-
-    - 📱 Digital QR menu management
-    - 🛠 Menu and category CRUD operations
-    - 🏪 Tenant-scoped store management
-    - 📊 Basic management and reporting capabilities
-    - 🚀 Scalable architecture for growing businesses
-
-The backend is built using **.NET 8 Web API with Onion Architecture**, focusing on maintainability, separation of concerns, and production-ready design.
-
-QR Dine API provides a **scalable and extensible SaaS backend foundation** that can evolve into a comprehensive digital restaurant management system.
+The system allows multiple businesses to register, manage their profiles, and generate unique QR codes that link to fully customizable online menus. Each store operates independently within a secure multi-tenant architecture, ensuring data isolation and scalability.
 
 ---
 
-## 🚀 Tech Stack & Architecture
+## Architecture
 
-| Project | Responsibility | Description |
-|----------|---------------|-------------|
-| **QRDine.API** | Presentation Layer | Exposes RESTful endpoints, API versioning, Swagger documentation, request/response handling |
-| **QRDine.Application** | Application Layer | CQRS implementation with MediatR, business use cases, validation, DTOs |
-| **QRDine.Application.Common** | Shared Abstractions | Common interfaces, base abstractions, cross-cutting concerns |
-| **QRDine.Domain** | Domain Layer | Core entities, value objects, business rules |
-| **QRDine.Infrastructure** | Infrastructure Layer | EF Core persistence, Identity, repository implementations, external services |
+Built with **.NET 8 Web API** using **Clean Architecture** (Onion Architecture) and **CQRS** (Command Query Responsibility Segregation).
 
----
+| Project | Layer | Responsibility |
+|---------|-------|----------------|
+| `QRDine.API` | Presentation | RESTful endpoints, Swagger, middleware, DI orchestration |
+| `QRDine.Application` | Application | CQRS handlers (MediatR), DTOs, validators, specifications |
+| `QRDine.Application.Common` | Shared Abstractions | Interfaces, pipeline behaviors, custom exceptions |
+| `QRDine.Domain` | Domain | Entities, enums, value objects, business rules |
+| `QRDine.Infrastructure` | Infrastructure | EF Core, ASP.NET Identity, JWT, Cloudinary, repositories |
 
-## 🧩 Core Features (MVP)
-
-- Merchant registration & authentication (JWT-based)
-- Tenant-scoped store management
-- QR code generation per tenant
-- Category & menu item management (CRUD APIs)
-- Public menu retrieval endpoint (QR access)
-- Role-based authorization (Admin / Merchant)
-- Basic management & reporting endpoints
-
----
-
-## 🏗 Project Structure
-
-```txt
-qr-dine-app/
-├── 📁 src/
-├── 📁 docs/
-├── 📄 README.md        # This file
+```mermaid
+graph TD
+    API["QRDine.API"] --> APP["QRDine.Application"]
+    API --> INFRA["QRDine.Infrastructure"]
+    APP --> COMMON["QRDine.Application.Common"]
+    APP --> DOMAIN["QRDine.Domain"]
+    COMMON --> DOMAIN
+    INFRA --> COMMON
+    INFRA --> DOMAIN
 ```
----
-
-## 📌 Project Status
-
-Initial project setup in progress.
 
 ---
 
-## 👤 Author
+## Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| Runtime | .NET 8 |
+| ORM | Entity Framework Core 8 (SQL Server) |
+| CQRS | MediatR |
+| Validation | FluentValidation |
+| Mapping | AutoMapper |
+| Specifications | Ardalis.Specification |
+| Authentication | ASP.NET Core Identity + JWT Bearer |
+| File Upload | Cloudinary |
+| API Docs | Swagger (Swashbuckle) |
+| API Versioning | Asp.Versioning.Mvc |
+
+---
+
+## Domain Modules
+
+| Module | Entities | Status |
+|--------|----------|--------|
+| **Catalog** | Category, Product, Table, ToppingGroup, Topping, ProductToppingGroup | ✅ CRUD implemented |
+| **Identity** | ApplicationUser, ApplicationRole, RefreshToken, Permission | ✅ Login + Registration |
+| **Tenant** | Merchant | ✅ Integrated with Identity |
+| **Sales** | Order, OrderItem | 🟡 Entities defined, endpoints pending |
+
+---
+
+## API Groups
+
+| Group | Route | Auth | Purpose |
+|-------|-------|------|---------|
+| **Management** | `/api/v1/management/...` | JWT (Merchant) | Store management CRUD |
+| **Storefront** | `/api/v1/storefront/...` | Public | Customer-facing read endpoints |
+| **Auth** | `/api/v1/auth/...` | Public | Login |
+| **Users** | `/api/v1/users/...` | JWT (SuperAdmin / Merchant) | User registration |
+
+---
+
+## Multi-Tenancy
+
+Data isolation is enforced at three levels:
+
+1. **Global Query Filters** — EF Core automatically filters all tenant-scoped entities by `MerchantId`
+2. **Auto MerchantId Stamp** — `SaveChangesAsync` automatically sets `MerchantId` on new entities implementing `IMustHaveMerchant`
+3. **Handler Ownership Checks** — Explicit verification in update/delete handlers
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/) (LocalDB, Express, or full)
+- [Cloudinary account](https://cloudinary.com/) (for image uploads)
+
+### Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/mduy26100/qr-dine-app.git
+   cd qr-dine-app
+   ```
+
+2. **Configure `appsettings.json`** (`src/QRDine.API/appsettings.template.json`):
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Server=YOUR_SERVER;Database=QRDine;Trusted_Connection=True;TrustServerCertificate=True;"
+     },
+     "Jwt": {
+       "Secret": "<your-256-bit-secret>",
+       "ValidIssuer": "http://localhost:xxxx",
+       "ValidAudience": "http://localhost:xxxx",
+       "AccessTokenExpiryMinutes": 15,
+       "RefreshTokenExpiryDays": 7
+     },
+     "Cloudinary": {
+       "CloudName": "<your-cloud-name>",
+       "ApiKey": "<your-api-key>",
+       "ApiSecret": "<your-api-secret>"
+     }
+   }
+   ```
+
+3. **Apply database migrations:**
+   ```bash
+   dotnet ef database update --project src/QRDine.Infrastructure --startup-project src/QRDine.API
+   ```
+
+4. **Run the application:**
+   ```bash
+   dotnet run --project src/QRDine.API
+   ```
+
+5. **Access Swagger UI:** `https://localhost:xxxx/swagger`
+
+### Seeded Data
+
+On first run, the system automatically seeds:
+- **Roles:** SuperAdmin, Merchant, Staff, Guest
+- **SuperAdmin account:** `admin@qrdine.com` / `Admin@123!`
+
+---
+
+## Documentation
+
+Detailed technical documentation is available in the [`docs/`](docs/) directory:
+
+| Document | Description |
+|----------|-------------|
+| [Architecture Overview](docs/architecture.md) | Clean Architecture layers, dependency flow, tech stack, startup pipeline |
+| [Database & Multi-Tenancy](docs/database-and-multitenancy.md) | Schema design, global query filters, transaction management, migrations |
+| [API Conventions](docs/api-conventions.md) | Response envelope, error handling, authentication, validation pipeline |
+| [Catalog Module](docs/features/catalog-module.md) | Categories, Products, Toppings, Tables — entities, business rules, endpoints |
+| [Identity Module](docs/features/identity-module.md) | Authentication, registration, JWT, roles, data seeding |
+| [Sales Module](docs/features/sales-module.md) | Orders, OrderItems — entities, status enum, implementation status |
+| [Cloudinary](docs/external-services/cloudinary.md) | Image upload integration, configuration, usage |
+
+---
+
+## Project Structure
+
+```
+qr-dine-app/
+├── src/
+│   ├── QRDine.API/
+│   │   ├── Controllers/
+│   │   │   ├── Identity/          # Auth, Users
+│   │   │   ├── Management/       # Catalog CRUD (Merchant)
+│   │   │   └── Storefront/       # Public endpoints
+│   │   ├── DependencyInjection/   # Modular DI registration
+│   │   ├── Filters/               # ApiResponseFilter
+│   │   ├── Middlewares/           # ExceptionHandlingMiddleware
+│   │   ├── Responses/            # ApiResponse, ApiError, Meta
+│   │   └── Requests/             # Form-data models
+│   ├── QRDine.Application/
+│   │   └── Features/
+│   │       ├── Catalog/           # Categories & Products CQRS
+│   │       └── Identity/          # Login & Registration CQRS
+│   ├── QRDine.Application.Common/
+│   │   ├── Abstractions/          # Interfaces
+│   │   ├── Behaviors/             # ValidationBehavior
+│   │   └── Exceptions/            # Custom exceptions
+│   ├── QRDine.Domain/
+│   │   ├── Catalog/               # Category, Product, Table, Topping entities
+│   │   ├── Sales/                 # Order, OrderItem entities
+│   │   ├── Tenant/                # Merchant entity
+│   │   ├── Common/                # BaseEntity, IMustHaveMerchant
+│   │   └── Enums/                 # OrderStatus
+│   └── QRDine.Infrastructure/
+│       ├── Catalog/               # Feature repositories
+│       ├── ExternalServices/      # Cloudinary
+│       ├── Identity/              # ASP.NET Identity, JWT
+│       └── Persistence/           # DbContext, EF configs, migrations, seeding
+├── docs/                          # Technical documentation
+└── QRDine.sln
+```
+
+---
+
+## Author
 
 **Do Manh Duy (Mark)**  
 Full-stack Developer (.NET & React)
@@ -76,7 +212,7 @@ Full-stack Developer (.NET & React)
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License — feel free to use, modify, and distribute it in accordance with the license terms.
 
