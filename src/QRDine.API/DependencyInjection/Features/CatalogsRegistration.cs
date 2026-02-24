@@ -9,6 +9,7 @@ namespace QRDine.API.DependencyInjection.Features
         {
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             return services;
         }
