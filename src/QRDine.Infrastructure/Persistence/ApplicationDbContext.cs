@@ -52,6 +52,9 @@ namespace QRDine.Infrastructure.Persistence
             builder.ApplyConfiguration(new CategoryConfiguration());
             builder.ApplyConfiguration(new ProductConfiguration());
             builder.ApplyConfiguration(new TableConfiguration());
+            builder.ApplyConfiguration(new ToppingGroupConfiguration());
+            builder.ApplyConfiguration(new ToppingConfiguration());
+            builder.ApplyConfiguration(new ProductToppingGroupConfiguration());
 
             // Sales tables
             builder.ApplyConfiguration(new OrderConfiguration());
@@ -62,6 +65,7 @@ namespace QRDine.Infrastructure.Persistence
             builder.Entity<Product>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
             builder.Entity<Table>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
             builder.Entity<Order>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
+            builder.Entity<ToppingGroup>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId);
         }
 
         public async Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -108,6 +112,9 @@ namespace QRDine.Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Table> Tables { get; set; }
+        public DbSet<ProductToppingGroup> ProductToppingGroups { get; set; }
+        public DbSet<ToppingGroup> ToppingGroups { get; set; }
+        public DbSet<Topping> Toppings { get; set; }
 
         // Sales
         public DbSet<Order> Orders { get; set; }

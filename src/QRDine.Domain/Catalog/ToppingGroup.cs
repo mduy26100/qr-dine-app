@@ -3,20 +3,21 @@ using QRDine.Domain.Tenant;
 
 namespace QRDine.Domain.Catalog
 {
-    public class Product : BaseEntity, IMustHaveMerchant
+    public class ToppingGroup : BaseEntity, IMustHaveMerchant
     {
         public Guid MerchantId { get; set; }
         public virtual Merchant Merchant { get; set; } = default!;
 
-        public Guid CategoryId { get; set; }
-        public virtual Category Category { get; set; } = default!;
-
         public string Name { get; set; } = default!;
         public string? Description { get; set; }
-        public string? ImageUrl { get; set; }
-        public decimal Price { get; set; }
-        public bool IsAvailable { get; set; } = true;
 
+        public bool IsRequired { get; set; } = false;
+        public int MinSelections { get; set; } = 0;
+        public int MaxSelections { get; set; } = 1;
+
+        public bool IsActive { get; set; } = true;
+
+        public virtual ICollection<Topping> Toppings { get; set; } = new List<Topping>();
         public virtual ICollection<ProductToppingGroup> ProductToppingGroups { get; set; } = new List<ProductToppingGroup>();
     }
 }
