@@ -1,5 +1,7 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
+using QRDine.Application.Features.Catalog.Categories.Commands.UpdateCategory;
+using QRDine.Application.Features.Catalog.Categories.DTOs;
 using QRDine.Application.Features.Catalog.Categories.Queries.GetMyCategories;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -33,6 +35,16 @@ namespace QRDine.API.Controllers.Management.Catalog
             var query = new GetMyCategoriesQuery();
 
             var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateCategory([FromRoute] Guid id, [FromBody] UpdateCategoryDto dto, CancellationToken cancellationToken)
+        {
+            var command = new UpdateCategoryCommand(id, dto);
+
+            var result = await _mediator.Send(command, cancellationToken);
 
             return Ok(result);
         }
