@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
+using QRDine.Application.Features.Catalog.Categories.Commands.DeleteCategory;
 using QRDine.Application.Features.Catalog.Categories.Commands.UpdateCategory;
 using QRDine.Application.Features.Catalog.Categories.DTOs;
 using QRDine.Application.Features.Catalog.Categories.Queries.GetMyCategories;
@@ -47,6 +48,15 @@ namespace QRDine.API.Controllers.Management.Catalog
             var result = await _mediator.Send(command, cancellationToken);
 
             return Ok(result);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var command = new DeleteCategoryCommand(id);
+            await _mediator.Send(command, cancellationToken);
+
+            return NoContent();
         }
     }
 }
