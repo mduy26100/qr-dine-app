@@ -1,6 +1,4 @@
-﻿using QRDine.Application.Common.Models;
-
-namespace QRDine.Application.Common.Abstractions.ExternalServices
+﻿namespace QRDine.Application.Common.Abstractions.ExternalServices.FileUpload
 {
     public interface IFileUploadService
     {

@@ -1,5 +1,4 @@
-﻿using QRDine.Application.Common.Abstractions.ExternalServices;
-using QRDine.Application.Common.Models;
+﻿using QRDine.Application.Common.Abstractions.ExternalServices.FileUpload;
 
 namespace QRDine.Infrastructure.ExternalServices.Cloudinary
 {

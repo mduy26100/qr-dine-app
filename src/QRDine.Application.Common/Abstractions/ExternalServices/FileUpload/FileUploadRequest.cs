@@ -1,4 +1,4 @@
-﻿namespace QRDine.Application.Common.Models
+﻿namespace QRDine.Application.Common.Abstractions.ExternalServices.FileUpload
 {
     public class FileUploadRequest
     {
