@@ -1,47 +1,50 @@
 # QR Dine App
 
 ![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver)
 ![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?logo=redis)
 ![License](https://img.shields.io/badge/License-Private-red)
 
-**QR Dine App** is a modern **multi-tenant SaaS (Software as a Service) platform** designed to help restaurants, cafés, and retail stores create and manage their own **QR-based digital menus** with ease.
+**QR Dine API** is a modern **multi-tenant SaaS backend** built to power QR-based digital menu systems for restaurants, cafés, and retail stores.
 
 The system allows multiple businesses to **register, manage their profiles, and generate unique QR codes** that link to fully customizable online menus. Each store operates independently within a secure multi-tenant architecture, ensuring data isolation and scalability.
 
-With QR Dine App, businesses can:
+Through a RESTful API, the platform supports:
 
-- 📱 Replace traditional paper menus with **digital QR menus**
-- 🛠 Manage menu items (create, update, delete) in real-time
-- 🏪 Operate under their own dedicated store space
-- 📊 Access basic analytics and management tools
-- 🚀 Scale easily as their business grows
+    - 📱 Digital QR menu management
+    - 🛠 Menu and category CRUD operations
+    - 🏪 Tenant-scoped store management
+    - 📊 Basic management and reporting capabilities
+    - 🚀 Scalable architecture for growing businesses
 
-The platform is built with a modern tech stack using **.NET 8 Web API (Clean Architecture)** for the backend and **React + Vite** for the frontend, ensuring high performance, maintainability, and scalability.
+The backend is built using **.NET 8 Web API with Onion Architecture**, focusing on maintainability, separation of concerns, and production-ready design.
 
-QR Dine App aims to provide a **lightweight, scalable, and production-ready SaaS foundation** that can evolve into a full-featured digital restaurant management ecosystem.
+QR Dine API provides a **scalable and extensible SaaS backend foundation** that can evolve into a comprehensive digital restaurant management system.
 
 ---
 
-## 🚀 Tech Stack
+## 🚀 Tech Stack & Architecture
 
-| Component | Architecture | Description |
-|-----------|--------------|-------------|
-| **Backend** | Monolithic + Onion Architecture | Clear layer separation, CQRS pattern with MediatR |
-| **Frontend** | Feature-Based Architecture | Code organized by business domain, reusable hooks |
-| **Communication** | RESTful API | JWT authentication, role-based authorization |
+| Project | Responsibility | Description |
+|----------|---------------|-------------|
+| **QRDine.API** | Presentation Layer | Exposes RESTful endpoints, API versioning, Swagger documentation, request/response handling |
+| **QRDine.Application** | Application Layer | CQRS implementation with MediatR, business use cases, validation, DTOs |
+| **QRDine.Application.Common** | Shared Abstractions | Common interfaces, base abstractions, cross-cutting concerns |
+| **QRDine.Domain** | Domain Layer | Core entities, value objects, business rules |
+| **QRDine.Infrastructure** | Infrastructure Layer | EF Core persistence, Identity, repository implementations, external services |
 
 ---
 
 ## 🧩 Core Features (MVP)
 
-- Store registration & management
-- QR menu generation per store
-- Menu management (CRUD)
-- Public QR menu view
-- Admin dashboard
+- Merchant registration & authentication (JWT-based)
+- Tenant-scoped store management
+- QR code generation per tenant
+- Category & menu item management (CRUD APIs)
+- Public menu retrieval endpoint (QR access)
+- Role-based authorization (Admin / Merchant)
+- Basic management & reporting endpoints
 
 ---
 
@@ -49,8 +52,7 @@ QR Dine App aims to provide a **lightweight, scalable, and production-ready SaaS
 
 ```txt
 qr-dine-app/
-├── 📁 backend/
-├── 📁 frontend/
+├── 📁 src/
 ├── 📁 docs/
 ├── 📄 README.md        # This file
 ```
