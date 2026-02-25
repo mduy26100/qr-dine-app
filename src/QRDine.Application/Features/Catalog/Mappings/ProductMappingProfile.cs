@@ -13,6 +13,10 @@ namespace QRDine.Application.Features.Catalog.Mappings
                 .ReverseMap();
 
             CreateMap<Product, ProductResponseDto>().ReverseMap();
+
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.Category.Parent != null ? src.Category.Parent.Name : null));
         }
     }
 }

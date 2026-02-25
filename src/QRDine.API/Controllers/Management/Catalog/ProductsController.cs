@@ -1,8 +1,11 @@
 ﻿using QRDine.API.Constants;
 using QRDine.API.Requests.Catalog;
+using QRDine.Application.Common.Models;
 using QRDine.Application.Features.Catalog.Products.Commands.CreateProduct;
 using QRDine.Application.Features.Catalog.Products.Commands.DeleteProduct;
 using QRDine.Application.Features.Catalog.Products.Commands.UpdateProduct;
+using QRDine.Application.Features.Catalog.Products.DTOs;
+using QRDine.Application.Features.Catalog.Products.Queries.GetMyProducts;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -46,6 +49,17 @@ namespace QRDine.API.Controllers.Management.Catalog
             await _mediator.Send(command, cancellationToken);
 
             return NoContent();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PagedResult<ProductDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyProducts(
+            [FromQuery] GetMyProductsQuery query,
+            CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
         }
     }
 }
