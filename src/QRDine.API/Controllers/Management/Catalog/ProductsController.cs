@@ -1,6 +1,7 @@
 ﻿using QRDine.API.Constants;
 using QRDine.API.Requests.Catalog;
 using QRDine.Application.Features.Catalog.Products.Commands.CreateProduct;
+using QRDine.Application.Features.Catalog.Products.Commands.UpdateProduct;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -26,6 +27,15 @@ namespace QRDine.API.Controllers.Management.Catalog
             var command = new CreateProductCommand(form.ToDto());
             var result = await _mediator.Send(command, cancellation);
             return Created(string.Empty, result);
+        }
+
+        [HttpPut("{id:guid}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromForm] UpdateProductForm form, CancellationToken cancellation)
+        {
+            var command = new UpdateProductCommand(id, form.ToDto());
+            var result = await _mediator.Send(command, cancellation);
+            return Ok(result);
         }
     }
 }
