@@ -10,6 +10,7 @@ namespace QRDine.API.DependencyInjection.Application
             {
                 cfg.AddProfile<CategoryMappingProfile>();
                 cfg.AddProfile<ProductMappingProfile>();
+                cfg.AddProfile<TableMappingProfile>();
             });
 
             return services;
