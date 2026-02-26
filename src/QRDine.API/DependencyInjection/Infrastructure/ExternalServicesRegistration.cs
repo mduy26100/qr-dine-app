@@ -1,5 +1,6 @@
 ﻿using QRDine.Application.Common.Abstractions.ExternalServices.FileUpload;
 using QRDine.Application.Common.Abstractions.ExternalServices.QrCode;
+using QRDine.Infrastructure.Configuration;
 using QRDine.Infrastructure.ExternalServices.Cloudinary;
 using QRDine.Infrastructure.ExternalServices.QrCode;
 
@@ -17,6 +18,9 @@ namespace QRDine.API.DependencyInjection.Infrastructure
             services.AddScoped<IFileUploadService, CloudinaryFileUploadService>();
 
             // QrCode generation
+            services.Configure<StorefrontSettings>(
+                configuration.GetSection("StorefrontSettings"));
+
             services.AddScoped<IQrCodeService, QrCodeService>();
 
             return services;

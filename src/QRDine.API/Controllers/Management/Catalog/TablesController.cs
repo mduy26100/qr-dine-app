@@ -1,0 +1,28 @@
+﻿using QRDine.API.Constants;
+using QRDine.Application.Features.Catalog.Tables.Commands.CreateTable;
+using QRDine.Infrastructure.Identity.Constants;
+
+namespace QRDine.API.Controllers.Management.Catalog
+{
+    [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/management/tables")]
+    [Authorize(Roles = SystemRoles.Merchant)]
+    [ApiExplorerSettings(GroupName = SwaggerGroups.Management)]
+    public class TablesController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+
+        public TablesController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTable([FromBody] CreateTableCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return Created(string.Empty, result);
+        }
+    }
+}

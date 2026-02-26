@@ -1,5 +1,7 @@
 ﻿using QRDine.Application.Features.Catalog.Repositories;
+using QRDine.Application.Features.Catalog.Tables.Services;
 using QRDine.Infrastructure.Catalog.Repositories;
+using QRDine.Infrastructure.Catalog.Tables.Services;
 
 namespace QRDine.API.DependencyInjection.Features
 {
@@ -11,6 +13,9 @@ namespace QRDine.API.DependencyInjection.Features
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
+
+            //Services
+            services.AddScoped<ITableQrGeneratorService, TableQrGeneratorService>();
 
             return services;
         }
