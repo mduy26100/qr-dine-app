@@ -23,7 +23,15 @@ namespace QRDine.Application.Features.Catalog.Products.Queries.GetMyProducts
             var countSpec = new ProductsFilterCountSpec(request.SearchTerm, request.CategoryId, request.IsAvailable);
             var totalCount = await _productRepository.CountAsync(countSpec, cancellationToken);
 
-            var pagedSpec = new ProductsFilterPagedSpec(request.SearchTerm, request.CategoryId, request.IsAvailable, request.PageNumber, request.PageSize);
+            var pagedSpec = new ProductsFilterPagedSpec(
+                request.SearchTerm,
+                request.CategoryId,
+                request.IsAvailable,
+                request.PageNumber,
+                request.PageSize,
+                request.CursorCreatedAt,
+                request.CursorId);
+
             var products = await _productRepository.ListAsync(pagedSpec, cancellationToken);
 
             var productDtos = _mapper.Map<List<ProductDto>>(products);

@@ -25,18 +25,23 @@ namespace QRDine.Application.Features.Catalog.Products.Specifications
 
     public class ProductsFilterPagedSpec : Specification<Product>
     {
-        public ProductsFilterPagedSpec(string? searchTerm, Guid? categoryId, bool? isAvailable, int pageNumber, int pageSize)
+        public ProductsFilterPagedSpec(
+            string? searchTerm,
+            Guid? categoryId,
+            bool? isAvailable,
+            int pageNumber,
+            int pageSize,
+            DateTime? cursorCreatedAt = null,
+            Guid? cursorId = null)
         {
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 Query.Where(x => x.Name.Contains(searchTerm));
             }
-
             if (categoryId.HasValue)
             {
                 Query.Where(x => x.CategoryId == categoryId.Value);
             }
-
             if (isAvailable.HasValue)
             {
                 Query.Where(x => x.IsAvailable == isAvailable.Value);
@@ -46,8 +51,26 @@ namespace QRDine.Application.Features.Catalog.Products.Specifications
                  .ThenInclude(c => c.Parent);
 
             Query.OrderByDescending(x => x.CreatedAt)
-                 .Skip((pageNumber - 1) * pageSize)
-                 .Take(pageSize);
+                 .ThenByDescending(x => x.Id);
+
+            if (cursorCreatedAt.HasValue && cursorId.HasValue)
+            {
+                Query.Where(x =>
+                        x.CreatedAt < cursorCreatedAt.Value ||
+                        (x.CreatedAt == cursorCreatedAt.Value && x.Id.CompareTo(cursorId.Value) < 0)
+                     )
+                     .Take(pageSize);
+            }
+            else if (cursorCreatedAt.HasValue)
+            {
+                Query.Where(x => x.CreatedAt < cursorCreatedAt.Value)
+                     .Take(pageSize);
+            }
+            else
+            {
+                Query.Skip((pageNumber - 1) * pageSize)
+                     .Take(pageSize);
+            }
         }
     }
 }

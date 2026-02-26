@@ -8,5 +8,8 @@ namespace QRDine.Application.Features.Catalog.Products.Queries.GetMyProducts
         public string? SearchTerm { get; set; }
         public Guid? CategoryId { get; set; }
         public bool? IsAvailable { get; set; }
+
+        public DateTime? CursorCreatedAt { get; set; }
+        public Guid? CursorId { get; set; }
     }
 }
