@@ -14,6 +14,7 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
 
             builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
             builder.Property(x => x.QrCodeToken).HasMaxLength(500);
+            builder.Property(x => x.QrCodeImageUrl).HasMaxLength(2000);
 
             builder.HasOne(x => x.Merchant)
                    .WithMany(m => m.Tables)
