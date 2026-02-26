@@ -8,14 +8,10 @@ namespace QRDine.Application.Features.Catalog.Products.Queries.GetMyProducts
     public class GetMyProductsQueryHandler : IRequestHandler<GetMyProductsQuery, PagedResult<ProductDto>>
     {
         private readonly IProductRepository _productRepository;
-        private readonly IMapper _mapper;
 
-        public GetMyProductsQueryHandler(
-            IProductRepository productRepository,
-            IMapper mapper)
+        public GetMyProductsQueryHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
-            _mapper = mapper;
         }
 
         public async Task<PagedResult<ProductDto>> Handle(GetMyProductsQuery request, CancellationToken cancellationToken)
@@ -32,9 +28,7 @@ namespace QRDine.Application.Features.Catalog.Products.Queries.GetMyProducts
                 request.CursorCreatedAt,
                 request.CursorId);
 
-            var products = await _productRepository.ListAsync(pagedSpec, cancellationToken);
-
-            var productDtos = _mapper.Map<List<ProductDto>>(products);
+            var productDtos = await _productRepository.ListAsync(pagedSpec, cancellationToken);
 
             return new PagedResult<ProductDto>(productDtos, totalCount, request.PageNumber, request.PageSize);
         }

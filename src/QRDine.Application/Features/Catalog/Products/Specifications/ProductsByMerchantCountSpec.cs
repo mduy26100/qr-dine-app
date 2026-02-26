@@ -1,4 +1,5 @@
-﻿using QRDine.Domain.Catalog;
+﻿using QRDine.Application.Features.Catalog.Products.DTOs;
+using QRDine.Domain.Catalog;
 
 namespace QRDine.Application.Features.Catalog.Products.Specifications
 {
@@ -23,7 +24,7 @@ namespace QRDine.Application.Features.Catalog.Products.Specifications
         }
     }
 
-    public class ProductsFilterPagedSpec : Specification<Product>
+    public class ProductsFilterPagedSpec : Specification<Product, ProductDto>
     {
         public ProductsFilterPagedSpec(
             string? searchTerm,
@@ -47,9 +48,6 @@ namespace QRDine.Application.Features.Catalog.Products.Specifications
                 Query.Where(x => x.IsAvailable == isAvailable.Value);
             }
 
-            Query.Include(x => x.Category)
-                 .ThenInclude(c => c.Parent);
-
             Query.OrderByDescending(x => x.CreatedAt)
                  .ThenByDescending(x => x.Id);
 
@@ -71,6 +69,20 @@ namespace QRDine.Application.Features.Catalog.Products.Specifications
                 Query.Skip((pageNumber - 1) * pageSize)
                      .Take(pageSize);
             }
+
+            Query.Select(x => new ProductDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                ImageUrl = x.ImageUrl,
+                Price = x.Price,
+                IsAvailable = x.IsAvailable,
+                CategoryId = x.CategoryId,
+                CategoryName = x.Category.Name,
+                ParentCategoryName = x.Category.Parent != null ? x.Category.Parent.Name : null,
+                CreatedAt = x.CreatedAt
+            });
         }
     }
 }
