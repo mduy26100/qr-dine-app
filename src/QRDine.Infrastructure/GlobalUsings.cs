@@ -15,3 +15,5 @@ global using Microsoft.EntityFrameworkCore.Storage;
 global using Ardalis.Specification.EntityFrameworkCore;
 global using CloudinaryDotNet;
 global using CloudinaryDotNet.Actions;
+global using SkiaSharp;
+global using QRCoder;

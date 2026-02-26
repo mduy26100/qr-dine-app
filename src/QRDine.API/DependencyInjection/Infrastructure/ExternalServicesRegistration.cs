@@ -1,5 +1,7 @@
 ﻿using QRDine.Application.Common.Abstractions.ExternalServices.FileUpload;
+using QRDine.Application.Common.Abstractions.ExternalServices.QrCode;
 using QRDine.Infrastructure.ExternalServices.Cloudinary;
+using QRDine.Infrastructure.ExternalServices.QrCode;
 
 namespace QRDine.API.DependencyInjection.Infrastructure
 {
@@ -13,6 +15,9 @@ namespace QRDine.API.DependencyInjection.Infrastructure
                 configuration.GetSection("Cloudinary"));
 
             services.AddScoped<IFileUploadService, CloudinaryFileUploadService>();
+
+            // QrCode generation
+            services.AddScoped<IQrCodeService, QrCodeService>();
 
             return services;
         }
