@@ -1,4 +1,4 @@
-﻿namespace QRDine.Infrastructure.ExternalServices.Cloudinary
+﻿namespace QRDine.Infrastructure.Configuration
 {
     public class CloudinarySettings
     {
