@@ -3,6 +3,7 @@ using QRDine.Application.Features.Catalog.Tables.Commands.CreateTable;
 using QRDine.Application.Features.Catalog.Tables.Commands.DeleteTable;
 using QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable;
 using QRDine.Application.Features.Catalog.Tables.DTOs;
+using QRDine.Application.Features.Catalog.Tables.Queries.GetMyTables;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -43,6 +44,15 @@ namespace QRDine.API.Controllers.Management.Catalog
             await _mediator.Send(command, cancellationToken);
 
             return NoContent();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(List<TableResponseDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyTables([FromQuery] bool? isOccupied, CancellationToken cancellationToken)
+        {
+            var query = new GetMyTablesQuery(isOccupied);
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
         }
     }
 }
