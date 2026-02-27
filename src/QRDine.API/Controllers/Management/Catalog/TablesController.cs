@@ -1,5 +1,7 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Tables.Commands.CreateTable;
+using QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable;
+using QRDine.Application.Features.Catalog.Tables.DTOs;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -23,6 +25,14 @@ namespace QRDine.API.Controllers.Management.Catalog
         {
             var result = await _mediator.Send(command, cancellationToken);
             return Created(string.Empty, result);
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateTable([FromRoute] Guid id, [FromBody] UpdateTableDto dto, CancellationToken cancellationToken)
+        {
+            var command = new UpdateTableCommand(id, dto);
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
         }
     }
 }
