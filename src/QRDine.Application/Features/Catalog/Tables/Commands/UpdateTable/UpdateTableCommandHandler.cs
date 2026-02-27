@@ -10,7 +10,9 @@ namespace QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable
         private readonly ITableRepository _tableRepository;
         private readonly IMapper _mapper;
 
-        public UpdateTableCommandHandler(ITableRepository tableRepository, IMapper mapper)
+        public UpdateTableCommandHandler(
+            ITableRepository tableRepository,
+            IMapper mapper)
         {
             _tableRepository = tableRepository;
             _mapper = mapper;
@@ -25,7 +27,7 @@ namespace QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable
                 throw new NotFoundException($"Table with ID {request.Id} not found.");
             }
 
-            var specName = new TableByNameSpec(request.Dto.Name, request.Id);
+            var specName = new TableByNameSpec(request.Dto.Name, excludeId: request.Id);
             var isExists = await _tableRepository.AnyAsync(specName, cancellationToken);
 
             if (isExists)

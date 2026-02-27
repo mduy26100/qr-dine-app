@@ -29,15 +29,26 @@ namespace QRDine.Application.Features.Catalog.Tables.Commands.CreateTable
 
         public async Task<TableResponseDto> Handle(CreateTableCommand request, CancellationToken cancellationToken)
         {
-            var specName = new TableByNameSpec(request.Name);
-            var isExists = await _tableRepository.AnyAsync(specName, cancellationToken);
-            if (isExists)
-            {
-                throw new ConflictException($"The table name '{request.Name}' already exists in the system.");
-            }
-
             var merchantId = _currentUserService.MerchantId
                 ?? throw new UnauthorizedAccessException("Merchant context is missing.");
+
+            var specName = new TableByNameSpec(request.Name, merchantId: merchantId, includeDeleted: true);
+            var existingTable = await _tableRepository.FirstOrDefaultAsync(specName, cancellationToken);
+
+            if (existingTable != null)
+            {
+                if (!existingTable.IsDeleted)
+                {
+                    throw new ConflictException($"The table name '{request.Name}' already exists in the system.");
+                }
+
+                existingTable.IsDeleted = false;
+                existingTable.IsOccupied = false;
+
+                await _tableRepository.UpdateAsync(existingTable, cancellationToken);
+
+                return _mapper.Map<TableResponseDto>(existingTable);
+            }
 
             var tableToken = Guid.NewGuid().ToString("N");
             var table = new Table
