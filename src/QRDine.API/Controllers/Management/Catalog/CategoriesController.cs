@@ -23,8 +23,9 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto, CancellationToken cancellationToken)
         {
+            var command = new CreateCategoryCommand(dto);
             var result = await _mediator.Send(command, cancellationToken);
 
             return Created(string.Empty, result);
