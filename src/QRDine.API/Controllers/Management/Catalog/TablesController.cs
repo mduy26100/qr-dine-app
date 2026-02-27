@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Tables.Commands.CreateTable;
+using QRDine.Application.Features.Catalog.Tables.Commands.DeleteTable;
 using QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable;
 using QRDine.Application.Features.Catalog.Tables.DTOs;
 using QRDine.Infrastructure.Identity.Constants;
@@ -33,6 +34,15 @@ namespace QRDine.API.Controllers.Management.Catalog
             var command = new UpdateTableCommand(id, dto);
             var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteTable([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var command = new DeleteTableCommand(id);
+            await _mediator.Send(command, cancellationToken);
+
+            return NoContent();
         }
     }
 }
