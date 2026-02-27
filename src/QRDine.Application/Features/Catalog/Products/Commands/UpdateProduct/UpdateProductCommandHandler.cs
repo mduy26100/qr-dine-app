@@ -43,7 +43,7 @@ namespace QRDine.Application.Features.Catalog.Products.Commands.UpdateProduct
 
             if (existingProduct.Name != request.Dto.Name || existingProduct.CategoryId != request.Dto.CategoryId)
             {
-                var conflictSpec = new ProductNameConflictSpec(request.Dto.CategoryId, request.Dto.Name, request.Id);
+                var conflictSpec = new ProductNameConflictSpec(request.Dto.CategoryId, request.Dto.Name, excludeId: request.Id);
                 if (await _productRepository.AnyAsync(conflictSpec, cancellationToken))
                 {
                     throw new ConflictException($"A product with the name '{request.Dto.Name}' already exists in this category.");

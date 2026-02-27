@@ -36,11 +36,8 @@ namespace QRDine.Application.Features.Catalog.Products.Commands.CreateProduct
                 throw new BusinessRuleException("Products can only be assigned to sub-categories (child categories).");
             }
 
-            var conflictSpec = new ProductNameConflictSpec(request.Dto.CategoryId, request.Dto.Name);
-            if (await _productRepository.AnyAsync(conflictSpec, cancellationToken))
-            {
-                throw new ConflictException($"A product with the name '{request.Dto.Name}' already exists in this category.");
-            }
+            var conflictSpec = new ProductNameConflictSpec(request.Dto.CategoryId, request.Dto.Name, includeDeleted: true);
+            var existingProduct = await _productRepository.FirstOrDefaultAsync(conflictSpec, cancellationToken);
 
             string imgUrl = string.Empty;
             if (request.Dto.ImgContent != null && !string.IsNullOrWhiteSpace(request.Dto.ImgFileName))
@@ -54,8 +51,25 @@ namespace QRDine.Application.Features.Catalog.Products.Commands.CreateProduct
                 imgUrl = await _fileUploadService.UploadAsync(uploadRequest, cancellationToken);
             }
 
-            var product = _mapper.Map<Product>(request.Dto);
+            if (existingProduct != null)
+            {
+                if (!existingProduct.IsDeleted)
+                {
+                    throw new ConflictException($"A product with the name '{request.Dto.Name}' already exists in this category.");
+                }
 
+                existingProduct.IsDeleted = false;
+                existingProduct.Description = request.Dto.Description;
+                existingProduct.Price = request.Dto.Price;
+                existingProduct.IsAvailable = request.Dto.IsAvailable;
+                existingProduct.ImageUrl = string.IsNullOrWhiteSpace(imgUrl) ? null : imgUrl;
+
+                await _productRepository.UpdateAsync(existingProduct, cancellationToken);
+
+                return _mapper.Map<ProductResponseDto>(existingProduct);
+            }
+
+            var product = _mapper.Map<Product>(request.Dto);
             product.ImageUrl = string.IsNullOrWhiteSpace(imgUrl) ? null : imgUrl;
 
             await _productRepository.AddAsync(product, cancellationToken);
