@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Identity.Commands.Login;
+using QRDine.Application.Features.Identity.DTOs;
 
 namespace QRDine.API.Controllers.Identity
 {
@@ -17,8 +18,9 @@ namespace QRDine.API.Controllers.Identity
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto, CancellationToken cancellationToken)
         {
+            var command = new LoginCommand(dto);
             var result = await _mediator.Send(command, cancellationToken);
             return Ok(result);
         }
