@@ -54,6 +54,7 @@ namespace QRDine.API.DependencyInjection
         public static IServiceCollection AddCrossCutting(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddApiVersioningConfig();
+            services.AddCorsPolicies(configuration);
             return services;
         }
 
