@@ -20,8 +20,9 @@ namespace QRDine.API.Services
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays)
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays),
+                Path = "/"
             };
 
             _httpContextAccessor.HttpContext?.Response.Cookies.Append(
@@ -36,8 +37,9 @@ namespace QRDine.API.Services
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(-1)
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(-1),
+                Path = "/"
             };
 
             _httpContextAccessor.HttpContext?.Response.Cookies.Delete(
