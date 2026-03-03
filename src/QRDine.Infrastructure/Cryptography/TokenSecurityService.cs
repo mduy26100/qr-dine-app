@@ -3,11 +3,11 @@ using QRDine.Infrastructure.Configuration;
 
 namespace QRDine.Infrastructure.Cryptography
 {
-    public class TokenHasher : ITokenHasher
+    public class TokenSecurityService : ITokenSecurityService
     {
         private readonly string _secretKey;
 
-        public TokenHasher(IOptions<SecuritySettings> options)
+        public TokenSecurityService(IOptions<SecuritySettings> options)
         {
             if (string.IsNullOrWhiteSpace(options.Value.TokenHashSecret))
             {
@@ -31,6 +31,28 @@ namespace QRDine.Infrastructure.Cryptography
             var hashBytes = hmac.ComputeHash(tokenBytes);
 
             return Convert.ToBase64String(hashBytes);
+        }
+
+        public bool VerifyToken(string plainToken, string hashedToken)
+        {
+            if (string.IsNullOrWhiteSpace(plainToken) || string.IsNullOrWhiteSpace(hashedToken))
+            {
+                return false;
+            }
+
+            try
+            {
+                var newlyHashedToken = HashToken(plainToken);
+
+                var newlyHashedBytes = Convert.FromBase64String(newlyHashedToken);
+                var originalHashedBytes = Convert.FromBase64String(hashedToken);
+
+                return CryptographicOperations.FixedTimeEquals(newlyHashedBytes, originalHashedBytes);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }

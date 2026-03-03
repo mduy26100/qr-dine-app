@@ -10,7 +10,7 @@ namespace QRDine.API.DependencyInjection.Infrastructure
             this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SecuritySettings>(configuration.GetSection("SecuritySettings"));
-            services.AddSingleton<ITokenHasher, TokenHasher>();
+            services.AddSingleton<ITokenSecurityService, TokenSecurityService>();
 
             return services;
         }

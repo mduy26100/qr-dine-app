@@ -15,7 +15,7 @@ namespace QRDine.Infrastructure.Identity.Services
         private readonly ApplicationDbContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JwtSettings _jwtSettings;
-        private readonly ITokenHasher _tokenHasher;
+        private readonly ITokenSecurityService _tokenHasher;
 
         public LoginService(
             UserManager<ApplicationUser> userManager,
@@ -23,7 +23,7 @@ namespace QRDine.Infrastructure.Identity.Services
             ApplicationDbContext dbContext,
             IHttpContextAccessor httpContextAccessor,
             IOptions<JwtSettings> jwtOptions,
-            ITokenHasher tokenHasher)
+            ITokenSecurityService tokenHasher)
         {
             _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
