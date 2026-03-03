@@ -34,6 +34,7 @@ namespace QRDine.API.DependencyInjection
         {
             services.AddPersistence(configuration);
             services.AddExternalServices(configuration);
+            services.AddCryptography(configuration);
             return services;
         }
 
