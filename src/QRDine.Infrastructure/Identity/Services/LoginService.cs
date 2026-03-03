@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Features.Identity.DTOs;
+﻿using QRDine.Application.Common.Abstractions.Cryptography;
+using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
 using QRDine.Infrastructure.Identity.Constants;
 using QRDine.Infrastructure.Identity.Models;
@@ -14,19 +15,22 @@ namespace QRDine.Infrastructure.Identity.Services
         private readonly ApplicationDbContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JwtSettings _jwtSettings;
+        private readonly ITokenHasher _tokenHasher;
 
         public LoginService(
             UserManager<ApplicationUser> userManager,
             IJwtTokenGenerator jwtTokenGenerator,
             ApplicationDbContext dbContext,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<JwtSettings> jwtOptions)
+            IOptions<JwtSettings> jwtOptions,
+            ITokenHasher tokenHasher)
         {
             _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
             _dbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
             _jwtSettings = jwtOptions.Value;
+            _tokenHasher = tokenHasher;
         }
 
         public async Task<LoginResponseDto> AuthenticateAsync(LoginRequestDto dto, CancellationToken cancellationToken)
@@ -43,13 +47,7 @@ namespace QRDine.Infrastructure.Identity.Services
                     .FirstOrDefaultAsync(u => u.PhoneNumber == dto.Identifier, cancellationToken);
             }
 
-            if (user == null)
-            {
-                throw new UnauthorizedAccessException("Invalid login credentials.");
-            }
-
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
-            if (!isPasswordValid)
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             {
                 throw new UnauthorizedAccessException("Invalid login credentials.");
             }
@@ -76,11 +74,14 @@ namespace QRDine.Infrastructure.Identity.Services
             var accessToken = _jwtTokenGenerator.GenerateToken(claims);
             var refreshTokenString = _jwtTokenGenerator.GenerateRefreshToken();
 
+            var hashedRefreshToken = _tokenHasher.HashToken(refreshTokenString);
+            var expirationDate = _jwtTokenGenerator.GetRefreshTokenExpiration();
+
             var refreshTokenEntity = new RefreshToken
             {
                 UserId = user.Id,
-                Token = refreshTokenString,
-                ExpiresAt = _jwtTokenGenerator.GetRefreshTokenExpiration(),
+                Token = hashedRefreshToken,
+                ExpiresAt = expirationDate,
                 CreatedByIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
             };
 
@@ -91,9 +92,7 @@ namespace QRDine.Infrastructure.Identity.Services
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenString,
-
                 ExpiresInMinutes = _jwtSettings.AccessTokenExpiryMinutes,
-
                 User = new UserDto
                 {
                     Id = user.Id,

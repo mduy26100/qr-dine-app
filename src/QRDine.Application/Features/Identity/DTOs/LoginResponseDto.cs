@@ -1,8 +1,12 @@
-﻿namespace QRDine.Application.Features.Identity.DTOs
+﻿using System.Text.Json.Serialization;
+
+namespace QRDine.Application.Features.Identity.DTOs
 {
     public class LoginResponseDto
     {
         public string AccessToken { get; set; } = default!;
+
+        [JsonIgnore]
         public string RefreshToken { get; set; } = default!;
         public int ExpiresInMinutes { get; set; }
 

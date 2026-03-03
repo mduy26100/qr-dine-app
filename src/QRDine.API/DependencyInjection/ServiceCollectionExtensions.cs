@@ -2,6 +2,7 @@
 using QRDine.API.DependencyInjection.CrossCutting;
 using QRDine.API.DependencyInjection.Features;
 using QRDine.API.DependencyInjection.Infrastructure;
+using QRDine.API.DependencyInjection.Presentation;
 using QRDine.API.DependencyInjection.Security;
 
 namespace QRDine.API.DependencyInjection
@@ -23,7 +24,8 @@ namespace QRDine.API.DependencyInjection
                 .AddSecurity(configuration)
                 .AddCrossCutting(configuration)
                 .AddApplication()
-                .AddFeatures();
+                .AddFeatures()
+                .AddPresentation();
         }
 
         /// <summary>
@@ -75,6 +77,15 @@ namespace QRDine.API.DependencyInjection
         public static IServiceCollection AddFeatures(this IServiceCollection services)
         {
             services.AddCatalogsFeature();
+            return services;
+        }
+
+        /// <summary>
+        /// Presentation: Controllers, HTTP concerns, Swagger
+        /// </summary>
+        public static IServiceCollection AddPresentation(this IServiceCollection services)
+        {
+            services.AddPresentationServices();
             return services;
         }
     }

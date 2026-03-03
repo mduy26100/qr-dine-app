@@ -28,9 +28,6 @@ namespace QRDine.API.DependencyInjection.Security
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            // HTTP Context accessor for user claims
-            services.AddHttpContextAccessor();
-
             // JWT Token Generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
