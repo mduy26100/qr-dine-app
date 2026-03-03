@@ -36,7 +36,7 @@ namespace QRDine.Infrastructure.Identity.Services
         public async Task<RefreshTokenResponseDto> RefreshAsync(string plainRefreshToken, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(plainRefreshToken))
-                throw new UnauthorizedAccessException("Refresh token is required.");
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
 
             var hashedIncomingToken = _tokenSecurityService.HashToken(plainRefreshToken);
 
@@ -46,21 +46,35 @@ namespace QRDine.Infrastructure.Identity.Services
                 .FirstOrDefaultAsync(rt => rt.Token == hashedIncomingToken, cancellationToken);
 
             if (tokenRecord == null)
-                throw new UnauthorizedAccessException("Invalid refresh token.");
+            {
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+            }
 
             if (tokenRecord.IsRevoked)
-                throw new UnauthorizedAccessException("Refresh token has been revoked. Please login again.");
+            {
+                var activeTokens = await _dbContext.RefreshTokens
+                    .IgnoreQueryFilters()
+                    .Where(t => t.UserId == tokenRecord.UserId && !t.IsRevoked)
+                    .ToListAsync(cancellationToken);
 
-            if (tokenRecord.ExpiresAt <= DateTime.UtcNow)
-                throw new UnauthorizedAccessException("Refresh token has expired. Please login again.");
+                foreach (var token in activeTokens)
+                {
+                    token.IsRevoked = true;
+                    token.RevokedAt = DateTime.UtcNow;
+                    token.RevokedByIp = "System: Token Reuse Detected";
+                }
 
-            if (!_tokenSecurityService.VerifyToken(plainRefreshToken, tokenRecord.Token))
-                throw new UnauthorizedAccessException("Token verification failed.");
+                await _dbContext.SaveChangesAsync(cancellationToken);
+
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+            }
+
+            if (tokenRecord.ExpiresAt <= DateTime.UtcNow || tokenRecord.User == null)
+            {
+                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
+            }
 
             var user = tokenRecord.User;
-            if (user == null)
-                throw new UnauthorizedAccessException("User associated with token not found.");
-
             var currentIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
 
             tokenRecord.IsRevoked = true;
