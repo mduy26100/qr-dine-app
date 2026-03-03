@@ -1,6 +1,7 @@
 ﻿using QRDine.API.Constants;
 using QRDine.API.Services;
 using QRDine.Application.Features.Identity.Commands.Login;
+using QRDine.Application.Features.Identity.Commands.RefreshToken;
 using QRDine.Application.Features.Identity.DTOs;
 
 namespace QRDine.API.Controllers.Identity
@@ -25,6 +26,24 @@ namespace QRDine.API.Controllers.Identity
         {
             var command = new LoginCommand(dto);
 
+            var result = await _mediator.Send(command, cancellationToken);
+
+            _authCookieService.AppendRefreshTokenCookie(result.RefreshToken);
+
+            return Ok(result);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
+        {
+            var plainRefreshToken = Request.Cookies[CookieNames.RefreshToken];
+
+            if (string.IsNullOrWhiteSpace(plainRefreshToken))
+            {
+                return Unauthorized();
+            }
+
+            var command = new RefreshTokenCommand(plainRefreshToken);
             var result = await _mediator.Send(command, cancellationToken);
 
             _authCookieService.AppendRefreshTokenCookie(result.RefreshToken);
