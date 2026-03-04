@@ -25,7 +25,7 @@ namespace QRDine.API.DependencyInjection
                 .AddCrossCutting(configuration)
                 .AddApplication()
                 .AddFeatures()
-                .AddPresentation();
+                .AddPresentation(configuration);
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace QRDine.API.DependencyInjection
         /// <summary>
         /// Presentation: Controllers, HTTP concerns, Swagger
         /// </summary>
-        public static IServiceCollection AddPresentation(this IServiceCollection services)
+        public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddPresentationServices();
+            services.AddPresentationServices(configuration);
             return services;
         }
     }
