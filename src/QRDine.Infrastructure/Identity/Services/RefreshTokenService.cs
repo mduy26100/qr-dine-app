@@ -75,7 +75,10 @@ namespace QRDine.Infrastructure.Identity.Services
             }
 
             var user = tokenRecord.User;
-            var currentIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            var ipAddress = _httpContextAccessor.HttpContext?
+                .Connection.RemoteIpAddress?
+                .ToString();
+            var currentIp = string.IsNullOrWhiteSpace(ipAddress) ? "Unknown" : ipAddress;
 
             tokenRecord.IsRevoked = true;
             tokenRecord.RevokedAt = DateTime.UtcNow;

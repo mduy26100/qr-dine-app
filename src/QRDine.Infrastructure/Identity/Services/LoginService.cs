@@ -77,12 +77,16 @@ namespace QRDine.Infrastructure.Identity.Services
             var hashedRefreshToken = _tokenHasher.HashToken(refreshTokenString);
             var expirationDate = _jwtTokenGenerator.GetRefreshTokenExpiration();
 
+            var ipAddress = _httpContextAccessor.HttpContext?
+                .Connection.RemoteIpAddress?
+                .ToString();
+
             var refreshTokenEntity = new RefreshToken
             {
                 UserId = user.Id,
                 Token = hashedRefreshToken,
                 ExpiresAt = expirationDate,
-                CreatedByIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+                CreatedByIp = string.IsNullOrWhiteSpace(ipAddress) ? "Unknown" : ipAddress
             };
 
             _dbContext.Set<RefreshToken>().Add(refreshTokenEntity);
