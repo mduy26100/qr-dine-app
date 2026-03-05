@@ -11,7 +11,6 @@ namespace QRDine.API.Controllers.Management.Catalog
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/management/tables")]
-    [Authorize(Roles = SystemRoles.Merchant)]
     [ApiExplorerSettings(GroupName = SwaggerGroups.Management)]
     public class TablesController : ControllerBase
     {
@@ -23,6 +22,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpPost]
+        [Authorize(Roles = SystemRoles.Merchant)]
         public async Task<IActionResult> CreateTable([FromBody] CreateTableCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
@@ -30,6 +30,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = SystemRoles.Merchant)]
         public async Task<IActionResult> UpdateTable([FromRoute] Guid id, [FromBody] UpdateTableDto dto, CancellationToken cancellationToken)
         {
             var command = new UpdateTableCommand(id, dto);
@@ -38,6 +39,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = SystemRoles.Merchant)]
         public async Task<IActionResult> DeleteTable([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var command = new DeleteTableCommand(id);
@@ -47,6 +49,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpGet]
+        [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
         [ProducesResponseType(typeof(List<TableResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyTables([FromQuery] bool? isOccupied, CancellationToken cancellationToken)
         {
