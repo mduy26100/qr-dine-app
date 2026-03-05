@@ -12,8 +12,14 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Sales
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
 
+            builder.Property(x => x.OrderCode).IsRequired().HasMaxLength(50);
+            builder.Property(x => x.TableName).IsRequired().HasMaxLength(100);
+
             builder.Property(x => x.TotalAmount).HasColumnType("decimal(18,2)");
             builder.Property(x => x.Note).HasMaxLength(1000);
+
+            builder.Property(x => x.CustomerName).HasMaxLength(256);
+            builder.Property(x => x.CustomerPhone).HasMaxLength(20);
 
             builder.HasOne(x => x.Merchant)
                    .WithMany()
@@ -25,6 +31,7 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Sales
                    .HasForeignKey(x => x.TableId)
                    .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasIndex(x => x.OrderCode);
             builder.HasIndex(x => x.SessionId);
             builder.HasIndex(x => x.MerchantId);
             builder.HasIndex(x => x.TableId);

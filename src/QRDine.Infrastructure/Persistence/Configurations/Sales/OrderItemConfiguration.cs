@@ -13,7 +13,10 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Sales
             builder.Property(x => x.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
 
             builder.Property(x => x.ProductName).IsRequired().HasMaxLength(256);
+            builder.Property(x => x.ToppingsSnapshot).HasMaxLength(1000);
+
             builder.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
+            builder.Property(x => x.Amount).HasColumnType("decimal(18,2)");
             builder.Property(x => x.Note).HasMaxLength(500);
 
             builder.HasOne(x => x.Order)
