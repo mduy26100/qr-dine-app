@@ -16,12 +16,18 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
             builder.Property(x => x.QrCodeToken).HasMaxLength(500);
             builder.Property(x => x.QrCodeImageUrl).HasMaxLength(2000);
 
+            builder.Property(x => x.CurrentSessionId).IsRequired(false);
+
             builder.HasOne(x => x.Merchant)
                    .WithMany(m => m.Tables)
                    .HasForeignKey(x => x.MerchantId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => x.MerchantId);
+
+            builder.HasIndex(x => new { x.MerchantId, x.QrCodeToken });
+
+            builder.HasIndex(x => x.CurrentSessionId);
 
             builder.HasQueryFilter(x => !x.IsDeleted);
         }

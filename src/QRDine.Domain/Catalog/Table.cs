@@ -12,5 +12,6 @@ namespace QRDine.Domain.Catalog
         public bool IsOccupied { get; set; } = false;
         public string? QrCodeToken { get; set; }
         public string? QrCodeImageUrl { get; set; }
+        public Guid? CurrentSessionId { get; set; }
     }
 }
