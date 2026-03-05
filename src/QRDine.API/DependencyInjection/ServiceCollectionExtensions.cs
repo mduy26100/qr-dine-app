@@ -77,6 +77,7 @@ namespace QRDine.API.DependencyInjection
         public static IServiceCollection AddFeatures(this IServiceCollection services)
         {
             services.AddCatalogsFeature();
+            services.AddSalesFeature();
             return services;
         }
 

@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Features.Catalog.Mappings;
+using QRDine.Application.Features.Sales.Mappings;
 
 namespace QRDine.API.DependencyInjection.Application
 {
@@ -11,6 +12,8 @@ namespace QRDine.API.DependencyInjection.Application
                 cfg.AddProfile<CategoryMappingProfile>();
                 cfg.AddProfile<ProductMappingProfile>();
                 cfg.AddProfile<TableMappingProfile>();
+                cfg.AddProfile<OrderMappingProfile>();
+                cfg.AddProfile<OrderItemMappingProfile>();
             });
 
             return services;
