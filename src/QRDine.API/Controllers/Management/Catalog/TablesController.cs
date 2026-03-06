@@ -4,6 +4,8 @@ using QRDine.Application.Features.Catalog.Tables.Commands.DeleteTable;
 using QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable;
 using QRDine.Application.Features.Catalog.Tables.DTOs;
 using QRDine.Application.Features.Catalog.Tables.Queries.GetMyTables;
+using QRDine.Application.Features.Sales.Orders.DTOs;
+using QRDine.Application.Features.Sales.Orders.Queries.GetActiveOrderByTable;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -54,6 +56,16 @@ namespace QRDine.API.Controllers.Management.Catalog
         public async Task<IActionResult> GetMyTables([FromQuery] bool? isOccupied, CancellationToken cancellationToken)
         {
             var query = new GetMyTablesQuery(isOccupied);
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("{tableId:guid}")]
+        [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
+        [ProducesResponseType(typeof(ManagementOrderDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCurrentOrderByTable([FromRoute] Guid tableId, CancellationToken cancellationToken)
+        {
+            var query = new GetActiveOrderByTableQuery(tableId);
             var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
