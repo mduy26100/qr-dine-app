@@ -83,20 +83,34 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             foreach (var itemModel in model.Items)
             {
                 var product = products.First(p => p.Id == itemModel.ProductId);
-                var amount = (product.Price + itemModel.ToppingSurcharge) * itemModel.Quantity;
 
-                order.OrderItems.Add(new OrderItem
+                var amountToAdd = (product.Price + itemModel.ToppingSurcharge) * itemModel.Quantity;
+
+                var existingItem = order.OrderItems.FirstOrDefault(oi =>
+                    oi.ProductId == product.Id &&
+                    oi.ToppingsSnapshot == itemModel.ToppingsSnapshot &&
+                    oi.Note == itemModel.Note);
+
+                if (existingItem != null)
                 {
-                    ProductId = product.Id,
-                    ProductName = product.Name,
-                    UnitPrice = product.Price,
-                    ToppingsSnapshot = itemModel.ToppingsSnapshot,
-                    Quantity = itemModel.Quantity,
-                    Amount = amount,
-                    Note = itemModel.Note
-                });
+                    existingItem.Quantity += itemModel.Quantity;
+                    existingItem.Amount += amountToAdd;
+                }
+                else
+                {
+                    order.OrderItems.Add(new OrderItem
+                    {
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        UnitPrice = product.Price,
+                        ToppingsSnapshot = itemModel.ToppingsSnapshot,
+                        Quantity = itemModel.Quantity,
+                        Amount = amountToAdd,
+                        Note = itemModel.Note
+                    });
+                }
 
-                order.TotalAmount += amount;
+                order.TotalAmount += amountToAdd;
             }
         }
     }
