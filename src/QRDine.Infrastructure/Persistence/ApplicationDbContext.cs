@@ -61,11 +61,11 @@ namespace QRDine.Infrastructure.Persistence
             builder.ApplyConfiguration(new OrderItemConfiguration());
 
             //Global query filters
-            builder.Entity<Category>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId && !e.IsDeleted);
-            builder.Entity<Product>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId && !e.IsDeleted);
-            builder.Entity<Table>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId && !e.IsDeleted);
-            builder.Entity<Order>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId && !e.IsDeleted);
-            builder.Entity<ToppingGroup>().HasQueryFilter(e => !CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId && !e.IsDeleted);
+            builder.Entity<Category>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+            builder.Entity<Product>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+            builder.Entity<Table>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+            builder.Entity<Order>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+            builder.Entity<ToppingGroup>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
         }
 
         public async Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
