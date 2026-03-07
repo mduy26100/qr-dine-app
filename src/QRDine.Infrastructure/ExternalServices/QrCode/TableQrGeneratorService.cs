@@ -34,7 +34,6 @@ namespace QRDine.Infrastructure.ExternalServices.QrCode
             {
                 Content = memoryStream,
                 FileName = fileName,
-                ContentType = "image/png"
             };
 
             return await _fileUploadService.UploadAsync(uploadRequest, cancellationToken);

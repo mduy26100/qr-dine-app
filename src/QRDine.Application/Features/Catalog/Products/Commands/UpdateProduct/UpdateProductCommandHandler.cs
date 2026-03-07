@@ -56,7 +56,6 @@ namespace QRDine.Application.Features.Catalog.Products.Commands.UpdateProduct
                 {
                     Content = request.Dto.ImgContent,
                     FileName = request.Dto.ImgFileName,
-                    ContentType = request.Dto.ImgContentType ?? "image/jpeg"
                 };
 
                 existingProduct.ImageUrl = await _fileUploadService.UploadAsync(uploadRequest, cancellationToken);

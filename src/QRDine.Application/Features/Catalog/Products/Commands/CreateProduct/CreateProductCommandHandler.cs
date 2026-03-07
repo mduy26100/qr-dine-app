@@ -46,7 +46,6 @@ namespace QRDine.Application.Features.Catalog.Products.Commands.CreateProduct
                 {
                     Content = request.Dto.ImgContent,
                     FileName = request.Dto.ImgFileName,
-                    ContentType = request.Dto.ImgContentType ?? "image/jpeg"
                 };
                 imgUrl = await _fileUploadService.UploadAsync(uploadRequest, cancellationToken);
             }
