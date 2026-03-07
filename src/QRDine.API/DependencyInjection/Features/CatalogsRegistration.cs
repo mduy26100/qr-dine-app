@@ -1,7 +1,7 @@
-﻿using QRDine.Application.Features.Catalog.Repositories;
-using QRDine.Application.Features.Catalog.Tables.Services;
+﻿using QRDine.Application.Common.Abstractions.ExternalServices.QrCode;
+using QRDine.Application.Features.Catalog.Repositories;
 using QRDine.Infrastructure.Catalog.Repositories;
-using QRDine.Infrastructure.Catalog.Tables.Services;
+using QRDine.Infrastructure.ExternalServices.QrCode;
 
 namespace QRDine.API.DependencyInjection.Features
 {

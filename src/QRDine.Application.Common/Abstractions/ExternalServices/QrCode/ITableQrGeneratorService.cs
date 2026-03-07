@@ -1,4 +1,4 @@
-﻿namespace QRDine.Application.Features.Catalog.Tables.Services
+﻿namespace QRDine.Application.Common.Abstractions.ExternalServices.QrCode
 {
     public interface ITableQrGeneratorService
     {

@@ -1,8 +1,8 @@
-﻿using QRDine.Application.Common.Abstractions.Identity;
+﻿using QRDine.Application.Common.Abstractions.ExternalServices.QrCode;
+using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Catalog.Repositories;
 using QRDine.Application.Features.Catalog.Tables.DTOs;
-using QRDine.Application.Features.Catalog.Tables.Services;
 using QRDine.Application.Features.Catalog.Tables.Specifications;
 using QRDine.Domain.Catalog;
 

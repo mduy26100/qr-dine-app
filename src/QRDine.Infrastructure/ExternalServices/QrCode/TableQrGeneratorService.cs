@@ -1,9 +1,8 @@
 ﻿using QRDine.Application.Common.Abstractions.ExternalServices.FileUpload;
 using QRDine.Application.Common.Abstractions.ExternalServices.QrCode;
-using QRDine.Application.Features.Catalog.Tables.Services;
 using QRDine.Infrastructure.Configuration;
 
-namespace QRDine.Infrastructure.Catalog.Tables.Services
+namespace QRDine.Infrastructure.ExternalServices.QrCode
 {
     public class TableQrGeneratorService : ITableQrGeneratorService
     {
@@ -23,7 +22,7 @@ namespace QRDine.Infrastructure.Catalog.Tables.Services
 
         public async Task<string> GenerateAndUploadQrAsync(Guid merchantId, string tableToken, string tableName, CancellationToken cancellationToken = default)
         {
-            var storefrontUrl = $"{_settings.BaseUrl.TrimEnd('/')}/store/{merchantId}/table/{tableToken}";
+            var storefrontUrl = $"{_settings.BaseUrl.TrimEnd('/')}/{merchantId}/table/{tableToken}";
 
             var qrImageBytes = await _qrCodeService.GenerateQrCodeAsync(storefrontUrl, cancellationToken);
 
