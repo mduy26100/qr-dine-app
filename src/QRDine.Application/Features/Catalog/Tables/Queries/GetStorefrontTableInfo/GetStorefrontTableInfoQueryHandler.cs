@@ -17,23 +17,18 @@ namespace QRDine.Application.Features.Catalog.Tables.Queries.GetStorefrontTableI
         public async Task<StorefrontTableInfoDto> Handle(GetStorefrontTableInfoQuery request, CancellationToken cancellationToken)
         {
             var spec = new TableByTokenSpec(request.MerchantId, request.QrCodeToken);
-            var table = await _tableRepository.SingleOrDefaultAsync(spec, cancellationToken);
 
-            if (table == null)
+            var dto = await _tableRepository.SingleOrDefaultAsync(spec, cancellationToken);
+
+            if (dto == null)
                 throw new NotFoundException("Mã QR không hợp lệ hoặc bàn không tồn tại.");
 
-            var sessionId = table.IsOccupied && table.CurrentSessionId.HasValue
-                                ? table.CurrentSessionId.Value
-                                : Guid.NewGuid();
-
-            return new StorefrontTableInfoDto
+            if (dto.SessionId == Guid.Empty)
             {
-                TableId = table.Id,
-                MerchantId = table.MerchantId,
-                TableName = table.Name,
-                IsOccupied = table.IsOccupied,
-                SessionId = sessionId
-            };
+                dto.SessionId = Guid.NewGuid();
+            }
+
+            return dto;
         }
     }
 }

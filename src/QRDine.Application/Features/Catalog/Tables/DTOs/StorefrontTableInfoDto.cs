@@ -7,5 +7,9 @@
         public string TableName { get; set; } = default!;
         public bool IsOccupied { get; set; }
         public Guid SessionId { get; set; }
+
+        public string MerchantName { get; set; } = default!;
+        public string? MerchantAddress { get; set; }
+        public string? MerchantLogoUrl { get; set; }
     }
 }
