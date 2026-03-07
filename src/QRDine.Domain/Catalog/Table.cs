@@ -13,5 +13,7 @@ namespace QRDine.Domain.Catalog
         public string? QrCodeToken { get; set; }
         public string? QrCodeImageUrl { get; set; }
         public Guid? CurrentSessionId { get; set; }
+
+        public byte[] RowVersion { get; set; } = default!;
     }
 }

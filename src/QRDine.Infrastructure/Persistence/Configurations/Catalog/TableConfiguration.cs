@@ -18,6 +18,8 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
 
             builder.Property(x => x.CurrentSessionId).IsRequired(false);
 
+            builder.Property(x => x.RowVersion).IsRowVersion();
+
             builder.HasOne(x => x.Merchant)
                    .WithMany(m => m.Tables)
                    .HasForeignKey(x => x.MerchantId)
