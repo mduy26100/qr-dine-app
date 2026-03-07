@@ -94,9 +94,9 @@ namespace QRDine.Infrastructure.Persistence
             {
                 return await base.SaveChangesAsync(cancellationToken);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw new ConcurrencyException("The data has been changed by someone else. Please try again.");
+                throw new ConcurrencyException("Dữ liệu đã bị thay đổi bởi một tiến trình khác.", ex);
             }
         }
 

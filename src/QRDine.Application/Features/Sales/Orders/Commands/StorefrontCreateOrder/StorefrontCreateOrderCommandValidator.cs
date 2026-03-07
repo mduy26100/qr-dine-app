@@ -17,9 +17,6 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.StorefrontCreateOrde
                 RuleFor(x => x.Dto.TableId)
                     .NotEmpty().WithMessage("TableId không được để trống.");
 
-                RuleFor(x => x.Dto.SessionId)
-                    .NotEmpty().WithMessage("SessionId không được để trống.");
-
                 RuleFor(x => x.Dto.CustomerName)
                     .MaximumLength(256).WithMessage("Tên khách hàng không được vượt quá 256 ký tự.");
 

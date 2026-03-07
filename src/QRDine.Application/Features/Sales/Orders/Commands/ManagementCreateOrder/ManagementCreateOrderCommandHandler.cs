@@ -1,7 +1,6 @@
 ﻿using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Catalog.Repositories;
-using QRDine.Application.Features.Catalog.Tables.Specifications;
 using QRDine.Application.Features.Sales.Orders.DTOs;
 using QRDine.Application.Features.Sales.Orders.Services;
 
@@ -33,36 +32,11 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.ManagementCreateOrde
             if (!_currentUserService.MerchantId.HasValue)
                 throw new ForbiddenException("Người dùng không thuộc chi nhánh/Merchant nào.");
 
-            var merchantId = _currentUserService.MerchantId.Value;
-
-            var tableSpec = new TableByIdAndMerchantSpec(dto.TableId, merchantId);
-            var table = await _tableRepository.SingleOrDefaultAsync(tableSpec, cancellationToken);
-
-            if (table == null)
-                throw new NotFoundException("Bàn không tồn tại hoặc không thuộc quyền quản lý của bạn.");
-
-            Guid sessionId;
-
-            if (table.IsOccupied)
-            {
-                if (!dto.SessionId.HasValue)
-                    throw new ConflictException("Bàn này đang có khách. Bắt buộc phải truyền SessionId để gọi thêm món.");
-
-                if (dto.SessionId.Value != table.CurrentSessionId)
-                    throw new ConflictException("SessionId không khớp với phiên ăn hiện tại của bàn. Vui lòng tải lại trang để tránh nhầm bill!");
-
-                sessionId = dto.SessionId.Value;
-            }
-            else
-            {
-                sessionId = Guid.NewGuid();
-            }
-
             var orderModel = new OrderCreationDto
             {
-                MerchantId = merchantId,
+                MerchantId = _currentUserService.MerchantId.Value,
                 TableId = dto.TableId,
-                SessionId = sessionId,
+                SessionId = dto.SessionId,
                 Note = dto.Note,
                 Items = dto.Items.Select(i => new OrderItemCreationDto
                 {
