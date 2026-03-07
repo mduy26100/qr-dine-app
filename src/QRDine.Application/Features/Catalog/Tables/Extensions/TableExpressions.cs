@@ -14,7 +14,7 @@ namespace QRDine.Application.Features.Catalog.Tables.Extensions
                 TableName = t.Name,
                 IsOccupied = t.IsOccupied,
 
-                SessionId = t.IsOccupied && t.CurrentSessionId.HasValue ? t.CurrentSessionId.Value : Guid.Empty,
+                SessionId = t.IsOccupied ? t.CurrentSessionId : null,
 
                 MerchantName = t.Merchant.Name,
                 MerchantAddress = t.Merchant.Address,

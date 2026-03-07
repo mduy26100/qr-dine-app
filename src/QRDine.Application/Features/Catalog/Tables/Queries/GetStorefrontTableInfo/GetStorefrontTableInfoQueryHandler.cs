@@ -23,11 +23,6 @@ namespace QRDine.Application.Features.Catalog.Tables.Queries.GetStorefrontTableI
             if (dto == null)
                 throw new NotFoundException("Mã QR không hợp lệ hoặc bàn không tồn tại.");
 
-            if (dto.SessionId == Guid.Empty)
-            {
-                dto.SessionId = Guid.NewGuid();
-            }
-
             return dto;
         }
     }
