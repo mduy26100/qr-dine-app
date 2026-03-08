@@ -8,12 +8,28 @@ namespace QRDine.API.DependencyInjection.Infrastructure
         public static IServiceCollection AddCaching(
             this IServiceCollection services, IConfiguration configuration)
         {
+            var connectionString = configuration.GetValue<string>("Redis:ConnectionString");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Redis:ConnectionString is missing. Please check your appsettings.json or environment variables.");
+            }
+
+            var redisOptions = ConfigurationOptions.Parse(connectionString);
+
+            redisOptions.ConnectTimeout = 150;
+            redisOptions.SyncTimeout = 150;
+            redisOptions.AsyncTimeout = 150;
+
+            redisOptions.AbortOnConnectFail = false;
+
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetValue<string>("Redis:ConnectionString");
+                options.ConfigurationOptions = redisOptions;
             });
 
-            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddSingleton<ICacheService, RedisCacheService>();
 
             return services;
         }
