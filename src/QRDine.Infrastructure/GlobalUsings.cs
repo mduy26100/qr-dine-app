@@ -17,3 +17,5 @@ global using CloudinaryDotNet;
 global using CloudinaryDotNet.Actions;
 global using SkiaSharp;
 global using QRCoder;
+global using System.Text.Json;
+global using Microsoft.Extensions.Caching.Distributed;
