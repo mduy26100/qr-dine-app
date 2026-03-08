@@ -87,5 +87,21 @@ namespace QRDine.Infrastructure.Caching
                 TripCircuit(ex, "RemoveAsync");
             }
         }
+
+        public async Task RemoveMultipleAsync(IEnumerable<string> keys, CancellationToken cancellationToken = default)
+        {
+            if (!CanUseCache() || keys == null) return;
+
+            try
+            {
+                var tasks = keys.Select(key => _cache.RemoveAsync(key, cancellationToken));
+
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception ex)
+            {
+                TripCircuit(ex, "RemoveMultipleAsync");
+            }
+        }
     }
 }
