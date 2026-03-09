@@ -1,6 +1,5 @@
 ﻿using QRDine.Application.Features.Catalog.Categories.DTOs;
 using QRDine.Domain.Catalog;
-using System.Linq.Expressions;
 
 namespace QRDine.Application.Features.Catalog.Categories.Extensions
 {
