@@ -77,6 +77,24 @@ namespace QRDine.Application.Features.Sales.Orders.Services
 
                 if (existingOrder != null)
                 {
+                    if (!string.IsNullOrWhiteSpace(model.Note))
+                    {
+                        if (string.IsNullOrWhiteSpace(existingOrder.Note))
+                        {
+                            existingOrder.Note = model.Note;
+                        }
+                        else if (!existingOrder.Note.Contains(model.Note))
+                        {
+                            existingOrder.Note += $" | Lần gọi thêm: {model.Note}";
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(existingOrder.CustomerName) && !string.IsNullOrWhiteSpace(model.CustomerName))
+                        existingOrder.CustomerName = model.CustomerName;
+
+                    if (string.IsNullOrWhiteSpace(existingOrder.CustomerPhone) && !string.IsNullOrWhiteSpace(model.CustomerPhone))
+                        existingOrder.CustomerPhone = model.CustomerPhone;
+
                     AddItems(existingOrder, model, products);
                     await _orderRepository.UpdateAsync(existingOrder, cancellationToken);
                     orderToReturn = existingOrder;
