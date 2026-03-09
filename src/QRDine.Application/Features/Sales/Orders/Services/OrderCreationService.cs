@@ -1,5 +1,6 @@
 ﻿using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Application.Common.Exceptions;
+using QRDine.Application.Features.Catalog.Products.DTOs;
 using QRDine.Application.Features.Catalog.Products.Specifications;
 using QRDine.Application.Features.Catalog.Repositories;
 using QRDine.Application.Features.Sales.Orders.DTOs;
@@ -138,7 +139,7 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             }
         }
 
-        private void AddItems(Order order, OrderCreationDto model, List<Product> products)
+        private void AddItems(Order order, OrderCreationDto model, List<ProductPriceDto> products)
         {
             foreach (var itemModel in model.Items)
             {
