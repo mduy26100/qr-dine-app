@@ -8,5 +8,6 @@
         public string Status { get; set; } = default!;
         public decimal TotalAmount { get; set; }
         public DateTime CreatedOn { get; set; }
+        public Guid SessionId { get; set; }
     }
 }
