@@ -6,7 +6,6 @@ using QRDine.Application.Features.Catalog.Repositories;
 using QRDine.Application.Features.Sales.Orders.DTOs;
 using QRDine.Application.Features.Sales.Orders.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
-using QRDine.Domain.Catalog;
 using QRDine.Domain.Enums;
 using QRDine.Domain.Sales;
 
