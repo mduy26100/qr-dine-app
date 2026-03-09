@@ -1,11 +1,13 @@
 ﻿using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Common.Abstractions.Persistence;
 using QRDine.Application.Common.Exceptions;
+using QRDine.Domain.Billing;
 using QRDine.Domain.Catalog;
 using QRDine.Domain.Common;
 using QRDine.Domain.Sales;
 using QRDine.Domain.Tenant;
 using QRDine.Infrastructure.Identity.Models;
+using QRDine.Infrastructure.Persistence.Configurations.Billing;
 using QRDine.Infrastructure.Persistence.Configurations.Catalog;
 using QRDine.Infrastructure.Persistence.Configurations.Identity;
 using QRDine.Infrastructure.Persistence.Configurations.Sales;
@@ -60,12 +62,25 @@ namespace QRDine.Infrastructure.Persistence
             builder.ApplyConfiguration(new OrderConfiguration());
             builder.ApplyConfiguration(new OrderItemConfiguration());
 
+            // Billing tables
+            builder.ApplyConfiguration(new FeatureLimitConfiguration());
+            builder.ApplyConfiguration(new PlanConfiguration());
+            builder.ApplyConfiguration(new SubscriptionConfiguration());
+            builder.ApplyConfiguration(new TransactionConfiguration());
+
             //Global query filters
+            // Apply a global query filter to automatically filter data by MerchantId and IsDeleted.
             builder.Entity<Category>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
             builder.Entity<Product>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
             builder.Entity<Table>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
             builder.Entity<Order>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
             builder.Entity<ToppingGroup>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+            builder.Entity<Subscription>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+            builder.Entity<Transaction>().HasQueryFilter(e => !e.IsDeleted && (!CurrentMerchantId.HasValue || e.MerchantId == CurrentMerchantId));
+
+            // Apply a global query filter to automatically filter out IsDeleted data.
+            builder.Entity<Plan>().HasQueryFilter(e => !e.IsDeleted);
+            builder.Entity<FeatureLimit>().HasQueryFilter(e => !e.IsDeleted);
         }
 
         public async Task<IDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
