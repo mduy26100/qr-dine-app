@@ -8,5 +8,6 @@
         public string RefreshToken { get; set; } = default!;
 
         public int ExpiresInMinutes { get; set; }
+        public UserDto User { get; set; } = default!;
     }
 }

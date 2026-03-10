@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Common.Abstractions.Cryptography;
+using QRDine.Application.Features.Billing.Subscriptions.Services;
 using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
 using QRDine.Infrastructure.Identity.Constants;
@@ -16,6 +17,7 @@ namespace QRDine.Infrastructure.Identity.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISubscriptionService _subscriptionService;
 
         public RefreshTokenService(
             ApplicationDbContext dbContext,
@@ -23,7 +25,8 @@ namespace QRDine.Infrastructure.Identity.Services
             IJwtTokenGenerator jwtTokenGenerator,
             UserManager<ApplicationUser> userManager,
             IOptions<JwtSettings> jwtOptions,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ISubscriptionService subscriptionService)
         {
             _dbContext = dbContext;
             _tokenSecurityService = tokenSecurityService;
@@ -31,6 +34,7 @@ namespace QRDine.Infrastructure.Identity.Services
             _userManager = userManager;
             _jwtSettings = jwtOptions.Value;
             _httpContextAccessor = httpContextAccessor;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<RefreshTokenResponseDto> RefreshAsync(string plainRefreshToken, CancellationToken cancellationToken = default)
@@ -65,7 +69,6 @@ namespace QRDine.Infrastructure.Identity.Services
                 }
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
-
                 throw new UnauthorizedAccessException("Invalid or expired refresh token.");
             }
 
@@ -75,9 +78,7 @@ namespace QRDine.Infrastructure.Identity.Services
             }
 
             var user = tokenRecord.User;
-            var ipAddress = _httpContextAccessor.HttpContext?
-                .Connection.RemoteIpAddress?
-                .ToString();
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
             var currentIp = string.IsNullOrWhiteSpace(ipAddress) ? "Unknown" : ipAddress;
 
             tokenRecord.IsRevoked = true;
@@ -85,6 +86,9 @@ namespace QRDine.Infrastructure.Identity.Services
             tokenRecord.RevokedByIp = currentIp;
 
             var roles = await _userManager.GetRolesAsync(user);
+            string? currentPlanCode = null;
+            string? currentSubStatus = null;
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -93,10 +97,25 @@ namespace QRDine.Infrastructure.Identity.Services
             };
 
             if (user.MerchantId.HasValue)
+            {
                 claims.Add(new Claim(AppClaimTypes.MerchantId, user.MerchantId.Value.ToString()));
 
+                var subInfo = await _subscriptionService.GetLatestSubscriptionInfoAsync(user.MerchantId.Value, cancellationToken);
+                if (subInfo != null)
+                {
+                    currentPlanCode = subInfo.PlanCode;
+                    var isExpired = subInfo.EndDate < DateTime.UtcNow;
+                    currentSubStatus = isExpired ? "Expired" : subInfo.Status.ToString();
+
+                    claims.Add(new Claim(AppClaimTypes.PlanCode, currentPlanCode));
+                    claims.Add(new Claim(AppClaimTypes.SubscriptionStatus, currentSubStatus));
+                }
+            }
+
             foreach (var role in roles)
+            {
                 claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var newAccessToken = _jwtTokenGenerator.GenerateToken(claims);
             var newPlainRefreshToken = _jwtTokenGenerator.GenerateRefreshToken();
@@ -117,7 +136,20 @@ namespace QRDine.Infrastructure.Identity.Services
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newPlainRefreshToken,
-                ExpiresInMinutes = _jwtSettings.AccessTokenExpiryMinutes
+                ExpiresInMinutes = _jwtSettings.AccessTokenExpiryMinutes,
+                User = new UserDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    FirstName = user.FirstName ?? string.Empty,
+                    LastName = user.LastName ?? string.Empty,
+                    AvatarUrl = user.AvatarUrl,
+                    Roles = roles,
+                    MerchantId = user.MerchantId,
+                    PlanCode = currentPlanCode,
+                    SubscriptionStatus = currentSubStatus
+                }
             };
         }
     }
