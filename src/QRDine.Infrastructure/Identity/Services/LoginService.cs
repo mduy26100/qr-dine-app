@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Common.Abstractions.Cryptography;
+using QRDine.Application.Features.Billing.Subscriptions.Services;
 using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
 using QRDine.Infrastructure.Identity.Constants;
@@ -16,6 +17,7 @@ namespace QRDine.Infrastructure.Identity.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JwtSettings _jwtSettings;
         private readonly ITokenSecurityService _tokenHasher;
+        private readonly ISubscriptionService _subscriptionService;
 
         public LoginService(
             UserManager<ApplicationUser> userManager,
@@ -23,7 +25,8 @@ namespace QRDine.Infrastructure.Identity.Services
             ApplicationDbContext dbContext,
             IHttpContextAccessor httpContextAccessor,
             IOptions<JwtSettings> jwtOptions,
-            ITokenSecurityService tokenHasher)
+            ITokenSecurityService tokenHasher,
+            ISubscriptionService subscriptionService)
         {
             _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
@@ -31,6 +34,7 @@ namespace QRDine.Infrastructure.Identity.Services
             _httpContextAccessor = httpContextAccessor;
             _jwtSettings = jwtOptions.Value;
             _tokenHasher = tokenHasher;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<LoginResponseDto> AuthenticateAsync(LoginRequestDto dto, CancellationToken cancellationToken)
@@ -61,9 +65,24 @@ namespace QRDine.Infrastructure.Identity.Services
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}".Trim())
             };
 
+            string? currentPlanCode = null;
+            string? currentSubStatus = null;
+
             if (user.MerchantId.HasValue)
             {
                 claims.Add(new Claim(AppClaimTypes.MerchantId, user.MerchantId.Value.ToString()));
+
+                var subInfo = await _subscriptionService.GetLatestSubscriptionInfoAsync(user.MerchantId.Value, cancellationToken);
+                if (subInfo != null)
+                {
+                    currentPlanCode = subInfo.PlanCode;
+
+                    var isExpired = subInfo.EndDate < DateTime.UtcNow;
+                    currentSubStatus = isExpired ? "Expired" : subInfo.Status.ToString();
+
+                    claims.Add(new Claim(AppClaimTypes.PlanCode, currentPlanCode));
+                    claims.Add(new Claim(AppClaimTypes.SubscriptionStatus, currentSubStatus));
+                }
             }
 
             foreach (var role in roles)
@@ -77,9 +96,7 @@ namespace QRDine.Infrastructure.Identity.Services
             var hashedRefreshToken = _tokenHasher.HashToken(refreshTokenString);
             var expirationDate = _jwtTokenGenerator.GetRefreshTokenExpiration();
 
-            var ipAddress = _httpContextAccessor.HttpContext?
-                .Connection.RemoteIpAddress?
-                .ToString();
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
             var refreshTokenEntity = new RefreshToken
             {
@@ -106,7 +123,9 @@ namespace QRDine.Infrastructure.Identity.Services
                     LastName = user.LastName ?? string.Empty,
                     AvatarUrl = user.AvatarUrl,
                     Roles = roles,
-                    MerchantId = user.MerchantId
+                    MerchantId = user.MerchantId,
+                    PlanCode = currentPlanCode,
+                    SubscriptionStatus = currentSubStatus
                 }
             };
         }

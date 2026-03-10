@@ -1,5 +1,5 @@
-﻿using QRDine.Application.Features.Billing.Plans.Services;
-using QRDine.Application.Features.Billing.Repositories;
+﻿using QRDine.Application.Features.Billing.Repositories;
+using QRDine.Application.Features.Billing.Subscriptions.Services;
 using QRDine.Infrastructure.Billing.Repositories;
 
 namespace QRDine.API.DependencyInjection.Features

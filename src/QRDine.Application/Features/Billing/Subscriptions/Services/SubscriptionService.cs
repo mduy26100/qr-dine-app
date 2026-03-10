@@ -2,10 +2,12 @@
 using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Billing.Plans.Specifications;
 using QRDine.Application.Features.Billing.Repositories;
+using QRDine.Application.Features.Billing.Subscriptions.DTOs;
+using QRDine.Application.Features.Billing.Subscriptions.Specifications;
 using QRDine.Domain.Billing;
 using QRDine.Domain.Enums;
 
-namespace QRDine.Application.Features.Billing.Plans.Services
+namespace QRDine.Application.Features.Billing.Subscriptions.Services
 {
     public class SubscriptionService : ISubscriptionService
     {
@@ -96,6 +98,12 @@ namespace QRDine.Application.Features.Billing.Plans.Services
                 await transaction.RollbackAsync(cancellationToken);
                 throw;
             }
+        }
+
+        public async Task<MerchantSubscriptionInfoDto?> GetLatestSubscriptionInfoAsync(Guid merchantId, CancellationToken cancellationToken = default)
+        {
+            var spec = new GetLatestSubscriptionInfoSpec(merchantId);
+            return await _subscriptionRepository.SingleOrDefaultAsync(spec, cancellationToken);
         }
     }
 }

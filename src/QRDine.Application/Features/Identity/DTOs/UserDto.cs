@@ -11,5 +11,7 @@
 
         public IList<string> Roles { get; set; } = new List<string>();
         public Guid? MerchantId { get; set; }
+        public string? PlanCode { get; set; }
+        public string? SubscriptionStatus { get; set; }
     }
 }

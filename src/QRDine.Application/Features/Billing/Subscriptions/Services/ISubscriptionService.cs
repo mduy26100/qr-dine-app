@@ -1,7 +1,8 @@
-﻿using QRDine.Domain.Billing;
+﻿using QRDine.Application.Features.Billing.Subscriptions.DTOs;
+using QRDine.Domain.Billing;
 using QRDine.Domain.Enums;
 
-namespace QRDine.Application.Features.Billing.Plans.Services
+namespace QRDine.Application.Features.Billing.Subscriptions.Services
 {
     public interface ISubscriptionService
     {
@@ -12,5 +13,7 @@ namespace QRDine.Application.Features.Billing.Plans.Services
             decimal? overrideAmount = null,
             string? adminNote = null,
             CancellationToken cancellationToken = default);
+
+        Task<MerchantSubscriptionInfoDto?> GetLatestSubscriptionInfoAsync(Guid merchantId, CancellationToken cancellationToken = default);
     }
 }

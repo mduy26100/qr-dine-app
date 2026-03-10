@@ -1,5 +1,5 @@
 ﻿using QRDine.Application.Features.Billing.Plans.DTOs;
-using QRDine.Application.Features.Billing.Plans.Services;
+using QRDine.Application.Features.Billing.Subscriptions.Services;
 using QRDine.Domain.Enums;
 
 namespace QRDine.Application.Features.Billing.Plans.Commands.AssignPlan
