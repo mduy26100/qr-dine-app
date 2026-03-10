@@ -1,4 +1,5 @@
-﻿using QRDine.API.Constants;
+﻿using QRDine.API.Attributes;
+using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
 using QRDine.Application.Features.Catalog.Categories.Commands.DeleteCategory;
 using QRDine.Application.Features.Catalog.Categories.Commands.UpdateCategory;
@@ -32,6 +33,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpGet]
+        [SkipSubscriptionCheck]
         public async Task<IActionResult> GetMyCategories(CancellationToken cancellationToken)
         {
             var query = new GetMyCategoriesQuery();

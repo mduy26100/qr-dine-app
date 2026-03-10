@@ -52,6 +52,8 @@ app.UseCors("AllowSpecificOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<SubscriptionEnforcementMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

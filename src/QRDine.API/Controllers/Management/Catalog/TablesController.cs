@@ -1,4 +1,5 @@
-﻿using QRDine.API.Constants;
+﻿using QRDine.API.Attributes;
+using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.Tables.Commands.CreateTable;
 using QRDine.Application.Features.Catalog.Tables.Commands.DeleteTable;
 using QRDine.Application.Features.Catalog.Tables.Commands.UpdateTable;
@@ -52,6 +53,7 @@ namespace QRDine.API.Controllers.Management.Catalog
 
         [HttpGet]
         [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
+        [SkipSubscriptionCheck]
         [ProducesResponseType(typeof(List<TableResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyTables([FromQuery] bool? isOccupied, CancellationToken cancellationToken)
         {
@@ -62,6 +64,7 @@ namespace QRDine.API.Controllers.Management.Catalog
 
         [HttpGet("{tableId:guid}")]
         [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
+        [SkipSubscriptionCheck]
         [ProducesResponseType(typeof(ManagementOrderDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCurrentOrderByTable([FromRoute] Guid tableId, CancellationToken cancellationToken)
         {

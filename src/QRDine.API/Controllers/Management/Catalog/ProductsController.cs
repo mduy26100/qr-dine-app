@@ -1,4 +1,5 @@
-﻿using QRDine.API.Constants;
+﻿using QRDine.API.Attributes;
+using QRDine.API.Constants;
 using QRDine.API.Requests.Catalog;
 using QRDine.Application.Common.Models;
 using QRDine.Application.Features.Catalog.Products.Commands.CreateProduct;
@@ -53,6 +54,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpGet("page")]
+        [SkipSubscriptionCheck]
         [ProducesResponseType(typeof(PagedResult<ProductDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyProductsByPage(
             [FromQuery] GetMyProductsByPageQuery query,
@@ -64,6 +66,7 @@ namespace QRDine.API.Controllers.Management.Catalog
         }
 
         [HttpGet("cursor")]
+        [SkipSubscriptionCheck]
         [ProducesResponseType(typeof(PagedResult<ProductDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyProductsByCusor(
             [FromQuery] GetMyProductsByCursorQuery query,
