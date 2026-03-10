@@ -8,6 +8,7 @@ using QRDine.Application.Features.Catalog.Products.Commands.UpdateProduct;
 using QRDine.Application.Features.Catalog.Products.DTOs;
 using QRDine.Application.Features.Catalog.Products.Queries.GetMyProductsByCursor;
 using QRDine.Application.Features.Catalog.Products.Queries.GetMyProductsByPage;
+using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -28,6 +29,7 @@ namespace QRDine.API.Controllers.Management.Catalog
 
         [HttpPost]
         [Consumes("multipart/form-data")]
+        [CheckFeatureLimit(FeatureType.MaxProducts)]
         public async Task<IActionResult> CreateProduct([FromForm] CreateProductForm form, CancellationToken cancellation)
         {
             var command = new CreateProductCommand(form.ToDto());

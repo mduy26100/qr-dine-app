@@ -7,6 +7,7 @@ using QRDine.Application.Features.Catalog.Tables.DTOs;
 using QRDine.Application.Features.Catalog.Tables.Queries.GetMyTables;
 using QRDine.Application.Features.Sales.Orders.DTOs;
 using QRDine.Application.Features.Sales.Orders.Queries.GetActiveOrderByTable;
+using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Management.Catalog
@@ -26,6 +27,7 @@ namespace QRDine.API.Controllers.Management.Catalog
 
         [HttpPost]
         [Authorize(Roles = SystemRoles.Merchant)]
+        [CheckFeatureLimit(FeatureType.MaxTables)]
         public async Task<IActionResult> CreateTable([FromBody] CreateTableCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
