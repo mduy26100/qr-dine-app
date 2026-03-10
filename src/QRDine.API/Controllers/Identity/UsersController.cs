@@ -1,4 +1,5 @@
-﻿using QRDine.API.Constants;
+﻿using QRDine.API.Attributes;
+using QRDine.API.Constants;
 using QRDine.Application.Features.Identity.Commands.Logout;
 using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
 using QRDine.Application.Features.Identity.Commands.RegisterStaff;
@@ -24,19 +25,21 @@ namespace QRDine.API.Controllers.Identity
         public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
-            return Ok(result);
+            return Created(string.Empty, result);
         }
 
         [HttpPost("register-staff")]
         [Authorize(Roles = SystemRoles.Merchant)]
+        [SkipSubscriptionCheck]
         public async Task<IActionResult> RegisterStaff([FromBody] RegisterStaffCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
-            return Ok(result);
+            return Created(string.Empty, result);
         }
 
         [HttpPost("logout")]
         [Authorize]
+        [SkipSubscriptionCheck]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
             var command = new LogoutCommand();
