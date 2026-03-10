@@ -17,6 +17,7 @@ namespace QRDine.API.DependencyInjection.Application
                 cfg.AddProfile<OrderItemMappingProfile>();
                 cfg.AddProfile<FeatureLimitMappingProfile>();
                 cfg.AddProfile<PlanMappingProfile>();
+                cfg.AddProfile<SubscriptionMappingProfile>();
             });
 
             return services;
