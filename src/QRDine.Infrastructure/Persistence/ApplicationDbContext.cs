@@ -134,5 +134,11 @@ namespace QRDine.Infrastructure.Persistence
         // Sales
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+
+        // Billing
+        public DbSet<FeatureLimit> FeatureLimits { get; set; }
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }

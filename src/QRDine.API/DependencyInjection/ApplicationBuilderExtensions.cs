@@ -1,4 +1,5 @@
 ﻿using QRDine.Infrastructure.Identity.Models;
+using QRDine.Infrastructure.Persistence;
 using QRDine.Infrastructure.Persistence.Seeding;
 
 namespace QRDine.API.DependencyInjection
@@ -18,11 +19,13 @@ namespace QRDine.API.DependencyInjection
 
             try
             {
+                var context = services.GetRequiredService<ApplicationDbContext>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
                 await IdentitySeeder.SeedAsync(userManager, roleManager, loggerFactory);
+                await PlanSeeder.SeedAsync(context, loggerFactory);
             }
             catch (Exception ex)
             {
