@@ -12,6 +12,12 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
+        options.SwaggerDoc(SwaggerGroups.Admin, new OpenApiInfo
+        {
+            Title = "QRDine Admin API",
+            Version = "v1"
+        });
+
         options.SwaggerDoc(SwaggerGroups.Management, new OpenApiInfo
         {
             Title = "QRDine Management API",
@@ -51,6 +57,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
+        options.SwaggerEndpoint(
+            $"/swagger/{SwaggerGroups.Admin}/swagger.json",
+            "Admin API");
+
         options.SwaggerEndpoint(
             $"/swagger/{SwaggerGroups.Management}/swagger.json",
             "Management API");

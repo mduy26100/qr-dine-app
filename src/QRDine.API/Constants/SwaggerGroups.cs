@@ -4,5 +4,6 @@
     {
         public const string Management = "management";
         public const string Storefront = "storefront";
+        public const string Admin = "admin";
     }
 }

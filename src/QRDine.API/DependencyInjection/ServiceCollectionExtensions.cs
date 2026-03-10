@@ -79,6 +79,7 @@ namespace QRDine.API.DependencyInjection
         {
             services.AddCatalogsFeature();
             services.AddSalesFeature();
+            services.AddBillingsFeature();
             return services;
         }
 
