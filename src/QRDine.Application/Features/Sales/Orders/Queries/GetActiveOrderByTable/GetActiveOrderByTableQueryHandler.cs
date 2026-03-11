@@ -18,7 +18,7 @@ namespace QRDine.Application.Features.Sales.Orders.Queries.GetActiveOrderByTable
         {
             var spec = new GetActiveOrderByTableSpec<ManagementOrderDto>(request.TableId, OrderExtensions.ToManagementOrderDto);
 
-            var orderDto = await _orderRepository.SingleOrDefaultAsync(spec, cancellationToken);
+            var orderDto = await _orderRepository.FirstOrDefaultAsync(spec, cancellationToken);
 
             return orderDto;
         }

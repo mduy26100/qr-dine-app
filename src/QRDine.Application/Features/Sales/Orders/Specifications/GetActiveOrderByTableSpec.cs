@@ -21,6 +21,9 @@ namespace QRDine.Application.Features.Sales.Orders.Specifications
                           && o.Status != OrderStatus.Cancelled
                           && !o.IsDeleted);
 
+            Query.OrderByDescending(o => o.CreatedAt)
+                 .Take(1);
+
             Query.Select(selector);
         }
     }
