@@ -32,46 +32,50 @@ namespace QRDine.Application.Features.Sales.Orders.Services
 
         public async Task<Order> CreateOrAppendOrderAsync(OrderCreationDto model, CancellationToken cancellationToken)
         {
+            var table = await _tableRepository.GetByIdAsync(model.TableId, cancellationToken);
+            if (table == null || table.MerchantId != model.MerchantId)
+                throw new NotFoundException("Bàn không tồn tại hoặc không hợp lệ.");
+
+            Guid activeSessionId;
+            if (table.IsOccupied)
+            {
+                if (!model.SessionId.HasValue)
+                    throw new ConflictException("Bàn này đang có khách. Bắt buộc phải truyền SessionId để gọi thêm món. Vui lòng tải lại trang!");
+
+                if (model.SessionId.Value != table.CurrentSessionId)
+                    throw new ConflictException("SessionId không khớp với phiên ăn hiện tại của bàn. Vui lòng tải lại trang để tránh nhầm bill!");
+
+                activeSessionId = table.CurrentSessionId.Value;
+            }
+            else
+            {
+                activeSessionId = Guid.NewGuid();
+            }
+
+            var productIds = model.Items.Select(x => x.ProductId).Distinct().ToList();
+            var productSpec = new GetProductsByIdsSpec(model.MerchantId, productIds);
+            var products = await _productRepository.ListAsync(productSpec, cancellationToken);
+
+            if (products.Count != productIds.Count)
+                throw new NotFoundException("Một số món ăn không tồn tại hoặc đã ngừng bán.");
+
+            Order? existingOrder = null;
+            if (table.IsOccupied)
+            {
+                var orderSpec = new GetActiveOrderBySessionSpec(model.MerchantId, model.TableId, activeSessionId);
+                existingOrder = await _orderRepository.SingleOrDefaultAsync(orderSpec, cancellationToken);
+            }
+
             await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
 
             try
             {
-                var table = await _tableRepository.GetByIdAsync(model.TableId, cancellationToken);
-
-                if (table == null || table.MerchantId != model.MerchantId)
-                    throw new NotFoundException("Bàn không tồn tại hoặc không hợp lệ.");
-
-                Guid activeSessionId;
-
-                if (table.IsOccupied)
+                if (!table.IsOccupied)
                 {
-                    if (!model.SessionId.HasValue)
-                        throw new ConflictException("Bàn này đang có khách. Bắt buộc phải truyền SessionId để gọi thêm món. Vui lòng tải lại trang!");
-
-                    if (model.SessionId.Value != table.CurrentSessionId)
-                        throw new ConflictException("SessionId không khớp với phiên ăn hiện tại của bàn. Vui lòng tải lại trang để tránh nhầm bill!");
-
-                    activeSessionId = table.CurrentSessionId.Value;
-                }
-                else
-                {
-                    activeSessionId = Guid.NewGuid();
                     table.IsOccupied = true;
                     table.CurrentSessionId = activeSessionId;
-
                     await _tableRepository.UpdateAsync(table, cancellationToken);
                 }
-
-                var productIds = model.Items.Select(x => x.ProductId).Distinct().ToList();
-
-                var productSpec = new GetProductsByIdsSpec(model.MerchantId, productIds);
-                var products = await _productRepository.ListAsync(productSpec, cancellationToken);
-
-                if (products.Count != productIds.Count)
-                    throw new NotFoundException("Một số món ăn không tồn tại hoặc đã ngừng bán.");
-
-                var orderSpec = new GetActiveOrderBySessionSpec(model.MerchantId, model.TableId, activeSessionId);
-                var existingOrder = await _orderRepository.SingleOrDefaultAsync(orderSpec, cancellationToken);
 
                 Order orderToReturn;
 
@@ -121,7 +125,6 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                 }
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
-
                 await transaction.CommitAsync(cancellationToken);
 
                 return orderToReturn;
