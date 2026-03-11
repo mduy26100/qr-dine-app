@@ -1,7 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Sales.Orders.Commands.StorefrontCreateOrder;
 using QRDine.Application.Features.Sales.Orders.DTOs;
-using QRDine.Application.Features.Sales.Orders.Queries.GetStorefrontOrder;
 
 namespace QRDine.API.Controllers.Storefront.Sales
 {
@@ -24,14 +23,6 @@ namespace QRDine.API.Controllers.Storefront.Sales
             var command = new StorefrontCreateOrderCommand(merchantId, dto);
             var result = await _mediator.Send(command);
             return Created(string.Empty, result);
-        }
-
-        [HttpGet("{sessionId:guid}")]
-        public async Task<IActionResult> GetOrder([FromRoute] Guid merchantId, [FromRoute] Guid sessionId, CancellationToken cancellationToken)
-        {
-            var query = new GetStorefrontOrderQuery(merchantId, sessionId);
-            var result = await _mediator.Send(query, cancellationToken);
-            return Ok(result);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Features.Sales.Orders.DTOs;
+using QRDine.Application.Features.Sales.Orders.Extensions;
 using QRDine.Application.Features.Sales.Orders.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
 
@@ -15,7 +16,7 @@ namespace QRDine.Application.Features.Sales.Orders.Queries.GetActiveOrderByTable
 
         public async Task<ManagementOrderDto?> Handle(GetActiveOrderByTableQuery request, CancellationToken cancellationToken)
         {
-            var spec = new GetActiveOrderByTableSpec(request.TableId);
+            var spec = new GetActiveOrderByTableSpec<ManagementOrderDto>(request.TableId, OrderExtensions.ToManagementOrderDto);
 
             var orderDto = await _orderRepository.SingleOrDefaultAsync(spec, cancellationToken);
 
