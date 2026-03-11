@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Features.Sales.Orders.DTOs;
+﻿using QRDine.Application.Common.Abstractions.Notifications;
+using QRDine.Application.Features.Sales.Orders.DTOs;
 using QRDine.Application.Features.Sales.Orders.Services;
 
 namespace QRDine.Application.Features.Sales.Orders.Commands.StorefrontCreateOrder
@@ -6,13 +7,16 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.StorefrontCreateOrde
     public class StorefrontCreateOrderCommandHandler : IRequestHandler<StorefrontCreateOrderCommand, OrderResponseDto>
     {
         private readonly IOrderCreationService _orderCreationService;
+        private readonly IOrderNotificationService _notificationService;
         private readonly IMapper _mapper;
 
         public StorefrontCreateOrderCommandHandler(
             IOrderCreationService orderCreationService,
+            IOrderNotificationService notificationService,
             IMapper mapper)
         {
             _orderCreationService = orderCreationService;
+            _notificationService = notificationService;
             _mapper = mapper;
         }
 
@@ -39,6 +43,13 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.StorefrontCreateOrde
             };
 
             var order = await _orderCreationService.CreateOrAppendOrderAsync(orderModel, cancellationToken);
+
+
+            _ = _notificationService.NotifyOrderUpdatedAsync(
+                request.MerchantId,
+                request.Dto.TableId,
+                order.TableName,
+                CancellationToken.None);
 
             return _mapper.Map<OrderResponseDto>(order);
         }

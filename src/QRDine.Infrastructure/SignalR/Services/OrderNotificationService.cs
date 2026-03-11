@@ -13,13 +13,13 @@ namespace QRDine.Infrastructure.SignalR.Services
             _hubContext = hubContext;
         }
 
-        public async Task NotifyOrderUpdatedAsync(Guid merchantId, Guid tableId, CancellationToken cancellationToken = default)
+        public async Task NotifyOrderUpdatedAsync(Guid merchantId, Guid tableId, string tableName, CancellationToken cancellationToken = default)
         {
-            var message = "Bàn của bạn vừa có cập nhật đơn hàng mới!";
+            var message = $"Bàn {tableName} vừa có cập nhật đơn hàng mới!";
 
             await _hubContext.Clients
                 .Group($"Merchant_{merchantId}")
-                .ReceiveOrderUpdate(tableId, message);
+                .ReceiveOrderUpdate(tableId, tableName, message);
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IOrderNotificationService
     {
-        Task NotifyOrderUpdatedAsync(Guid merchantId, Guid tableId, CancellationToken cancellationToken = default);
+        Task NotifyOrderUpdatedAsync(Guid merchantId, Guid tableId, string tableName, CancellationToken cancellationToken = default);
     }
 }

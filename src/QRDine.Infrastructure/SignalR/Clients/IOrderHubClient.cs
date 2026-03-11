@@ -2,6 +2,6 @@
 {
     public interface IOrderHubClient
     {
-        Task ReceiveOrderUpdate(Guid tableId, string message);
+        Task ReceiveOrderUpdate(Guid tableId, string tableName, string message);
     }
 }
