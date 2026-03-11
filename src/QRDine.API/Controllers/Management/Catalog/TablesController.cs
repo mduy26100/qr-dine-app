@@ -64,11 +64,11 @@ namespace QRDine.API.Controllers.Management.Catalog
             return Ok(result);
         }
 
-        [HttpGet("{tableId:guid}")]
+        [HttpGet("{tableId:guid}/active-order")]
         [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
         [SkipSubscriptionCheck]
         [ProducesResponseType(typeof(ManagementOrderDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetCurrentOrderByTable([FromRoute] Guid tableId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetActiveOrder([FromRoute] Guid tableId, CancellationToken cancellationToken)
         {
             var query = new GetActiveOrderByTableQuery(tableId);
             var result = await _mediator.Send(query, cancellationToken);
