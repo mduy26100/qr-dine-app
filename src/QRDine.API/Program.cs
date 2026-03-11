@@ -2,6 +2,7 @@ using QRDine.API.Constants;
 using QRDine.API.DependencyInjection;
 using QRDine.API.Filters;
 using QRDine.API.Middlewares;
+using QRDine.Infrastructure.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,8 @@ app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<OrderHub>("/hubs/order");
 
 app.UseMiddleware<SubscriptionEnforcementMiddleware>();
 

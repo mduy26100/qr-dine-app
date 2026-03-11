@@ -38,6 +38,7 @@ namespace QRDine.API.DependencyInjection
             services.AddExternalServices(configuration);
             services.AddCryptography(configuration);
             services.AddCaching(configuration);
+            services.AddSignalRInfrastructure();
             return services;
         }
 
