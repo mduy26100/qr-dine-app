@@ -167,7 +167,8 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                         ToppingsSnapshot = itemModel.ToppingsSnapshot,
                         Quantity = itemModel.Quantity,
                         Amount = amountToAdd,
-                        Note = itemModel.Note
+                        Status = OrderItemStatus.Pending,
+                        Note = itemModel.Note         
                     });
                 }
                 order.TotalAmount += amountToAdd;
