@@ -3,7 +3,6 @@ using QRDine.Application.Features.Catalog.Repositories;
 using QRDine.Application.Features.Dashboards.DTOs;
 using QRDine.Application.Features.Dashboards.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
-using QRDine.Domain.Enums;
 
 namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
 {
@@ -11,17 +10,20 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
     {
         private readonly IProductRepository _productRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemRepository _orderItemRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IIdentityService _identityService;
 
         public GetDashboardSummaryQueryHandler(
             IProductRepository productRepository,
             IOrderRepository orderRepository,
+            IOrderItemRepository orderItemRepository,
             ICurrentUserService currentUserService,
             IIdentityService identityService)
         {
             _productRepository = productRepository;
             _orderRepository = orderRepository;
+            _orderItemRepository = orderItemRepository;
             _currentUserService = currentUserService;
             _identityService = identityService;
         }
@@ -38,14 +40,16 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
             var startOfLast7Days = now.Date.AddDays(-6);
             var endOfToday = now.Date.AddDays(1).AddTicks(-1);
 
-            var totalProducts = await _productRepository.CountAsync(new ActiveProductsByMerchantSpec(merchantId), cancellationToken);
-            var totalStaff = await _identityService.CountStaffByMerchantAsync(merchantId, cancellationToken);
-            var monthlyOrders = await _orderRepository.ListAsync(new MonthlyOrdersSummarySpec(merchantId, startOfMonth, endOfMonth), cancellationToken);
-            var rawChartData = await _orderRepository.ListAsync(new Last7DaysRevenueSpec(merchantId, startOfLast7Days, endOfToday), cancellationToken);
+            var totalProducts = await _productRepository.CountAsync(new ActiveProductsSpec(), cancellationToken);
 
-            var revenueThisMonth = monthlyOrders
-                .Where(o => o.Status == OrderStatus.Paid)
-                .Sum(o => o.TotalAmount);
+            var totalStaff = await _identityService.CountStaffByMerchantAsync(merchantId, cancellationToken);
+
+            var totalOrdersThisMonth = await _orderRepository.CountAsync(new OrdersByDateRangeSpec(startOfMonth, endOfMonth), cancellationToken);
+
+            var monthlyServedItems = await _orderItemRepository.ListAsync(new ServedOrderItemsByDateRangeSpec(startOfMonth, endOfMonth), cancellationToken);
+            var revenueThisMonth = monthlyServedItems.Sum(oi => oi.Amount);
+
+            var rawChartData = await _orderItemRepository.ListAsync(new ServedOrderItemsByDateRangeSpec(startOfLast7Days, endOfToday), cancellationToken);
 
             var revenueChart = Enumerable.Range(0, 7)
                 .Select(i => new ChartDataDto
@@ -59,7 +63,7 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
                 .GroupBy(x => x.CreatedAt.Date)
                 .ToDictionary(
                     g => g.Key.ToString("dd/MM"),
-                    g => g.Sum(x => x.TotalAmount)
+                    g => g.Sum(x => x.Amount)
                 );
 
             foreach (var day in revenueChart)
@@ -74,7 +78,7 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
             {
                 TotalProducts = totalProducts,
                 TotalStaff = totalStaff,
-                TotalOrdersThisMonth = monthlyOrders.Count,
+                TotalOrdersThisMonth = totalOrdersThisMonth,
                 RevenueThisMonth = revenueThisMonth,
                 RevenueChart = revenueChart
             };
