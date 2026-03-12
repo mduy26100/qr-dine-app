@@ -1,5 +1,6 @@
 ﻿using QRDine.Domain.Catalog;
 using QRDine.Domain.Common;
+using QRDine.Domain.Enums;
 
 namespace QRDine.Domain.Sales
 {
@@ -18,6 +19,7 @@ namespace QRDine.Domain.Sales
 
         public int Quantity { get; set; }
         public decimal Amount { get; set; }
+        public OrderItemStatus Status { get; set; } = OrderItemStatus.Pending;
 
         public string? Note { get; set; }
     }
