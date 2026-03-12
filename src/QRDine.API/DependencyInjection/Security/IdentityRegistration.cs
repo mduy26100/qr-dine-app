@@ -34,6 +34,9 @@ namespace QRDine.API.DependencyInjection.Security
             // Current User Service
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+            // Identity Service
+            services.AddScoped<IIdentityService, IdentityService>();
+
             // Features Identity Services
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IRegisterService, RegisterService>();
