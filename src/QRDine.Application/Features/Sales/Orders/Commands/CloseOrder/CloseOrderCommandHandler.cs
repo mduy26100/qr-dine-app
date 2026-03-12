@@ -32,14 +32,9 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.CloseOrder
 
             if (request.TargetStatus == OrderStatus.Paid)
             {
-                var unservedItems = order.OrderItems
-                    .Where(i => i.Status == OrderItemStatus.Pending || i.Status == OrderItemStatus.Preparing)
-                    .ToList();
-
-                foreach (var item in unservedItems)
+                foreach (var item in order.OrderItems.Where(i => i.Status != OrderItemStatus.Cancelled && i.Status != OrderItemStatus.Served))
                 {
-                    item.Status = OrderItemStatus.Cancelled;
-                    order.TotalAmount -= item.Amount;
+                    item.Status = OrderItemStatus.Served;
                 }
             }
             else if (request.TargetStatus == OrderStatus.Cancelled)
