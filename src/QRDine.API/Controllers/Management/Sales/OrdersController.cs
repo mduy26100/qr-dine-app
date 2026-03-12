@@ -1,4 +1,5 @@
 ﻿using QRDine.API.Constants;
+using QRDine.Application.Common.Models;
 using QRDine.Application.Features.Sales.Orders.Commands.CloseOrder;
 using QRDine.Application.Features.Sales.Orders.Commands.ManagementCreateOrder;
 using QRDine.Application.Features.Sales.Orders.DTOs;
@@ -43,12 +44,10 @@ namespace QRDine.API.Controllers.Management.Sales
 
         [HttpGet("history")]
         [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
-        [ProducesResponseType(typeof(List<OrderListDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetOrderHistory(CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(PagedResult<OrderListDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetOrderHistory([FromQuery] GetOrderHistoryQuery query, CancellationToken cancellationToken)
         {
-            var query = new GetOrderHistoryQuery();
             var result = await _mediator.Send(query, cancellationToken);
-
             return Ok(result);
         }
 
