@@ -23,6 +23,7 @@ namespace QRDine.Application.Features.Sales.Orders.Extensions
                     ToppingsSnapshot = oi.ToppingsSnapshot,
                     Quantity = oi.Quantity,
                     Amount = oi.Amount,
+                    Status = oi.Status.ToString(),
                     Note = oi.Note
                 }).ToList()
             };
@@ -47,6 +48,7 @@ namespace QRDine.Application.Features.Sales.Orders.Extensions
                     ToppingsSnapshot = oi.ToppingsSnapshot,
                     Quantity = oi.Quantity,
                     Amount = oi.Amount,
+                    Status = oi.Status.ToString(),
                     Note = oi.Note,
                     CreatedAt = oi.CreatedAt
                 }).ToList()

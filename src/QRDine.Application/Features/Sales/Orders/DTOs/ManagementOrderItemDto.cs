@@ -8,6 +8,7 @@
         public string? ToppingsSnapshot { get; set; }
         public int Quantity { get; set; }
         public decimal Amount { get; set; }
+        public string Status { get; set; } = default!;  
         public string? Note { get; set; }
 
         public DateTime CreatedAt { get; set; }
