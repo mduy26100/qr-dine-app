@@ -51,5 +51,16 @@ namespace QRDine.Application.Features.Sales.Orders.Extensions
                     CreatedAt = oi.CreatedAt
                 }).ToList()
             };
+
+        public static Expression<Func<Order, OrderListDto>> ToOrderListDto =>
+            o => new OrderListDto
+            {
+                Id = o.Id,
+                OrderCode = o.OrderCode,
+                TableName = o.TableName,
+                Status = o.Status.ToString(),
+                TotalAmount = o.TotalAmount,
+                CreatedAt = o.CreatedAt
+            };
     }
 }

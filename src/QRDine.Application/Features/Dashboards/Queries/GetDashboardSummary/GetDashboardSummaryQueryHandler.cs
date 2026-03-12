@@ -31,7 +31,6 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
             var merchantId = _currentUserService.MerchantId
                 ?? throw new UnauthorizedAccessException("Bạn không có quyền xem thông tin này.");
 
-            // 1. Tính toán mốc thời gian (UTC)
             var now = DateTime.UtcNow;
             var startOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
             var endOfMonth = startOfMonth.AddMonths(1).AddTicks(-1);
@@ -39,18 +38,15 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
             var startOfLast7Days = now.Date.AddDays(-6);
             var endOfToday = now.Date.AddDays(1).AddTicks(-1);
 
-            // 2. Chạy LẦN LƯỢT từng query để đảm bảo an toàn cho DbContext (Thread-safe)
             var totalProducts = await _productRepository.CountAsync(new ActiveProductsByMerchantSpec(merchantId), cancellationToken);
             var totalStaff = await _identityService.CountStaffByMerchantAsync(merchantId, cancellationToken);
             var monthlyOrders = await _orderRepository.ListAsync(new MonthlyOrdersSummarySpec(merchantId, startOfMonth, endOfMonth), cancellationToken);
             var rawChartData = await _orderRepository.ListAsync(new Last7DaysRevenueSpec(merchantId, startOfLast7Days, endOfToday), cancellationToken);
 
-            // 3. Xử lý logic tổng quan tháng
             var revenueThisMonth = monthlyOrders
                 .Where(o => o.Status == OrderStatus.Paid)
                 .Sum(o => o.TotalAmount);
 
-            // 4. Xử lý Logic Chart (Khởi tạo 7 ngày = 0đ, sau đó lấp data thật vào)
             var revenueChart = Enumerable.Range(0, 7)
                 .Select(i => new ChartDataDto
                 {
@@ -74,7 +70,6 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
                 }
             }
 
-            // 5. Trả kết quả
             return new DashboardSummaryDto
             {
                 TotalProducts = totalProducts,
