@@ -14,18 +14,22 @@ namespace QRDine.Application.Features.Sales.Orders.Extensions
                 Status = o.Status.ToString(),
                 TotalAmount = o.TotalAmount,
                 Note = o.Note,
-                Items = o.OrderItems.Where(oi => !oi.IsDeleted).Select(oi => new StorefrontOrderItemDto
-                {
-                    ProductId = oi.ProductId,
-                    ProductName = oi.ProductName,
-                    ImageUrl = oi.Product != null ? oi.Product.ImageUrl : null,
-                    UnitPrice = oi.UnitPrice,
-                    ToppingsSnapshot = oi.ToppingsSnapshot,
-                    Quantity = oi.Quantity,
-                    Amount = oi.Amount,
-                    Status = oi.Status.ToString(),
-                    Note = oi.Note
-                }).ToList()
+                Items = o.OrderItems
+                    .Where(oi => !oi.IsDeleted)
+                    .OrderBy(oi => oi.Status)
+                    .ThenByDescending(oi => oi.CreatedAt)
+                    .Select(oi => new StorefrontOrderItemDto
+                    {
+                        ProductId = oi.ProductId,
+                        ProductName = oi.ProductName,
+                        ImageUrl = oi.Product != null ? oi.Product.ImageUrl : null,
+                        UnitPrice = oi.UnitPrice,
+                        ToppingsSnapshot = oi.ToppingsSnapshot,
+                        Quantity = oi.Quantity,
+                        Amount = oi.Amount,
+                        Status = oi.Status.ToString(),
+                        Note = oi.Note
+                    }).ToList()
             };
 
         public static Expression<Func<Order, ManagementOrderDto>> ToManagementOrderDto =>
@@ -40,18 +44,23 @@ namespace QRDine.Application.Features.Sales.Orders.Extensions
                 CustomerName = o.CustomerName,
                 CustomerPhone = o.CustomerPhone,
                 CreatedAt = o.CreatedAt,
-                Items = o.OrderItems.Where(oi => !oi.IsDeleted).Select(oi => new ManagementOrderItemDto
-                {
-                    ProductId = oi.ProductId,
-                    ProductName = oi.ProductName,
-                    UnitPrice = oi.UnitPrice,
-                    ToppingsSnapshot = oi.ToppingsSnapshot,
-                    Quantity = oi.Quantity,
-                    Amount = oi.Amount,
-                    Status = oi.Status.ToString(),
-                    Note = oi.Note,
-                    CreatedAt = oi.CreatedAt
-                }).ToList()
+                Items = o.OrderItems
+                    .Where(oi => !oi.IsDeleted)
+                    .OrderBy(oi => oi.Status)
+                    .ThenByDescending(oi => oi.CreatedAt)
+                    .Select(oi => new ManagementOrderItemDto
+                    {
+                        Id = oi.Id,
+                        ProductId = oi.ProductId,
+                        ProductName = oi.ProductName,
+                        UnitPrice = oi.UnitPrice,
+                        ToppingsSnapshot = oi.ToppingsSnapshot,
+                        Quantity = oi.Quantity,
+                        Amount = oi.Amount,
+                        Status = oi.Status.ToString(),
+                        Note = oi.Note,
+                        CreatedAt = oi.CreatedAt
+                    }).ToList()
             };
 
         public static Expression<Func<Order, OrderListDto>> ToOrderListDto =>

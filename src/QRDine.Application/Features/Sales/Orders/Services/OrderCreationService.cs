@@ -147,7 +147,9 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             {
                 var product = products.First(p => p.Id == itemModel.ProductId);
                 var amountToAdd = (product.Price + itemModel.ToppingSurcharge) * itemModel.Quantity;
+
                 var existingItem = order.OrderItems.FirstOrDefault(oi =>
+                    oi.Status == OrderItemStatus.Pending &&
                     oi.ProductId == product.Id &&
                     oi.ToppingsSnapshot == itemModel.ToppingsSnapshot &&
                     oi.Note == itemModel.Note);
@@ -168,9 +170,10 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                         Quantity = itemModel.Quantity,
                         Amount = amountToAdd,
                         Status = OrderItemStatus.Pending,
-                        Note = itemModel.Note         
+                        Note = itemModel.Note
                     });
                 }
+
                 order.TotalAmount += amountToAdd;
             }
         }
