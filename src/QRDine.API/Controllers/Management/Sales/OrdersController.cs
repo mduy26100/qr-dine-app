@@ -2,6 +2,7 @@
 using QRDine.Application.Features.Sales.Orders.Commands.CloseOrder;
 using QRDine.Application.Features.Sales.Orders.Commands.ManagementCreateOrder;
 using QRDine.Application.Features.Sales.Orders.DTOs;
+using QRDine.Application.Features.Sales.Orders.Queries.GetOrderDetail;
 using QRDine.Application.Features.Sales.Orders.Queries.GetOrderHistory;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -46,6 +47,17 @@ namespace QRDine.API.Controllers.Management.Sales
         public async Task<IActionResult> GetOrderHistory(CancellationToken cancellationToken)
         {
             var query = new GetOrderHistoryQuery();
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{orderId:guid}")]
+        [Authorize(Roles = $"{SystemRoles.Merchant},{SystemRoles.Staff}")]
+        [ProducesResponseType(typeof(ManagementOrderDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetOrderDetail([FromRoute] Guid orderId, CancellationToken cancellationToken)
+        {
+            var query = new GetOrderDetailQuery(orderId);
             var result = await _mediator.Send(query, cancellationToken);
 
             return Ok(result);
