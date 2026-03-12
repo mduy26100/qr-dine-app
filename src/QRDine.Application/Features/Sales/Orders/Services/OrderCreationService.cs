@@ -112,7 +112,7 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                         TableName = table.Name,
                         SessionId = activeSessionId,
                         OrderCode = OrderCodeGenerator.Generate(),
-                        Status = OrderStatus.Pending,
+                        Status = OrderStatus.Open,
                         CustomerName = model.CustomerName,
                         CustomerPhone = model.CustomerPhone,
                         Note = model.Note,

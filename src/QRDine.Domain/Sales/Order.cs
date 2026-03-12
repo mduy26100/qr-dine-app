@@ -14,7 +14,7 @@ namespace QRDine.Domain.Sales
 
         public string OrderCode { get; set; } = default!;
         public Guid SessionId { get; set; } = default!;
-        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public OrderStatus Status { get; set; } = OrderStatus.Open;
 
         public decimal TotalAmount { get; set; }
         public string? Note { get; set; }
