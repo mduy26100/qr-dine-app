@@ -74,12 +74,20 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
                 }
                 else
                 {
-                    subscription.PlanId = plan.Id;
+                    if (subscription.PlanId == plan.Id)
+                    {
+                        var baseDate = subscription.EndDate > now ? subscription.EndDate : now;
+                        subscription.EndDate = baseDate.AddDays(plan.DurationDays);
+                    }
+                    else
+                    {
+                        subscription.PlanId = plan.Id;
+                        subscription.StartDate = now;
+                        subscription.EndDate = now.AddDays(plan.DurationDays);
+                    }
+
                     subscription.Status = SubscriptionStatus.Active;
                     subscription.AdminNote = adminNote;
-
-                    var baseDate = subscription.EndDate > now ? subscription.EndDate : now;
-                    subscription.EndDate = baseDate.AddDays(plan.DurationDays);
 
                     await _subscriptionRepository.UpdateAsync(subscription, cancellationToken);
                 }
