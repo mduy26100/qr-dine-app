@@ -2,5 +2,5 @@
 
 namespace QRDine.Application.Features.Billing.Plans.Commands.AssignPlan
 {
-    public record AssignPlanCommand(AssignPlanDto Dto) : IRequest<AssignPlanResponseDto>;
+    public record AssignPlanCommand(Guid MerchantId, AssignPlanDto Dto) : IRequest<AssignPlanResponseDto>;
 }

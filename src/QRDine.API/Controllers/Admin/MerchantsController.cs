@@ -29,5 +29,16 @@ namespace QRDine.API.Controllers.Admin
             var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
+
+
+        [HttpPost("{merchantId:guid}/assign-plan")]
+        [ProducesResponseType(typeof(AssignPlanResponseDto), StatusCodes.Status201Created)]
+        public async Task<IActionResult> AssignPlan([FromRoute] Guid merchantId, [FromBody] AssignPlanDto dto, CancellationToken cancellationToken)
+        {
+            var command = new AssignPlanCommand(merchantId, dto);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return Created(string.Empty, result);
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace QRDine.Application.Features.Billing.Plans.Commands.AssignPlan
             var dto = request.Dto;
 
             var subscription = await _subscriptionService.AssignPlanAsync(
-                merchantId: dto.MerchantId,
+                merchantId: request.MerchantId,
                 planId: dto.PlanId,
                 paymentMethod: PaymentMethod.System_Grant,
                 overrideAmount: 0,

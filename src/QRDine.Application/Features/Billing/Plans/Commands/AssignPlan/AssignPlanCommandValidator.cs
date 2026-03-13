@@ -4,7 +4,7 @@
     {
         public AssignPlanCommandValidator()
         {
-            RuleFor(x => x.Dto.MerchantId)
+            RuleFor(x => x.MerchantId)
                 .NotEmpty().WithMessage("MerchantId không được để trống.");
 
             RuleFor(x => x.Dto.PlanId)
