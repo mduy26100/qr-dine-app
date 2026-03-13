@@ -16,7 +16,7 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Billing
             builder.Property(x => x.AdminNote).HasMaxLength(500);
 
             builder.HasOne(x => x.Merchant)
-                   .WithMany()
+                   .WithMany(m => m.Subscriptions)
                    .HasForeignKey(x => x.MerchantId)
                    .OnDelete(DeleteBehavior.Restrict);
 

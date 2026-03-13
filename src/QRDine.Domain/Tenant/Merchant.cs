@@ -1,4 +1,5 @@
-﻿using QRDine.Domain.Catalog;
+﻿using QRDine.Domain.Billing;
+using QRDine.Domain.Catalog;
 using QRDine.Domain.Common;
 
 namespace QRDine.Domain.Tenant
@@ -14,5 +15,6 @@ namespace QRDine.Domain.Tenant
 
         public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
         public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
+        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }
