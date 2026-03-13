@@ -1,6 +1,7 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Billing.Plans.Commands.AssignPlan;
 using QRDine.Application.Features.Billing.Plans.DTOs;
+using QRDine.Application.Features.Billing.Plans.Queries.GetAdminPlans;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Admin
@@ -17,6 +18,16 @@ namespace QRDine.API.Controllers.Admin
         public PlansController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(List<PlanDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPlans(CancellationToken cancellationToken)
+        {
+            var query = new GetAdminPlansQuery();
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
         }
 
         [HttpPost("assign")]
