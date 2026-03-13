@@ -16,7 +16,7 @@ namespace QRDine.Application.Features.Tenant.Merchants.Queries.GetAdminMerchants
 
         public async Task<PagedResult<AdminMerchantDto>> Handle(GetAdminMerchantsQuery request, CancellationToken cancellationToken)
         {
-            var spec = new MerchantsWithSubscriptionSpec(request.SearchKeyword, request.PageIndex, request.PageSize);
+            var spec = new MerchantsWithSubscriptionSpec(request.SearchKeyword, request.PageNumber, request.PageSize);
             var items = await _merchantRepository.ListAsync(spec, cancellationToken);
 
             var countSpec = new MerchantsCountSpec(request.SearchKeyword);
@@ -25,7 +25,7 @@ namespace QRDine.Application.Features.Tenant.Merchants.Queries.GetAdminMerchants
             return new PagedResult<AdminMerchantDto>(
                 items,
                 totalCount,
-                request.PageIndex,
+                request.PageNumber,
                 request.PageSize);
         }
     }

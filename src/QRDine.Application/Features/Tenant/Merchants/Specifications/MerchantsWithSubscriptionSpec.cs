@@ -6,7 +6,7 @@ namespace QRDine.Application.Features.Tenant.Merchants.Specifications
 {
     public class MerchantsWithSubscriptionSpec : Specification<Merchant, AdminMerchantDto>
     {
-        public MerchantsWithSubscriptionSpec(string? searchKeyword, int pageIndex, int pageSize)
+        public MerchantsWithSubscriptionSpec(string? searchKeyword, int pageNumber, int pageSize)
         {
             if (!string.IsNullOrWhiteSpace(searchKeyword))
             {
@@ -16,7 +16,7 @@ namespace QRDine.Application.Features.Tenant.Merchants.Specifications
 
             Query.OrderByDescending(m => m.CreatedAt);
 
-            Query.Skip((pageIndex - 1) * pageSize)
+            Query.Skip((pageNumber - 1) * pageSize)
                  .Take(pageSize);
 
             Query.Select(MerchantExtensions.ToAdminMerchantDto);
