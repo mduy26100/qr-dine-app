@@ -21,3 +21,6 @@ global using System.Text.Json;
 global using Microsoft.Extensions.Caching.Distributed;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.SignalR;
+global using MailKit.Net.Smtp;
+global using MailKit.Security;
+global using MimeKit;

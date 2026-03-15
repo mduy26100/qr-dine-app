@@ -4,7 +4,6 @@ using QRDine.Application.Features.Identity.Commands.Login;
 using QRDine.Application.Features.Identity.Commands.RefreshToken;
 using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
 using QRDine.Application.Features.Identity.DTOs;
-using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Identity
 {
