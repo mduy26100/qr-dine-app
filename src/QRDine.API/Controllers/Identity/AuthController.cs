@@ -39,9 +39,11 @@ namespace QRDine.API.Controllers.Identity
 
         [HttpPost("register-merchant")]
         [EnableRateLimiting(RateLimitPolicies.Register)]
-        public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantCommand command, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantDto dto, CancellationToken cancellationToken)
         {
+            var command = new RegisterMerchantCommand(dto);
             var result = await _mediator.Send(command, cancellationToken);
+
             return Created(string.Empty, new
             {
                 message = "Yêu cầu đăng ký thành công. Vui lòng kiểm tra email để kích hoạt tài khoản.",
