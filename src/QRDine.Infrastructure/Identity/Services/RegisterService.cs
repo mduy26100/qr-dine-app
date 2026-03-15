@@ -24,6 +24,8 @@ namespace QRDine.Infrastructure.Identity.Services
 
         public async Task<RegisterResponseDto> ConfirmMerchantRegistrationAsync(RegisterMerchantDto request, CancellationToken cancellationToken)
         {
+            await ValidateUserAndMerchantUniquenessAsync(request.Email, request.UserPhoneNumber, request.MerchantPhoneNumber, cancellationToken);
+
             await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
 
             try
@@ -43,7 +45,7 @@ namespace QRDine.Infrastructure.Identity.Services
 
                 var user = await CreateIdentityUserAsync(
                     request.Email, request.Password, request.FirstName, request.LastName,
-                    request.UserPhoneNumber, merchant.Id, SystemRoles.Merchant, cancellationToken);
+                    request.UserPhoneNumber, merchant.Id, SystemRoles.Merchant);
 
                 await transaction.CommitAsync(cancellationToken);
 
@@ -64,9 +66,11 @@ namespace QRDine.Infrastructure.Identity.Services
 
         public async Task<RegisterResponseDto> RegisterStaffAsync(RegisterStaffDto request, Guid merchantId, CancellationToken cancellationToken)
         {
+            await ValidateUserAndMerchantUniquenessAsync(request.Email, request.PhoneNumber, null, cancellationToken);
+
             var user = await CreateIdentityUserAsync(
                 request.Email, request.Password, request.FirstName, request.LastName,
-                request.PhoneNumber, merchantId, SystemRoles.Staff, cancellationToken);
+                request.PhoneNumber, merchantId, SystemRoles.Staff);
 
             return new RegisterResponseDto
             {
@@ -77,22 +81,63 @@ namespace QRDine.Infrastructure.Identity.Services
             };
         }
 
-        private async Task<ApplicationUser> CreateIdentityUserAsync(
-            string email, string password, string firstName, string lastName,
-            string? phoneNumber, Guid merchantId, string role, CancellationToken cancellationToken)
+        public async Task ValidateNewMerchantAsync(RegisterMerchantDto request, CancellationToken cancellationToken)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+            if (existingUser != null)
+                throw new ConflictException("Địa chỉ email này đã được đăng ký trong hệ thống.");
+
+            var phonesToCheck = new[] { request.UserPhoneNumber, request.MerchantPhoneNumber }
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Distinct()
+                .ToList();
+
+            if (phonesToCheck.Any())
+            {
+                var phoneExistsInUsers = await _dbContext.Users
+                    .AnyAsync(u => phonesToCheck.Contains(u.PhoneNumber), cancellationToken);
+                if (phoneExistsInUsers)
+                    throw new ConflictException("Số điện thoại này đã được gắn với một tài khoản người dùng khác.");
+
+                var phoneExistsInMerchants = await _dbContext.Merchants
+                    .AnyAsync(m => phonesToCheck.Contains(m.PhoneNumber), cancellationToken);
+                if (phoneExistsInMerchants)
+                    throw new ConflictException("Số điện thoại này đã được đăng ký cho một cửa hàng khác.");
+            }
+        }
+
+        private async Task ValidateUserAndMerchantUniquenessAsync(string email, string? userPhone, string? merchantPhone, CancellationToken cancellationToken)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
-                throw new ConflictException("This email address has already been registered.");
+                throw new ConflictException("Địa chỉ email này đã được đăng ký trong hệ thống.");
 
-            if (!string.IsNullOrEmpty(phoneNumber))
+            var phonesToCheck = new List<string?>();
+            if (!string.IsNullOrWhiteSpace(userPhone)) phonesToCheck.Add(userPhone);
+            if (!string.IsNullOrWhiteSpace(merchantPhone)) phonesToCheck.Add(merchantPhone);
+
+            phonesToCheck = phonesToCheck.Distinct().ToList();
+
+            if (phonesToCheck.Any())
             {
-                var existingPhone = await _dbContext.Users
-                    .AnyAsync(u => u.PhoneNumber == phoneNumber, cancellationToken);
-                if (existingPhone)
-                    throw new ConflictException("This phone number has already been registered.");
-            }
+                var existingUserPhone = await _dbContext.Users
+                    .AnyAsync(u => phonesToCheck.Contains(u.PhoneNumber), cancellationToken);
 
+                if (existingUserPhone)
+                    throw new ConflictException("Số điện thoại này đã được gắn với một tài khoản người dùng khác.");
+
+                var existingMerchantPhone = await _dbContext.Merchants
+                    .AnyAsync(m => phonesToCheck.Contains(m.PhoneNumber), cancellationToken);
+
+                if (existingMerchantPhone)
+                    throw new ConflictException("Số điện thoại này đã được đăng ký cho một cửa hàng khác.");
+            }
+        }
+
+        private async Task<ApplicationUser> CreateIdentityUserAsync(
+            string email, string password, string firstName, string lastName,
+            string? phoneNumber, Guid merchantId, string role)
+        {
             var user = new ApplicationUser
             {
                 UserName = email,
@@ -108,16 +153,21 @@ namespace QRDine.Infrastructure.Identity.Services
             if (!createUserResult.Succeeded)
             {
                 var firstError = createUserResult.Errors.FirstOrDefault()?.Description;
-                throw new BusinessRuleException(firstError ?? "Error creating account.");
+                throw new BusinessRuleException(firstError ?? "Lỗi trong quá trình tạo tài khoản.");
             }
 
             var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
             if (!addToRoleResult.Succeeded)
-                throw new BusinessRuleException("Error when assigning account permissions.");
+                throw new BusinessRuleException("Lỗi trong quá trình phân quyền tài khoản.");
 
             return user;
         }
 
+        public string GenerateActivationLink(string token)
+        {
+            var baseUrl = _frontendSettings.BaseUrl.TrimEnd('/');
+            return $"{baseUrl}/verify-email?token={token}";
+        }
 
         private async Task<string> GenerateUniqueSlugAsync(string merchantName, CancellationToken cancellationToken)
         {
@@ -151,9 +201,7 @@ namespace QRDine.Infrastructure.Identity.Services
             if (string.IsNullOrWhiteSpace(text)) return string.Empty;
 
             text = text.ToLowerInvariant();
-
             text = RemoveVietnameseDiacritics(text);
-
             text = System.Text.RegularExpressions.Regex.Replace(text, @"[^a-z0-9\s-]", "");
             text = System.Text.RegularExpressions.Regex.Replace(text, @"\s+", "-").Trim('-');
 
@@ -190,27 +238,6 @@ namespace QRDine.Infrastructure.Identity.Services
             }
 
             return text;
-        }
-
-        public async Task ValidateNewMerchantAsync(string email, string? phoneNumber, CancellationToken cancellationToken)
-        {
-            var existingUser = await _userManager.FindByEmailAsync(email);
-            if (existingUser != null)
-                throw new ConflictException("Địa chỉ email này đã được đăng ký trong hệ thống.");
-
-            if (!string.IsNullOrEmpty(phoneNumber))
-            {
-                var existingPhone = await _dbContext.Users
-                    .AnyAsync(u => u.PhoneNumber == phoneNumber, cancellationToken);
-                if (existingPhone)
-                    throw new ConflictException("Số điện thoại này đã được sử dụng.");
-            }
-        }
-
-        public string GenerateActivationLink(string token)
-        {
-            var baseUrl = _frontendSettings.BaseUrl.TrimEnd('/');
-            return $"{baseUrl}/verify-email?token={token}";
         }
     }
 }

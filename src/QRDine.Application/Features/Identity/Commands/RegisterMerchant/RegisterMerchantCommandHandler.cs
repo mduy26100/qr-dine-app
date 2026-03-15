@@ -24,7 +24,7 @@ namespace QRDine.Application.Features.Identity.Commands.RegisterMerchant
 
         public async Task<bool> Handle(RegisterMerchantCommand request, CancellationToken cancellationToken)
         {
-            await _registerService.ValidateNewMerchantAsync(request.Dto.Email, request.Dto.UserPhoneNumber, cancellationToken);
+            await _registerService.ValidateNewMerchantAsync(request.Dto, cancellationToken);
 
             var token = Guid.NewGuid().ToString("N");
 
