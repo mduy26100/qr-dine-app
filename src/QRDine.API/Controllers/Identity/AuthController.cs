@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.API.Services;
+using QRDine.Application.Features.Identity.Commands.ConfirmRegister;
 using QRDine.Application.Features.Identity.Commands.Login;
 using QRDine.Application.Features.Identity.Commands.RefreshToken;
 using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
@@ -44,6 +45,14 @@ namespace QRDine.API.Controllers.Identity
                 message = "Yêu cầu đăng ký thành công. Vui lòng kiểm tra email để kích hoạt tài khoản.",
                 data = result
             });
+        }
+
+        [HttpPost("confirm-register")]
+        public async Task<IActionResult> ConfirmRegister([FromBody] ConfirmRegisterCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return Ok(result);
         }
 
         [HttpPost("refresh-token")]

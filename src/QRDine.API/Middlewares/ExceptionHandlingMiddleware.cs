@@ -64,6 +64,15 @@ namespace QRDine.API.Middlewares
 
             switch (ex)
             {
+                case BadRequestException badRequestEx:
+                    statusCode = HttpStatusCode.BadRequest;
+                    apiError = new ApiError
+                    {
+                        Type = "bad-request",
+                        Message = badRequestEx.Message
+                    };
+                    break;
+
                 case ValidationException validationEx:
                     statusCode = HttpStatusCode.BadRequest;
                     apiError = new ApiError
