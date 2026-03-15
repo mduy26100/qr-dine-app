@@ -9,7 +9,7 @@ namespace QRDine.API.Controllers.Identity
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/users")]
-    [ApiExplorerSettings(GroupName = SwaggerGroups.Management)]
+    [ApiExplorerSettings(GroupName = SwaggerGroups.Identity)]
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
