@@ -2,7 +2,9 @@
 using QRDine.API.Services;
 using QRDine.Application.Features.Identity.Commands.Login;
 using QRDine.Application.Features.Identity.Commands.RefreshToken;
+using QRDine.Application.Features.Identity.Commands.RegisterMerchant;
 using QRDine.Application.Features.Identity.DTOs;
+using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Identity
 {
@@ -31,6 +33,14 @@ namespace QRDine.API.Controllers.Identity
             _authCookieService.AppendRefreshTokenCookie(result.RefreshToken);
 
             return Ok(result);
+        }
+
+
+        [HttpPost("register-merchant")]
+        public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return Created(string.Empty, result);
         }
 
         [HttpPost("refresh-token")]
