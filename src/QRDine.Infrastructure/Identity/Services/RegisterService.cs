@@ -1,6 +1,9 @@
 ﻿using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
+using QRDine.Domain.Billing;
+using QRDine.Domain.Constants;
+using QRDine.Domain.Enums;
 using QRDine.Domain.Tenant;
 using QRDine.Infrastructure.Configuration;
 using QRDine.Infrastructure.Identity.Constants;
@@ -41,6 +44,39 @@ namespace QRDine.Infrastructure.Identity.Services
                 };
 
                 _dbContext.Merchants.Add(merchant);
+
+                var trialPlanCode = $"{PlanTiers.Trial}_14D";
+                var trialPlan = await _dbContext.Set<Plan>().FirstOrDefaultAsync(p => p.Code == trialPlanCode, cancellationToken);
+
+                if (trialPlan != null)
+                {
+                    var now = DateTime.UtcNow;
+
+                    var subscription = new Subscription
+                    {
+                        MerchantId = merchant.Id,
+                        PlanId = trialPlan.Id,
+                        Status = SubscriptionStatus.Active,
+                        StartDate = now,
+                        EndDate = now.AddDays(trialPlan.DurationDays),
+                        AdminNote = "Hệ thống tự động cấp gói dùng thử khi đăng ký"
+                    };
+                    _dbContext.Set<Subscription>().Add(subscription);
+
+                    var billingTransaction = new Transaction
+                    {
+                        MerchantId = merchant.Id,
+                        PlanId = trialPlan.Id,
+                        Subscription = subscription,
+                        Amount = 0,
+                        Status = PaymentStatus.Success,
+                        Method = PaymentMethod.System_Grant,
+                        PaidAt = now,
+                        AdminNote = "Hệ thống tự động cấp gói dùng thử khi đăng ký"
+                    };
+                    _dbContext.Set<Transaction>().Add(billingTransaction);
+                }
+
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 var user = await CreateIdentityUserAsync(
