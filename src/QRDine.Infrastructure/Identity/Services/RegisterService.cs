@@ -2,6 +2,7 @@
 using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
 using QRDine.Domain.Tenant;
+using QRDine.Infrastructure.Configuration;
 using QRDine.Infrastructure.Identity.Constants;
 using QRDine.Infrastructure.Identity.Models;
 using QRDine.Infrastructure.Persistence;
@@ -12,14 +13,16 @@ namespace QRDine.Infrastructure.Identity.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
+        private readonly FrontendSettings _frontendSettings;
 
-        public RegisterService(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public RegisterService(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext, IOptions<FrontendSettings> options)
         {
             _userManager = userManager;
             _dbContext = dbContext;
+            _frontendSettings = options.Value;
         }
 
-        public async Task<RegisterResponseDto> RegisterMerchantAsync(RegisterMerchantDto request, CancellationToken cancellationToken)
+        public async Task<RegisterResponseDto> ConfirmMerchantRegistrationAsync(RegisterMerchantDto request, CancellationToken cancellationToken)
         {
             await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
 
@@ -187,6 +190,27 @@ namespace QRDine.Infrastructure.Identity.Services
             }
 
             return text;
+        }
+
+        public async Task ValidateNewMerchantAsync(string email, string? phoneNumber, CancellationToken cancellationToken)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+                throw new ConflictException("Địa chỉ email này đã được đăng ký trong hệ thống.");
+
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                var existingPhone = await _dbContext.Users
+                    .AnyAsync(u => u.PhoneNumber == phoneNumber, cancellationToken);
+                if (existingPhone)
+                    throw new ConflictException("Số điện thoại này đã được sử dụng.");
+            }
+        }
+
+        public string GenerateActivationLink(string token)
+        {
+            var baseUrl = _frontendSettings.BaseUrl.TrimEnd('/');
+            return $"{baseUrl}/verify-email?token={token}";
         }
     }
 }

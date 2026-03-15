@@ -39,7 +39,11 @@ namespace QRDine.API.Controllers.Identity
         public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
-            return Created(string.Empty, result);
+            return Created(string.Empty, new
+            {
+                message = "Yêu cầu đăng ký thành công. Vui lòng kiểm tra email để kích hoạt tài khoản.",
+                data = result
+            });
         }
 
         [HttpPost("refresh-token")]
