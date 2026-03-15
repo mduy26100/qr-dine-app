@@ -24,3 +24,5 @@ global using Microsoft.AspNetCore.SignalR;
 global using MailKit.Net.Smtp;
 global using MailKit.Security;
 global using MimeKit;
+global using System.Linq.Expressions;
+global using Ardalis.Specification;
