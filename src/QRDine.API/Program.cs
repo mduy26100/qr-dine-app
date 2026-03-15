@@ -54,6 +54,8 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 
+app.UseRateLimiter();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
@@ -69,7 +71,7 @@ app.UseMiddleware<SubscriptionEnforcementMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger();   
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint(

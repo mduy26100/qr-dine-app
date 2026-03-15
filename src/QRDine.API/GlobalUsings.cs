@@ -14,3 +14,6 @@ global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.Extensions.Options;
 global using StackExchange.Redis;
+global using Microsoft.AspNetCore.HttpOverrides;
+global using System.Threading.RateLimiting;
+global using Microsoft.AspNetCore.RateLimiting;

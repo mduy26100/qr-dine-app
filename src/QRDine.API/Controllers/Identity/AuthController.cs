@@ -24,6 +24,7 @@ namespace QRDine.API.Controllers.Identity
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting(RateLimitPolicies.Login)]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto, CancellationToken cancellationToken)
         {
             var command = new LoginCommand(dto);
@@ -37,6 +38,7 @@ namespace QRDine.API.Controllers.Identity
 
 
         [HttpPost("register-merchant")]
+        [EnableRateLimiting(RateLimitPolicies.Register)]
         public async Task<IActionResult> RegisterMerchant([FromBody] RegisterMerchantCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
@@ -48,6 +50,7 @@ namespace QRDine.API.Controllers.Identity
         }
 
         [HttpPost("confirm-register")]
+        [EnableRateLimiting(RateLimitPolicies.Register)]
         public async Task<IActionResult> ConfirmRegister([FromBody] ConfirmRegisterCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
