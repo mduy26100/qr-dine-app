@@ -8,12 +8,12 @@ namespace QRDine.Infrastructure.ExternalServices.QrCode
     {
         private readonly IQrCodeService _qrCodeService;
         private readonly IFileUploadService _fileUploadService;
-        private readonly StorefrontSettings _settings;
+        private readonly FrontendSettings _settings;
 
         public TableQrGeneratorService(
             IQrCodeService qrCodeService,
             IFileUploadService fileUploadService,
-            IOptions<StorefrontSettings> settings)
+            IOptions<FrontendSettings> settings)
         {
             _qrCodeService = qrCodeService;
             _fileUploadService = fileUploadService;

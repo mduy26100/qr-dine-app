@@ -18,8 +18,8 @@ namespace QRDine.API.DependencyInjection.Infrastructure
             services.AddScoped<IFileUploadService, CloudinaryFileUploadService>();
 
             // QrCode generation
-            services.Configure<StorefrontSettings>(
-                configuration.GetSection("StorefrontSettings"));
+            services.Configure<FrontendSettings>(
+                configuration.GetSection("FrontendSettings"));
 
             services.AddScoped<IQrCodeService, QrCodeService>();
 

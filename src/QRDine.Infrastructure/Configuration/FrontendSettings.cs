@@ -1,6 +1,6 @@
 ﻿namespace QRDine.Infrastructure.Configuration
 {
-    public class StorefrontSettings
+    public class FrontendSettings
     {
         public string BaseUrl { get; set; } = default!;
     }
