@@ -54,13 +54,13 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 
-app.UseRateLimiter();
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
 app.UseCors("AllowSpecificOrigins");
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
