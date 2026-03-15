@@ -2,6 +2,7 @@
 using QRDine.API.Constants;
 using QRDine.Application.Features.Identity.Commands.Logout;
 using QRDine.Application.Features.Identity.Commands.RegisterStaff;
+using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Controllers.Identity
@@ -21,7 +22,7 @@ namespace QRDine.API.Controllers.Identity
 
         [HttpPost("register-staff")]
         [Authorize(Roles = SystemRoles.Merchant)]
-        [SkipSubscriptionCheck]
+        [CheckFeatureLimit(FeatureType.MaxStaffMembers)]
         public async Task<IActionResult> RegisterStaff([FromBody] RegisterStaffCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);

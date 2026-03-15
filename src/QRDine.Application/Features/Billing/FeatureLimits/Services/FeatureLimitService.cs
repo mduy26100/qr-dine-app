@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Common.Exceptions;
+﻿using QRDine.Application.Common.Abstractions.Identity;
+using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Billing.FeatureLimits.Specifications;
 using QRDine.Application.Features.Billing.Repositories;
 using QRDine.Application.Features.Catalog.Repositories;
@@ -11,15 +12,18 @@ namespace QRDine.Application.Features.Billing.FeatureLimits.Services
         private readonly IFeatureLimitRepository _featureLimitRepository;
         private readonly ITableRepository _tableRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IIdentityService _identityService;
 
         public FeatureLimitService(
             IFeatureLimitRepository featureLimitRepository,
             ITableRepository tableRepository,
-            IProductRepository productRepository)
+            IProductRepository productRepository,
+            IIdentityService identityService)
         {
             _featureLimitRepository = featureLimitRepository;
             _tableRepository = tableRepository;
             _productRepository = productRepository;
+            _identityService = identityService;
         }
 
         public async Task CheckLimitAsync(Guid merchantId, string planCode, FeatureType featureType, CancellationToken cancellationToken = default)
@@ -49,6 +53,16 @@ namespace QRDine.Application.Features.Billing.FeatureLimits.Services
 
                         if (currentCount >= limits.MaxProducts.Value)
                             throw new ConflictException($"Gói cước hiện tại giới hạn tối đa {limits.MaxProducts.Value} món ăn. Vui lòng nâng cấp gói cước.");
+                    }
+                    break;
+
+                case FeatureType.MaxStaffMembers:
+                    if (limits.MaxStaffMembers.HasValue)
+                    {
+                        var currentCount = await _identityService.CountStaffByMerchantAsync(merchantId, cancellationToken);
+
+                        if (currentCount >= limits.MaxStaffMembers.Value)
+                            throw new ConflictException($"Gói cước hiện tại giới hạn tối đa {limits.MaxStaffMembers.Value} nhân viên. Vui lòng nâng cấp gói cước để tạo thêm.");
                     }
                     break;
 
