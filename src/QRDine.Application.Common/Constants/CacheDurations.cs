@@ -3,5 +3,6 @@
     public static class CacheDurations
     {
         public static readonly TimeSpan StorefrontMenu = TimeSpan.FromHours(12);
+        public static readonly TimeSpan FeatureLimits = TimeSpan.FromHours(24);
     }
 }

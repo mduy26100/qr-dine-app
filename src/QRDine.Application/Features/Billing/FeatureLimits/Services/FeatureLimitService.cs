@@ -1,5 +1,8 @@
-﻿using QRDine.Application.Common.Abstractions.Identity;
+﻿using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Abstractions.Identity;
+using QRDine.Application.Common.Constants;
 using QRDine.Application.Common.Exceptions;
+using QRDine.Application.Features.Billing.FeatureLimits.DTOs;
 using QRDine.Application.Features.Billing.FeatureLimits.Specifications;
 using QRDine.Application.Features.Billing.Repositories;
 using QRDine.Application.Features.Catalog.Repositories;
@@ -13,26 +16,38 @@ namespace QRDine.Application.Features.Billing.FeatureLimits.Services
         private readonly ITableRepository _tableRepository;
         private readonly IProductRepository _productRepository;
         private readonly IIdentityService _identityService;
+        private readonly ICacheService _cacheService;
 
         public FeatureLimitService(
             IFeatureLimitRepository featureLimitRepository,
             ITableRepository tableRepository,
             IProductRepository productRepository,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            ICacheService cacheService)
         {
             _featureLimitRepository = featureLimitRepository;
             _tableRepository = tableRepository;
             _productRepository = productRepository;
             _identityService = identityService;
+            _cacheService = cacheService;
         }
 
         public async Task CheckLimitAsync(Guid merchantId, string planCode, FeatureType featureType, CancellationToken cancellationToken = default)
         {
-            var spec = new GetFeatureLimitByPlanCodeSpec(planCode);
-            var limits = await _featureLimitRepository.SingleOrDefaultAsync(spec, cancellationToken);
+            var cacheKey = CacheKeys.FeatureLimit(planCode);
+
+            var limits = await _cacheService.GetAsync<FeatureLimitCheckDto>(cacheKey, cancellationToken);
 
             if (limits == null)
-                throw new NotFoundException("Không tìm thấy cấu hình giới hạn cho gói cước này.");
+            {
+                var spec = new GetFeatureLimitByPlanCodeSpec(planCode);
+                limits = await _featureLimitRepository.SingleOrDefaultAsync(spec, cancellationToken);
+
+                if (limits == null)
+                    throw new NotFoundException("Không tìm thấy cấu hình giới hạn cho gói cước này.");
+
+                await _cacheService.SetAsync(cacheKey, limits, CacheDurations.FeatureLimits, cancellationToken);
+            }
 
             switch (featureType)
             {
