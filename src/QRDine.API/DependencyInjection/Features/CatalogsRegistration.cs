@@ -13,6 +13,9 @@ namespace QRDine.API.DependencyInjection.Features
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ITableRepository, TableRepository>();
+            services.AddScoped<IToppingGroupRepository, ToppingGroupRepository>();
+            services.AddScoped<IProductToppingGroupRepository, ProductToppingGroupRepository>();
+            services.AddScoped<IToppingRepository, ToppingRepository>();
 
             //Services
             services.AddScoped<ITableQrGeneratorService, TableQrGeneratorService>();
