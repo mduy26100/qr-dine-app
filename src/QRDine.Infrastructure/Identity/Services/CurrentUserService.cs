@@ -36,8 +36,21 @@ namespace QRDine.Infrastructure.Identity.Services
         {
             get
             {
-                var merchantIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(AppClaimTypes.MerchantId)?.Value;
-                return Guid.TryParse(merchantIdStr, out var merchantId) ? merchantId : null;
+                var context = _httpContextAccessor.HttpContext;
+                if (context == null) return null;
+
+                var merchantIdStr = context.User?.FindFirst(AppClaimTypes.MerchantId)?.Value;
+                if (Guid.TryParse(merchantIdStr, out var merchantId))
+                {
+                    return merchantId;
+                }
+
+                if (context.Items.TryGetValue("ResolvedMerchantId", out var resolvedId) && resolvedId is Guid id)
+                {
+                    return id;
+                }
+
+                return null;
             }
         }
 

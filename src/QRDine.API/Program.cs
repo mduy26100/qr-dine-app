@@ -63,6 +63,7 @@ app.UseCors("AllowSpecificOrigins");
 app.UseRateLimiter();
 
 app.UseAuthentication();
+app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthorization();
 
 app.MapHub<OrderHub>("/hubs/order");
