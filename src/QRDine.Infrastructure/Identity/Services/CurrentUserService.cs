@@ -1,4 +1,5 @@
 ﻿using QRDine.Application.Common.Abstractions.Identity;
+using QRDine.Application.Common.Constants;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.Infrastructure.Identity.Services
@@ -45,7 +46,7 @@ namespace QRDine.Infrastructure.Identity.Services
                     return merchantId;
                 }
 
-                if (context.Items.TryGetValue("ResolvedMerchantId", out var resolvedId) && resolvedId is Guid id)
+                if (context.Items.TryGetValue(HttpContextKeys.ResolvedMerchantId, out var resolvedId) && resolvedId is Guid id)
                 {
                     return id;
                 }

@@ -15,5 +15,6 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
             CancellationToken cancellationToken = default);
 
         Task<MerchantSubscriptionInfoDto?> GetLatestSubscriptionInfoAsync(Guid merchantId, CancellationToken cancellationToken = default);
+        Task<bool> IsSubscriptionActiveAsync(Guid merchantId, CancellationToken cancellationToken = default);
     }
 }

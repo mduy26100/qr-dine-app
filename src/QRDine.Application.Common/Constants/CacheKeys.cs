@@ -4,5 +4,6 @@
     {
         public static string StorefrontMenu(Guid merchantId) => $"StorefrontMenu_{merchantId}";
         public static string FeatureLimit(string planCode) => $"FeatureLimit_{planCode}";
+        public static string MerchantActiveStatus(Guid merchantId) => $"MerchantActiveStatus_{merchantId}";
     }
 }

@@ -1,4 +1,5 @@
-﻿using QRDine.Infrastructure.Identity.Constants;
+﻿using QRDine.Application.Common.Constants;
+using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Middlewares
 {
@@ -46,7 +47,7 @@ namespace QRDine.API.Middlewares
 
                 if (resolvedMerchantId.HasValue)
                 {
-                    context.Items["ResolvedMerchantId"] = resolvedMerchantId.Value;
+                    context.Items[HttpContextKeys.ResolvedMerchantId] = resolvedMerchantId.Value;
                 }
             }
 

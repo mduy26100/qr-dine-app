@@ -4,5 +4,6 @@
     {
         public static readonly TimeSpan StorefrontMenu = TimeSpan.FromHours(12);
         public static readonly TimeSpan FeatureLimits = TimeSpan.FromHours(24);
+        public static readonly TimeSpan MerchantActiveStatus = TimeSpan.FromHours(1);
     }
 }

@@ -1,4 +1,6 @@
-﻿using QRDine.Application.Common.Abstractions.Persistence;
+﻿using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Abstractions.Persistence;
+using QRDine.Application.Common.Constants;
 using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Billing.Plans.Specifications;
 using QRDine.Application.Features.Billing.Repositories;
@@ -17,19 +19,22 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
         private readonly IMerchantRepository _merchantRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IApplicationDbContext _context;
+        private readonly ICacheService _cacheService;
 
         public SubscriptionService(
             IPlanRepository planRepository,
             ISubscriptionRepository subscriptionRepository,
             IMerchantRepository merchantRepository,
             ITransactionRepository transactionRepository,
-            IApplicationDbContext context)
+            IApplicationDbContext context,
+            ICacheService cacheService)
         {
             _planRepository = planRepository;
             _subscriptionRepository = subscriptionRepository;
             _merchantRepository = merchantRepository;
             _transactionRepository = transactionRepository;
             _context = context;
+            _cacheService = cacheService;
         }
 
         public async Task<Subscription> AssignPlanAsync(
@@ -109,6 +114,9 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
                 await _context.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
+                var cacheKey = CacheKeys.MerchantActiveStatus(merchantId);
+                await _cacheService.RemoveAsync(cacheKey, cancellationToken);
+
                 return subscription;
             }
             catch (Exception)
@@ -122,6 +130,24 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
         {
             var spec = new GetLatestSubscriptionInfoSpec(merchantId);
             return await _subscriptionRepository.SingleOrDefaultAsync(spec, cancellationToken);
+        }
+
+        public async Task<bool> IsSubscriptionActiveAsync(Guid merchantId, CancellationToken cancellationToken = default)
+        {
+            var cacheKey = CacheKeys.MerchantActiveStatus(merchantId);
+
+            var isActive = await _cacheService.GetAsync<bool?>(cacheKey, cancellationToken);
+
+            if (isActive == null)
+            {
+                var spec = new CheckActiveSubscriptionSpec(merchantId);
+                var result = await _subscriptionRepository.AnyAsync(spec, cancellationToken);
+
+                await _cacheService.SetAsync(cacheKey, result, CacheDurations.MerchantActiveStatus, cancellationToken);
+                return result;
+            }
+
+            return isActive.Value;
         }
     }
 }

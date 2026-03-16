@@ -64,6 +64,7 @@ app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseMiddleware<TenantResolutionMiddleware>();
+app.UseMiddleware<StorefrontSubscriptionMiddleware>();
 app.UseAuthorization();
 
 app.MapHub<OrderHub>("/hubs/order");
