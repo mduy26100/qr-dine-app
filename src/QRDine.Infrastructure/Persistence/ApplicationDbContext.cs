@@ -75,10 +75,10 @@ namespace QRDine.Infrastructure.Persistence
             builder.Entity<Table>().HasQueryFilter(e => !e.IsDeleted && e.MerchantId == CurrentMerchantId);
             builder.Entity<Order>().HasQueryFilter(e => !e.IsDeleted && e.MerchantId == CurrentMerchantId);
             builder.Entity<ToppingGroup>().HasQueryFilter(e => !e.IsDeleted && e.MerchantId == CurrentMerchantId);
-            builder.Entity<Subscription>().HasQueryFilter(e => !e.IsDeleted && e.MerchantId == CurrentMerchantId);
-            builder.Entity<Transaction>().HasQueryFilter(e => !e.IsDeleted && e.MerchantId == CurrentMerchantId);
 
             // Apply a global query filter to automatically filter out IsDeleted data.
+            builder.Entity<Subscription>().HasQueryFilter(e => !e.IsDeleted);
+            builder.Entity<Transaction>().HasQueryFilter(e => !e.IsDeleted);
             builder.Entity<Plan>().HasQueryFilter(e => !e.IsDeleted);
             builder.Entity<FeatureLimit>().HasQueryFilter(e => !e.IsDeleted);
         }
