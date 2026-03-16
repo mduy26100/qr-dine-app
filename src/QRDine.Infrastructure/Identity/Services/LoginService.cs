@@ -53,7 +53,7 @@ namespace QRDine.Infrastructure.Identity.Services
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             {
-                throw new UnauthorizedAccessException("Invalid login credentials.");
+                throw new UnauthorizedAccessException("Thông tin đăng nhập không chính xác. Vui lòng thử lại.");
             }
 
             var roles = await _userManager.GetRolesAsync(user);
