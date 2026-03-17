@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.ToppingGroups.Commands.CreateToppingGroup;
+using QRDine.Application.Features.Catalog.ToppingGroups.Commands.DeleteToppingGroup;
 using QRDine.Application.Features.Catalog.ToppingGroups.Commands.UpdateToppingGroup;
 using QRDine.Application.Features.Catalog.ToppingGroups.DTOs;
 using QRDine.Infrastructure.Identity.Constants;
@@ -34,9 +35,18 @@ namespace QRDine.API.Controllers.Management.Catalog
         public async Task<IActionResult> UpdateToppingGroup([FromRoute] Guid id, [FromBody] UpdateToppingGroupRequestDto dto, CancellationToken cancellationToken)
         {
             var command = new UpdateToppingGroupCommand(id, dto);
-            await _mediator.Send(command, cancellationToken);
+            var result = await _mediator.Send(command, cancellationToken);
 
-            return Ok();
+            return Ok(result);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteToppingGroup([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var command = new DeleteToppingGroupCommand(id);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return NoContent();
         }
     }
 }
