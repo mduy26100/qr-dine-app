@@ -12,6 +12,6 @@
 
         public List<ToppingDto> Toppings { get; set; } = new();
 
-        public List<Guid> AppliedProductIds { get; set; } = new();
+        public List<AppliedProductDto> AppliedProducts { get; set; } = new();
     }
 }

@@ -41,8 +41,13 @@ namespace QRDine.Application.Features.Catalog.ToppingGroups.Extensions
                         IsAvailable = t.IsAvailable
                     }).ToList(),
 
-                AppliedProductIds = tg.ProductToppingGroups
-                    .Select(ptg => ptg.ProductId)
+                AppliedProducts = tg.ProductToppingGroups
+                    .Where(ptg => !ptg.Product.IsDeleted)
+                    .Select(ptg => new AppliedProductDto
+                    {
+                        Id = ptg.ProductId,
+                        Name = ptg.Product.Name
+                    })
                     .ToList()
             };
     }
