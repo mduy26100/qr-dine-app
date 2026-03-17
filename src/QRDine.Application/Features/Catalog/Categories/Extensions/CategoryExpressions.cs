@@ -24,5 +24,21 @@ namespace QRDine.Application.Features.Catalog.Categories.Extensions
                         Price = p.Price
                     }).ToList()
             };
+
+        public static Expression<Func<Category, CategoryLookupDto>> ToLookupDto =>
+            c => new CategoryLookupDto
+            {
+                Id = c.Id,
+                Name = c.Parent != null ? c.Parent.Name + " - " + c.Name : c.Name,
+                DisplayOrder = c.Parent != null ? c.Parent.DisplayOrder : c.DisplayOrder,
+
+                Products = c.Products
+                    .Where(p => !p.IsDeleted)
+                    .Select(p => new ProductLookupDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name
+                    }).ToList()
+            };
     }
 }

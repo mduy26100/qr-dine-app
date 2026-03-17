@@ -4,6 +4,7 @@ using QRDine.Application.Features.Catalog.Categories.Commands.CreateCategory;
 using QRDine.Application.Features.Catalog.Categories.Commands.DeleteCategory;
 using QRDine.Application.Features.Catalog.Categories.Commands.UpdateCategory;
 using QRDine.Application.Features.Catalog.Categories.DTOs;
+using QRDine.Application.Features.Catalog.Categories.Queries.GetCategoryProductLookup;
 using QRDine.Application.Features.Catalog.Categories.Queries.GetMyCategories;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -60,6 +61,16 @@ namespace QRDine.API.Controllers.Management.Catalog
             await _mediator.Send(command, cancellationToken);
 
             return NoContent();
+        }
+
+        [HttpGet("lookup")]
+        [SkipSubscriptionCheck]
+        [ProducesResponseType(typeof(List<CategoryLookupDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetLookup(CancellationToken cancellationToken)
+        {
+            var query = new GetCategoryProductLookupQuery();
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
         }
     }
 }
