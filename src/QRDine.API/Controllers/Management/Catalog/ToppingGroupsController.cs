@@ -4,6 +4,7 @@ using QRDine.Application.Features.Catalog.ToppingGroups.Commands.CreateToppingGr
 using QRDine.Application.Features.Catalog.ToppingGroups.Commands.DeleteToppingGroup;
 using QRDine.Application.Features.Catalog.ToppingGroups.Commands.UpdateToppingGroup;
 using QRDine.Application.Features.Catalog.ToppingGroups.DTOs;
+using QRDine.Application.Features.Catalog.ToppingGroups.Queries.GetToppingGroupDetail;
 using QRDine.Application.Features.Catalog.ToppingGroups.Queries.GetToppingGroupsByPage;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -55,6 +56,16 @@ namespace QRDine.API.Controllers.Management.Catalog
         [ProducesResponseType(typeof(PagedResult<ToppingGroupDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetToppingGroups([FromQuery] GetToppingGroupsByPageQuery query, CancellationToken cancellationToken = default)
         {
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(ToppingGroupDetailDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetToppingGroupDetail([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var query = new GetToppingGroupDetailQuery(id);
             var result = await _mediator.Send(query, cancellationToken);
 
             return Ok(result);
