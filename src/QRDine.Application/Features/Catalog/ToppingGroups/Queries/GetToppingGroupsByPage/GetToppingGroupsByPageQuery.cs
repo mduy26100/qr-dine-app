@@ -5,6 +5,6 @@ namespace QRDine.Application.Features.Catalog.ToppingGroups.Queries.GetToppingGr
 {
     public class GetToppingGroupsByPageQuery : PaginationRequest, IRequest<PagedResult<ToppingGroupDto>>
     {
-        public string? Keyword { get; set; }
+        public string? SearchTerm { get; set; }
     }
 }

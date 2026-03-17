@@ -16,10 +16,10 @@ namespace QRDine.Application.Features.Catalog.ToppingGroups.Queries.GetToppingGr
 
         public async Task<PagedResult<ToppingGroupDto>> Handle(GetToppingGroupsByPageQuery request, CancellationToken cancellationToken)
         {
-            var countSpec = new ToppingGroupsCountSpec(request.Keyword);
+            var countSpec = new ToppingGroupsCountSpec(request.SearchTerm);
             var totalCount = await _toppingGroupRepository.CountAsync(countSpec, cancellationToken);
 
-            var pagedSpec = new ToppingGroupsByPageSpec(request.PageNumber, request.PageSize, request.Keyword);
+            var pagedSpec = new ToppingGroupsByPageSpec(request.PageNumber, request.PageSize, request.SearchTerm);
             var toppingGroups = await _toppingGroupRepository.ListAsync(pagedSpec, cancellationToken);
 
             return new PagedResult<ToppingGroupDto>(toppingGroups, totalCount, request.PageNumber, request.PageSize);
