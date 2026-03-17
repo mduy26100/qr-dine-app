@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.Application.Features.Catalog.ToppingGroups.Commands.CreateToppingGroup;
+using QRDine.Application.Features.Catalog.ToppingGroups.Commands.UpdateToppingGroup;
 using QRDine.Application.Features.Catalog.ToppingGroups.DTOs;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -27,6 +28,15 @@ namespace QRDine.API.Controllers.Management.Catalog
             var result = await _mediator.Send(command, cancellationToken);
 
             return Created(string.Empty, result);
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateToppingGroup([FromRoute] Guid id, [FromBody] UpdateToppingGroupRequestDto dto, CancellationToken cancellationToken)
+        {
+            var command = new UpdateToppingGroupCommand(id, dto);
+            await _mediator.Send(command, cancellationToken);
+
+            return Ok();
         }
     }
 }
