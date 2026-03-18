@@ -1,4 +1,4 @@
-# Identity Module
+# Identity Module - Complete Documentation
 
 The Identity module handles user authentication, registration, JWT token management, and role-based access control using ASP.NET Core Identity.
 
@@ -8,12 +8,12 @@ The Identity module handles user authentication, registration, JWT token managem
 
 Defined in `src/QRDine.Infrastructure/Identity/Constants/SystemRoles.cs`:
 
-| Role | Description | Registration Method |
-|------|-------------|-------------------|
-| `SuperAdmin` | Platform administrator. Can register merchants. | Seeded on startup |
-| `Merchant` | Store owner. Manages their own catalog and staff. | Registered by SuperAdmin |
-| `Staff` | Store employee. Registered under a specific merchant. | Registered by Merchant |
-| `Guest` | Public visitor. | Not used in current implementation |
+| Role         | Description                                           | Registration Method                |
+| ------------ | ----------------------------------------------------- | ---------------------------------- |
+| `SuperAdmin` | Platform administrator. Can register merchants.       | Seeded on startup                  |
+| `Merchant`   | Store owner. Manages their own catalog and staff.     | Registered by SuperAdmin           |
+| `Staff`      | Store employee. Registered under a specific merchant. | Registered by Merchant             |
+| `Guest`      | Public visitor.                                       | Not used in current implementation |
 
 ---
 
@@ -25,15 +25,15 @@ Defined in `src/QRDine.Infrastructure/Identity/Constants/SystemRoles.cs`:
 
 Extends `IdentityUser<Guid>` with custom properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `FirstName` | `string?` | User's first name |
-| `LastName` | `string?` | User's last name |
-| `AvatarUrl` | `string?` | Profile image URL |
-| `FullName` | `string` | Computed: `$"{FirstName} {LastName}".Trim()` (not mapped) |
-| `CreatedAt` | `DateTime` | Account creation timestamp |
-| `MerchantId` | `Guid?` | Associated merchant (null for SuperAdmin) |
-| `IsActive` | `bool` | Account active flag (default: true) |
+| Property     | Type       | Description                                               |
+| ------------ | ---------- | --------------------------------------------------------- |
+| `FirstName`  | `string?`  | User's first name                                         |
+| `LastName`   | `string?`  | User's last name                                          |
+| `AvatarUrl`  | `string?`  | Profile image URL                                         |
+| `FullName`   | `string`   | Computed: `$"{FirstName} {LastName}".Trim()` (not mapped) |
+| `CreatedAt`  | `DateTime` | Account creation timestamp                                |
+| `MerchantId` | `Guid?`    | Associated merchant (null for SuperAdmin)                 |
+| `IsActive`   | `bool`     | Account active flag (default: true)                       |
 
 ### ApplicationRole
 
@@ -47,12 +47,12 @@ Extends `IdentityRole<Guid>` with an additional `Description` property.
 
 Stores refresh tokens for JWT renewal:
 
-| Property | Type |
-|----------|------|
-| `UserId` | `Guid` |
-| `Token` | `string` |
-| `ExpiresAt` | `DateTime` |
-| `CreatedByIp` | `string?` |
+| Property      | Type       |
+| ------------- | ---------- |
+| `UserId`      | `Guid`     |
+| `Token`       | `string`   |
+| `ExpiresAt`   | `DateTime` |
+| `CreatedByIp` | `string?`  |
 
 ### Permission & RolePermission
 
@@ -75,6 +75,7 @@ Permission entities for future granular access control. Currently configured in 
 **Output:** `LoginResponseDto`
 
 **Flow:**
+
 1. Identifier can be **email** (contains `@`) or **phone number**.
 2. Validates password via `UserManager.CheckPasswordAsync`.
 3. Generates JWT access token with claims (NameIdentifier, Email, Name, Roles, MerchantId).
@@ -83,12 +84,12 @@ Permission entities for future granular access control. Currently configured in 
 
 **Response DTO (`LoginResponseDto`):**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `AccessToken` | `string` | JWT access token |
-| `RefreshToken` | `string` | Refresh token string |
-| `ExpiresInMinutes` | `int` | Access token TTL |
-| `User` | `UserDto` | User profile (Id, Email, PhoneNumber, FirstName, LastName, AvatarUrl, Roles, MerchantId) |
+| Field              | Type      | Description                                                                              |
+| ------------------ | --------- | ---------------------------------------------------------------------------------------- |
+| `AccessToken`      | `string`  | JWT access token                                                                         |
+| `RefreshToken`     | `string`  | Refresh token string                                                                     |
+| `ExpiresInMinutes` | `int`     | Access token TTL                                                                         |
+| `User`             | `UserDto` | User profile (Id, Email, PhoneNumber, FirstName, LastName, AvatarUrl, Roles, MerchantId) |
 
 ### RegisterMerchant
 
@@ -101,12 +102,14 @@ Permission entities for future granular access control. Currently configured in 
 **Output:** `RegisterResponseDto`
 
 **Flow (transactional):**
+
 1. Creates a new `Merchant` entity with a unique slug (auto-generated from `MerchantName`).
 2. Creates an `ApplicationUser` with the `Merchant` role.
 3. Associates the user with the newly created merchant.
 4. Returns `MerchantId`, `MerchantName`, `FirstName`, `LastName`.
 
 **Business rules:**
+
 - Email uniqueness is enforced.
 - Phone number uniqueness is enforced (if provided).
 - Slug generation supports Vietnamese diacritics removal and URL-safe formatting.
@@ -123,6 +126,7 @@ Permission entities for future granular access control. Currently configured in 
 **Output:** `RegisterResponseDto`
 
 **Flow:**
+
 1. Reads the current user's `MerchantId` from JWT claims.
 2. Creates an `ApplicationUser` with the `Staff` role, associated with the merchant.
 
@@ -143,6 +147,7 @@ Handles the complete authentication flow: credential validation, claim assembly,
 **Implementation:** `src/QRDine.Infrastructure/Identity/Services/RegisterService.cs`
 
 Handles merchant and staff registration with:
+
 - Duplicate email/phone validation
 - Unique slug generation for merchants
 - Transaction management for merchant registration
@@ -152,11 +157,11 @@ Handles merchant and staff registration with:
 **Interface:** `src/QRDine.Application/Features/Identity/Services/IJwtTokenGenerator.cs`  
 **Implementation:** `src/QRDine.Infrastructure/Identity/Services/JwtTokenGenerator.cs`
 
-| Method | Purpose |
-|--------|---------|
-| `GenerateToken(claims)` | Creates a signed JWT with HMAC-SHA256 |
-| `GenerateRefreshToken()` | Generates a cryptographically random 32-byte token |
-| `GetRefreshTokenExpiration()` | Returns expiry date based on `RefreshTokenExpiryDays` setting |
+| Method                                | Purpose                                                                          |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| `GenerateToken(claims)`               | Creates a signed JWT with HMAC-SHA256                                            |
+| `GenerateRefreshToken()`              | Generates a cryptographically random 32-byte token                               |
+| `GetRefreshTokenExpiration()`         | Returns expiry date based on `RefreshTokenExpiryDays` setting                    |
 | `GetPrincipalFromExpiredToken(token)` | Validates an expired JWT (lifetime validation disabled) to extract the principal |
 
 ### ICurrentUserService / CurrentUserService
@@ -166,12 +171,12 @@ Handles merchant and staff registration with:
 
 Reads user context from `HttpContext.User` claims:
 
-| Property | Source Claim | Description |
-|----------|-------------|-------------|
-| `UserId` | `ClaimTypes.NameIdentifier` | Current user's GUID |
-| `Roles` | `ClaimTypes.Role` | List of assigned roles |
-| `MerchantId` | `AppClaimTypes.MerchantId` (`merchant_id`) | Associated merchant GUID |
-| `IsAuthenticated` | `Identity.IsAuthenticated` | Auth status |
+| Property          | Source Claim                               | Description              |
+| ----------------- | ------------------------------------------ | ------------------------ |
+| `UserId`          | `ClaimTypes.NameIdentifier`                | Current user's GUID      |
+| `Roles`           | `ClaimTypes.Role`                          | List of assigned roles   |
+| `MerchantId`      | `AppClaimTypes.MerchantId` (`merchant_id`) | Associated merchant GUID |
+| `IsAuthenticated` | `Identity.IsAuthenticated`                 | Auth status              |
 
 ---
 
@@ -205,8 +210,12 @@ On startup, `IdentitySeeder` (`src/QRDine.Infrastructure/Persistence/Seeding/Ide
 
 ## Endpoint Summary
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/api/v1/auth/login` | Public | Login with email/phone + password |
-| `POST` | `/api/v1/users/register-merchant` | SuperAdmin | Register a new merchant + owner account |
-| `POST` | `/api/v1/users/register-staff` | Merchant | Register a staff member under current merchant |
+| Method | Path                              | Auth       | Description                                    |
+| ------ | --------------------------------- | ---------- | ---------------------------------------------- |
+| `POST` | `/api/v1/auth/login`              | Public     | Login with email/phone + password              |
+| `POST` | `/api/v1/users/register-merchant` | SuperAdmin | Register a new merchant + owner account        |
+| `POST` | `/api/v1/users/register-staff`    | Merchant   | Register a staff member under current merchant |
+
+---
+
+**Reference:** See also [Identity Module Overview](README.md) and [Features Overview](../) for other modules.

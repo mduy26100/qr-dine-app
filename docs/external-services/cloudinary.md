@@ -6,7 +6,7 @@ QRDine uses **Cloudinary** as the external cloud service for image hosting. This
 
 ## Architecture
 
-The file upload functionality follows the Clean Architecture pattern:
+The file upload functionality follows the Onion Architecture pattern with dependency injection:
 
 ```
 IFileUploadService (Application.Common)
@@ -29,10 +29,10 @@ public interface IFileUploadService
 
 **File:** `src/QRDine.Application.Common/Abstractions/ExternalServices/FileUpload/FileUploadRequest.cs`
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `Content` | `Stream` | File content stream |
-| `FileName` | `string` | Original file name |
+| Property      | Type     | Description                    |
+| ------------- | -------- | ------------------------------ |
+| `Content`     | `Stream` | File content stream            |
+| `FileName`    | `string` | Original file name             |
 | `ContentType` | `string` | MIME type (e.g., `image/jpeg`) |
 
 ### Implementation
@@ -74,6 +74,7 @@ public class CloudinaryFileUploadService : IFileUploadService
 ```
 
 **Upload behavior:**
+
 - All images are uploaded to the **`QRDine`** folder in Cloudinary.
 - `PublicId` is derived from the file name (without extension).
 - `Overwrite = true` — Re-uploading with the same name replaces the existing image.

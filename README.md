@@ -17,13 +17,13 @@ The system allows multiple businesses to register, manage their profiles, and ge
 
 Built with **.NET 8 Web API** using **Clean Architecture** (Onion Architecture) and **CQRS** (Command Query Responsibility Segregation).
 
-| Project | Layer | Responsibility |
-|---------|-------|----------------|
-| `QRDine.API` | Presentation | RESTful endpoints, Swagger, middleware, DI orchestration |
-| `QRDine.Application` | Application | CQRS handlers (MediatR), DTOs, validators, specifications |
-| `QRDine.Application.Common` | Shared Abstractions | Interfaces, pipeline behaviors, custom exceptions |
-| `QRDine.Domain` | Domain | Entities, enums, value objects, business rules |
-| `QRDine.Infrastructure` | Infrastructure | EF Core, ASP.NET Identity, JWT, Cloudinary, repositories |
+| Project                     | Layer               | Responsibility                                            |
+| --------------------------- | ------------------- | --------------------------------------------------------- |
+| `QRDine.API`                | Presentation        | RESTful endpoints, Swagger, middleware, DI orchestration  |
+| `QRDine.Application`        | Application         | CQRS handlers (MediatR), DTOs, validators, specifications |
+| `QRDine.Application.Common` | Shared Abstractions | Interfaces, pipeline behaviors, custom exceptions         |
+| `QRDine.Domain`             | Domain              | Entities, enums, value objects, business rules            |
+| `QRDine.Infrastructure`     | Infrastructure      | EF Core, ASP.NET Identity, JWT, Cloudinary, repositories  |
 
 ```mermaid
 graph TD
@@ -40,40 +40,42 @@ graph TD
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|-----------|
-| Runtime | .NET 8 |
-| ORM | Entity Framework Core 8 (SQL Server) |
-| CQRS | MediatR |
-| Validation | FluentValidation |
-| Mapping | AutoMapper |
-| Specifications | Ardalis.Specification |
-| Authentication | ASP.NET Core Identity + JWT Bearer |
-| File Upload | Cloudinary |
-| API Docs | Swagger (Swashbuckle) |
-| API Versioning | Asp.Versioning.Mvc |
+| Category       | Technology                           |
+| -------------- | ------------------------------------ |
+| Runtime        | .NET 8                               |
+| ORM            | Entity Framework Core 8 (SQL Server) |
+| CQRS           | MediatR                              |
+| Validation     | FluentValidation                     |
+| Mapping        | AutoMapper                           |
+| Specifications | Ardalis.Specification                |
+| Authentication | ASP.NET Core Identity + JWT Bearer   |
+| File Upload    | Cloudinary                           |
+| API Docs       | Swagger (Swashbuckle)                |
+| API Versioning | Asp.Versioning.Mvc                   |
 
 ---
 
 ## Domain Modules
 
-| Module | Entities | Status |
-|--------|----------|--------|
-| **Catalog** | Category, Product, Table, ToppingGroup, Topping, ProductToppingGroup | ✅ CRUD implemented |
-| **Identity** | ApplicationUser, ApplicationRole, RefreshToken, Permission | ✅ Login + Registration |
-| **Tenant** | Merchant | ✅ Integrated with Identity |
-| **Sales** | Order, OrderItem | 🟡 Entities defined, endpoints pending |
+| Module       | Entities                                        | Status            | Documentation                              |
+| ------------ | ----------------------------------------------- | ----------------- | ------------------------------------------ |
+| **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete       | [Catalog Module](docs/features/catalog/)   |
+| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete       | [Identity Module](docs/features/identity/) |
+| **Tenant**   | Merchant                                        | ✅ Complete       | [Tenant Module](docs/features/tenant/)     |
+| **Sales**    | Order, OrderItem                                | 🟡 In Development | [Sales Module](docs/features/sales/)       |
+| **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete       | [Billing Module](docs/features/billing/)   |
+| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete       | [Staffs Module](docs/features/staffs/)     |
 
 ---
 
 ## API Groups
 
-| Group | Route | Auth | Purpose |
-|-------|-------|------|---------|
-| **Management** | `/api/v1/management/...` | JWT (Merchant) | Store management CRUD |
-| **Storefront** | `/api/v1/storefront/...` | Public | Customer-facing read endpoints |
-| **Auth** | `/api/v1/auth/...` | Public | Login |
-| **Users** | `/api/v1/users/...` | JWT (SuperAdmin / Merchant) | User registration |
+| Group          | Route                    | Auth                        | Purpose                        |
+| -------------- | ------------------------ | --------------------------- | ------------------------------ |
+| **Management** | `/api/v1/management/...` | JWT (Merchant)              | Store management CRUD          |
+| **Storefront** | `/api/v1/storefront/...` | Public                      | Customer-facing read endpoints |
+| **Auth**       | `/api/v1/auth/...`       | Public                      | Login                          |
+| **Users**      | `/api/v1/users/...`      | JWT (SuperAdmin / Merchant) | User registration              |
 
 ---
 
@@ -98,12 +100,14 @@ Data isolation is enforced at three levels:
 ### Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/mduy26100/qr-dine-app.git
    cd qr-dine-app
    ```
 
 2. **Configure `appsettings.json`** (`src/QRDine.API/appsettings.template.json`):
+
    ```json
    {
      "ConnectionStrings": {
@@ -125,11 +129,13 @@ Data isolation is enforced at three levels:
    ```
 
 3. **Apply database migrations:**
+
    ```bash
    dotnet ef database update --project src/QRDine.Infrastructure --startup-project src/QRDine.API
    ```
 
 4. **Run the application:**
+
    ```bash
    dotnet run --project src/QRDine.API
    ```
@@ -139,24 +145,69 @@ Data isolation is enforced at three levels:
 ### Seeded Data
 
 On first run, the system automatically seeds:
+
 - **Roles:** SuperAdmin, Merchant, Staff, Guest
 - **SuperAdmin account:** `admin@qrdine.com` / `Admin@123!`
 
 ---
 
+## 🎯 Quick Navigation
+
+| Need                             | Link                                           |
+| -------------------------------- | ---------------------------------------------- |
+| **First time setup?**            | [👉 Getting Started](docs/getting-started.md)  |
+| **Understanding the codebase?**  | [👉 Architecture Overview](docs/architecture/) |
+| **Looking for an API endpoint?** | [👉 API Reference](docs/api/)                  |
+| **Working on a feature?**        | [👉 Development Guidelines](docs/development/) |
+| **Deploying to production?**     | [👉 Build & Deploy](docs/deployment/)          |
+| **Having issues?**               | [👉 Troubleshooting](docs/troubleshooting.md)  |
+| **Multi-tenancy questions?**     | [👉 Database & Multi-Tenancy](docs/database/)  |
+| **Security concerns?**           | [👉 Security Overview](docs/security/)         |
+
+---
+
 ## Documentation
 
-Detailed technical documentation is available in the [`docs/`](docs/) directory:
+Complete technical documentation is organized in the [`docs/`](docs/) directory with dedicated sections for each topic:
 
-| Document | Description |
-|----------|-------------|
-| [Architecture Overview](docs/architecture.md) | Clean Architecture layers, dependency flow, tech stack, startup pipeline |
-| [Database & Multi-Tenancy](docs/database-and-multitenancy.md) | Schema design, global query filters, transaction management, migrations |
-| [API Conventions](docs/api-conventions.md) | Response envelope, error handling, authentication, validation pipeline |
-| [Catalog Module](docs/features/catalog-module.md) | Categories, Products, Toppings, Tables — entities, business rules, endpoints |
-| [Identity Module](docs/features/identity-module.md) | Authentication, registration, JWT, roles, data seeding |
-| [Sales Module](docs/features/sales-module.md) | Orders, OrderItems — entities, status enum, implementation status |
-| [Cloudinary](docs/external-services/cloudinary.md) | Image upload integration, configuration, usage |
+### 📖 Documentation Sections
+
+**Getting Started & Basics**
+
+- [📘 Complete Documentation Home](docs/README.md) — Entry point for all documentation
+- [🚀 Getting Started Guide](docs/getting-started.md) — 5-step local setup guide
+- [📁 Project Structure](docs/project-structure.md) — Folder organization and file structure
+
+**Architecture & Design**
+
+- [🏗️ Architecture Overview](docs/architecture/) — Clean Architecture, CQRS, design patterns
+- [🗄️ Database & Multi-Tenancy](docs/database/) — Schema, isolation strategy, migrations
+- [🔒 Security Overview](docs/security/) — Authentication, authorization, data protection
+
+**Development**
+
+- [💻 Development Guidelines](docs/development/) — CQRS patterns, coding standards, testing
+- [⚙️ Configuration Guide](docs/configuration/) — Environment setup, secrets management
+- [🔌 API Reference](docs/api/) — Endpoints, response formats, authentication
+
+**Deployment & Operations**
+
+- [📦 Build & Deployment](docs/deployment/) — Azure, Docker, CI/CD, migrations
+- [🔧 External Services](docs/external-services/) — Cloudinary, third-party integrations
+- [❓ Troubleshooting](docs/troubleshooting.md) — Common issues and solutions
+
+### 🎯 Feature Modules
+
+Each feature module is fully documented with use cases and implementation details:
+
+- [📦 Catalog Module](docs/features/catalog/) — Menu, products, tables, customizations
+- [🔐 Identity Module](docs/features/identity/) — Authentication, registration, roles
+- [📋 Sales Module](docs/features/sales/) — Orders, real-time tracking, status management
+- [💳 Billing Module](docs/features/billing/) — Subscription plans, feature limits
+- [🏢 Tenant Module](docs/features/tenant/) — Multi-tenancy, merchant isolation
+- [👥 Staffs Module](docs/features/staffs/) — Staff management, permissions, performance
+
+**Quick reference:** [Features Overview](docs/features/) for all modules
 
 ---
 
