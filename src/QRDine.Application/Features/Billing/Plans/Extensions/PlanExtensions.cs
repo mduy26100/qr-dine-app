@@ -5,7 +5,7 @@ namespace QRDine.Application.Features.Billing.Plans.Extensions
 {
     public static class PlanExtensions
     {
-        public static Expression<Func<Plan, PlanDto>> ToAdminPlanDto =>
+        public static Expression<Func<Plan, PlanDto>> ToPlanDto =>
             p => new PlanDto
             {
                 Id = p.Id,
