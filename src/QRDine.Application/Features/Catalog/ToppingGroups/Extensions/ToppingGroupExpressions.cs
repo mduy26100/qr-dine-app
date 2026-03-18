@@ -41,12 +41,28 @@ namespace QRDine.Application.Features.Catalog.ToppingGroups.Extensions
                         IsAvailable = t.IsAvailable
                     }).ToList(),
 
-                AppliedProducts = tg.ProductToppingGroups
+                AppliedCategories = tg.ProductToppingGroups
                     .Where(ptg => !ptg.Product.IsDeleted)
-                    .Select(ptg => new AppliedProductDto
+                    .GroupBy(ptg => new
                     {
-                        Id = ptg.ProductId,
-                        Name = ptg.Product.Name
+                        CategoryId = ptg.Product.Category.Id,
+                        CategoryName = ptg.Product.Category.Name,
+                        ParentName = ptg.Product.Category.Parent != null ? ptg.Product.Category.Parent.Name : null,
+                        DisplayOrder = ptg.Product.Category.Parent != null ? ptg.Product.Category.Parent.DisplayOrder : ptg.Product.Category.DisplayOrder
+                    })
+                    .OrderBy(g => g.Key.DisplayOrder)
+                    .Select(g => new AppliedCategoryDto
+                    {
+                        Id = g.Key.CategoryId,
+                        Name = g.Key.ParentName != null ? g.Key.ParentName + " - " + g.Key.CategoryName : g.Key.CategoryName,
+
+                        Products = g.Select(ptg => new AppliedProductDto
+                        {
+                            Id = ptg.ProductId,
+                            Name = ptg.Product.Name
+                        })
+                        .OrderBy(p => p.Name)
+                        .ToList()
                     })
                     .ToList()
             };
