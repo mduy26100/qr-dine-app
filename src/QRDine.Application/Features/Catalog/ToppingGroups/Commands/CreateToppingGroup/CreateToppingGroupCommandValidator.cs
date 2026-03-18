@@ -8,8 +8,15 @@
                 .NotEmpty().WithMessage("Tên nhóm topping không được để trống.")
                 .MaximumLength(100).WithMessage("Tên nhóm topping không vượt quá 100 ký tự.");
 
-            RuleFor(x => x.Data.MinSelections)
-                .GreaterThanOrEqualTo(0).WithMessage("Số lượng chọn tối thiểu phải >= 0.");
+            When(x => x.Data.IsRequired, () =>
+            {
+                RuleFor(x => x.Data.MinSelections)
+                    .GreaterThanOrEqualTo(1).WithMessage("Số lượng chọn tối thiểu phải >= 1 khi bắt buộc chọn.");
+            }).Otherwise(() =>
+            {
+                RuleFor(x => x.Data.MinSelections)
+                    .Equal(0).WithMessage("Số lượng chọn tối thiểu phải bằng 0 khi không bắt buộc chọn.");
+            });
 
             RuleFor(x => x.Data.MaxSelections)
                 .GreaterThanOrEqualTo(1).WithMessage("Số lượng chọn tối đa phải >= 1.")
