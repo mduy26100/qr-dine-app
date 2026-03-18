@@ -44,12 +44,12 @@ namespace QRDine.Application.Features.Dashboards.Queries.GetDashboardSummary
 
             var totalStaff = await _identityService.CountStaffByMerchantAsync(merchantId, cancellationToken);
 
-            var totalOrdersThisMonth = await _orderRepository.CountAsync(new OrdersByDateRangeSpec(startOfMonth, endOfMonth), cancellationToken);
+            var totalOrdersThisMonth = await _orderRepository.CountAsync(new OrdersByDateRangeSpec(merchantId, startOfMonth, endOfMonth), cancellationToken);
 
-            var monthlyServedItems = await _orderItemRepository.ListAsync(new ServedOrderItemsByDateRangeSpec(startOfMonth, endOfMonth), cancellationToken);
+            var monthlyServedItems = await _orderItemRepository.ListAsync(new ServedOrderItemsByDateRangeSpec(merchantId, startOfMonth, endOfMonth), cancellationToken);
             var revenueThisMonth = monthlyServedItems.Sum(oi => oi.Amount);
 
-            var rawChartData = await _orderItemRepository.ListAsync(new ServedOrderItemsByDateRangeSpec(startOfLast7Days, endOfToday), cancellationToken);
+            var rawChartData = await _orderItemRepository.ListAsync(new ServedOrderItemsByDateRangeSpec(merchantId, startOfLast7Days, endOfToday), cancellationToken);
 
             var revenueChart = Enumerable.Range(0, 7)
                 .Select(i => new ChartDataDto

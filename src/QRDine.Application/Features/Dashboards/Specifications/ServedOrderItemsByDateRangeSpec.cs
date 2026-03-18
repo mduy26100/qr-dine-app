@@ -7,9 +7,10 @@ namespace QRDine.Application.Features.Dashboards.Specifications
 {
     public class ServedOrderItemsByDateRangeSpec : Specification<OrderItem, OrderItemRevenueDto>
     {
-        public ServedOrderItemsByDateRangeSpec(DateTime startDate, DateTime endDate)
+        public ServedOrderItemsByDateRangeSpec(Guid merchantId, DateTime startDate, DateTime endDate)
         {
-            Query.Where(oi => oi.Status == OrderItemStatus.Served
+            Query.Where(oi => oi.Order.MerchantId == merchantId
+                           && oi.Status == OrderItemStatus.Served
                            && oi.CreatedAt >= startDate
                            && oi.CreatedAt <= endDate);
 

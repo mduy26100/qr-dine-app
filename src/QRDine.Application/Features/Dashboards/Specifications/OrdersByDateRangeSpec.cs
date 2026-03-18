@@ -4,9 +4,11 @@ namespace QRDine.Application.Features.Dashboards.Specifications
 {
     public class OrdersByDateRangeSpec : Specification<Order>
     {
-        public OrdersByDateRangeSpec(DateTime startDate, DateTime endDate)
+        public OrdersByDateRangeSpec(Guid merchantId, DateTime startDate, DateTime endDate)
         {
-            Query.Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate);
+            Query.Where(o => o.MerchantId == merchantId
+                          && o.CreatedAt >= startDate
+                          && o.CreatedAt <= endDate);
         }
     }
 }
