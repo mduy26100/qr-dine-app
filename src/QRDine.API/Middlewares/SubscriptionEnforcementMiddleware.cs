@@ -1,4 +1,5 @@
 ﻿using QRDine.API.Attributes;
+using QRDine.API.Constants;
 using QRDine.API.Responses;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -25,7 +26,7 @@ namespace QRDine.API.Middlewares
         {
             var endpoint = context.GetEndpoint();
 
-            if (context.Request.Path.StartsWithSegments("/api/v1/webhooks"))
+            if (context.Request.Path.StartsWithSegments(ApiRoutePrefixes.Webhooks))
             {
                 await _next(context);
                 return;

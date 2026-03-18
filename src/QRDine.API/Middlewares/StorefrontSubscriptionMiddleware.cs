@@ -1,4 +1,5 @@
-﻿using QRDine.API.Responses;
+﻿using QRDine.API.Constants;
+using QRDine.API.Responses;
 using QRDine.Application.Common.Constants;
 using QRDine.Application.Features.Billing.Subscriptions.Services;
 
@@ -23,13 +24,13 @@ namespace QRDine.API.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments("/api/v1/webhooks"))
+            if (context.Request.Path.StartsWithSegments(ApiRoutePrefixes.Webhooks))
             {
                 await _next(context);
                 return;
             }
 
-            if (!context.Request.Path.StartsWithSegments("/api/v1/storefront", StringComparison.OrdinalIgnoreCase))
+            if (!context.Request.Path.StartsWithSegments(ApiRoutePrefixes.Storefront, StringComparison.OrdinalIgnoreCase))
             {
                 await _next(context);
                 return;

@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Common.Constants;
+﻿using QRDine.API.Constants;
+using QRDine.Application.Common.Constants;
 using QRDine.Infrastructure.Identity.Constants;
 
 namespace QRDine.API.Middlewares
@@ -6,7 +7,6 @@ namespace QRDine.API.Middlewares
     public class TenantResolutionMiddleware
     {
         private readonly RequestDelegate _next;
-        private const string TenantHeaderName = "X-Merchant-Id";
         private const string TenantQueryName = "merchantId";
         private const string TenantRouteName = "merchantId";
 
@@ -19,7 +19,7 @@ namespace QRDine.API.Middlewares
         {
             var hasMerchantClaim = context.User?.HasClaim(c => c.Type == AppClaimTypes.MerchantId) ?? false;
 
-            if (context.Request.Path.StartsWithSegments("/api/v1/webhooks"))
+            if (context.Request.Path.StartsWithSegments(ApiRoutePrefixes.Webhooks))
             {
                 await _next(context);
                 return;
@@ -29,19 +29,10 @@ namespace QRDine.API.Middlewares
             {
                 Guid? resolvedMerchantId = null;
 
-                if (context.Request.Headers.TryGetValue(TenantHeaderName, out var headerValues) &&
-                    Guid.TryParse(headerValues.FirstOrDefault(), out Guid parsedHeaderId))
+                var routeValue = context.GetRouteValue(TenantRouteName);
+                if (routeValue != null && Guid.TryParse(routeValue.ToString(), out Guid parsedRouteId))
                 {
-                    resolvedMerchantId = parsedHeaderId;
-                }
-
-                if (resolvedMerchantId == null)
-                {
-                    var routeValue = context.GetRouteValue(TenantRouteName);
-                    if (routeValue != null && Guid.TryParse(routeValue.ToString(), out Guid parsedRouteId))
-                    {
-                        resolvedMerchantId = parsedRouteId;
-                    }
+                    resolvedMerchantId = parsedRouteId;
                 }
 
                 if (resolvedMerchantId == null &&
