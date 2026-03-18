@@ -23,6 +23,12 @@ namespace QRDine.API.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
+            if (context.Request.Path.StartsWithSegments("/api/v1/webhooks"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!context.Request.Path.StartsWithSegments("/api/v1/storefront", StringComparison.OrdinalIgnoreCase))
             {
                 await _next(context);

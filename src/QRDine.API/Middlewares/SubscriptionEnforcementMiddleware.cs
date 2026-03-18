@@ -25,6 +25,12 @@ namespace QRDine.API.Middlewares
         {
             var endpoint = context.GetEndpoint();
 
+            if (context.Request.Path.StartsWithSegments("/api/v1/webhooks"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (endpoint == null || endpoint.Metadata?.GetMetadata<IAllowAnonymous>() != null)
             {
                 await _next(context);

@@ -19,6 +19,12 @@ namespace QRDine.API.Middlewares
         {
             var hasMerchantClaim = context.User?.HasClaim(c => c.Type == AppClaimTypes.MerchantId) ?? false;
 
+            if (context.Request.Path.StartsWithSegments("/api/v1/webhooks"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!hasMerchantClaim)
             {
                 Guid? resolvedMerchantId = null;
