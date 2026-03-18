@@ -4,6 +4,8 @@ using QRDine.API.Filters;
 using QRDine.API.Middlewares;
 using QRDine.Infrastructure.SignalR.Hubs;
 
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== Service Registration =====

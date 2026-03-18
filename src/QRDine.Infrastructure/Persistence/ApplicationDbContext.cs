@@ -67,6 +67,7 @@ namespace QRDine.Infrastructure.Persistence
             builder.ApplyConfiguration(new PlanConfiguration());
             builder.ApplyConfiguration(new SubscriptionConfiguration());
             builder.ApplyConfiguration(new TransactionConfiguration());
+            builder.ApplyConfiguration(new SubscriptionCheckoutConfiguration());
 
             //Global query filters
             // Apply a global query filter to automatically filter data by MerchantId and IsDeleted.
@@ -140,5 +141,6 @@ namespace QRDine.Infrastructure.Persistence
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<SubscriptionCheckout> SubscriptionCheckouts { get; set; }
     }
 }

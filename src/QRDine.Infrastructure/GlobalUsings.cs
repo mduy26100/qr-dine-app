@@ -26,3 +26,5 @@ global using MailKit.Security;
 global using MimeKit;
 global using System.Linq.Expressions;
 global using Ardalis.Specification;
+global using PayOS;
+global using PayOS.Models.V2.PaymentRequests;

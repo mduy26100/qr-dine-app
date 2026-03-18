@@ -14,6 +14,7 @@ namespace QRDine.API.DependencyInjection.Features
             services.AddScoped<IPlanRepository, PlanRepository>();
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ISubscriptionCheckoutRepository, SubscriptionCheckoutRepository>();
 
             // Services
             services.AddScoped<ISubscriptionService, SubscriptionService>();

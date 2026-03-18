@@ -17,3 +17,4 @@ global using StackExchange.Redis;
 global using Microsoft.AspNetCore.HttpOverrides;
 global using System.Threading.RateLimiting;
 global using Microsoft.AspNetCore.RateLimiting;
+global using PayOS;
