@@ -55,75 +55,62 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
             if (plan == null || !plan.IsActive)
                 throw new NotFoundException("Gói cước không tồn tại hoặc đã ngừng bán.");
 
-            await using var transaction = await _context.BeginTransactionAsync(cancellationToken);
+            var subSpec = new GetSubscriptionByMerchantIdSpec(merchantId);
+            var subscription = await _subscriptionRepository.SingleOrDefaultAsync(subSpec, cancellationToken);
 
-            try
+            var now = DateTime.UtcNow;
+
+            if (subscription == null)
             {
-                var subSpec = new GetSubscriptionByMerchantIdSpec(merchantId);
-                var subscription = await _subscriptionRepository.SingleOrDefaultAsync(subSpec, cancellationToken);
-
-                var now = DateTime.UtcNow;
-
-                if (subscription == null)
-                {
-                    subscription = new Subscription
-                    {
-                        MerchantId = merchantId,
-                        PlanId = plan.Id,
-                        Status = SubscriptionStatus.Active,
-                        StartDate = now,
-                        EndDate = now.AddDays(plan.DurationDays),
-                        AdminNote = adminNote
-                    };
-                    await _subscriptionRepository.AddAsync(subscription, cancellationToken);
-                }
-                else
-                {
-                    if (subscription.PlanId == plan.Id)
-                    {
-                        var baseDate = subscription.EndDate > now ? subscription.EndDate : now;
-                        subscription.EndDate = baseDate.AddDays(plan.DurationDays);
-                    }
-                    else
-                    {
-                        subscription.PlanId = plan.Id;
-                        subscription.StartDate = now;
-                        subscription.EndDate = now.AddDays(plan.DurationDays);
-                    }
-
-                    subscription.Status = SubscriptionStatus.Active;
-                    subscription.AdminNote = adminNote;
-
-                    await _subscriptionRepository.UpdateAsync(subscription, cancellationToken);
-                }
-
-                var billingTransaction = new Transaction
+                subscription = new Subscription
                 {
                     MerchantId = merchantId,
                     PlanId = plan.Id,
-                    Subscription = subscription,
-                    Amount = overrideAmount ?? plan.Price,
-                    Status = PaymentStatus.Success,
-                    Method = paymentMethod,
-                    PaidAt = now,
+                    Status = SubscriptionStatus.Active,
+                    StartDate = now,
+                    EndDate = now.AddDays(plan.DurationDays),
                     AdminNote = adminNote
                 };
-
-                await _transactionRepository.AddAsync(billingTransaction, cancellationToken);
-
-                await _context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-
-                var cacheKey = CacheKeys.MerchantActiveStatus(merchantId);
-                await _cacheService.RemoveAsync(cacheKey, cancellationToken);
-
-                return subscription;
+                await _subscriptionRepository.AddAsync(subscription, cancellationToken);
             }
-            catch (Exception)
+            else
             {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
+                if (subscription.PlanId == plan.Id)
+                {
+                    var baseDate = subscription.EndDate > now ? subscription.EndDate : now;
+                    subscription.EndDate = baseDate.AddDays(plan.DurationDays);
+                }
+                else
+                {
+                    subscription.PlanId = plan.Id;
+                    subscription.StartDate = now;
+                    subscription.EndDate = now.AddDays(plan.DurationDays);
+                }
+
+                subscription.Status = SubscriptionStatus.Active;
+                subscription.AdminNote = adminNote;
+
+                await _subscriptionRepository.UpdateAsync(subscription, cancellationToken);
             }
+
+            var billingTransaction = new Transaction
+            {
+                MerchantId = merchantId,
+                PlanId = plan.Id,
+                Subscription = subscription,
+                Amount = overrideAmount ?? plan.Price,
+                Status = PaymentStatus.Success,
+                Method = paymentMethod,
+                PaidAt = now,
+                AdminNote = adminNote
+            };
+
+            await _transactionRepository.AddAsync(billingTransaction, cancellationToken);
+
+            var cacheKey = CacheKeys.MerchantActiveStatus(merchantId);
+            await _cacheService.RemoveAsync(cacheKey, cancellationToken);
+
+            return subscription;
         }
 
         public async Task<MerchantSubscriptionInfoDto?> GetLatestSubscriptionInfoAsync(Guid merchantId, CancellationToken cancellationToken = default)
@@ -135,7 +122,6 @@ namespace QRDine.Application.Features.Billing.Subscriptions.Services
         public async Task<bool> IsSubscriptionActiveAsync(Guid merchantId, CancellationToken cancellationToken = default)
         {
             var cacheKey = CacheKeys.MerchantActiveStatus(merchantId);
-
             var isActive = await _cacheService.GetAsync<bool?>(cacheKey, cancellationToken);
 
             if (isActive == null)

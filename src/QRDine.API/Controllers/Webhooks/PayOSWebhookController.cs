@@ -10,11 +10,13 @@ namespace QRDine.API.Controllers.Webhooks
     {
         private readonly PayOSClient _payOSClient;
         private readonly IMediator _mediator;
+        private readonly ILogger<PayOSWebhookController> _logger;
 
-        public PayOSWebhookController(PayOSClient payOSClient, IMediator mediator)
+        public PayOSWebhookController(PayOSClient payOSClient, IMediator mediator, ILogger<PayOSWebhookController> logger)
         {
             _payOSClient = payOSClient;
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpPost("payos")]
@@ -27,7 +29,11 @@ namespace QRDine.API.Controllers.Webhooks
 
                 if (webhookData.Code == "00")
                 {
-                    var command = new ProcessPaymentWebhookCommand(webhookData.OrderCode, webhookData.Reference);
+                    var command = new ProcessPaymentWebhookCommand(
+                        webhookData.OrderCode,
+                        webhookData.Amount,
+                        webhookData.Reference);
+
                     await _mediator.Send(command);
                 }
 
@@ -35,6 +41,7 @@ namespace QRDine.API.Controllers.Webhooks
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi khi xử lý PayOS Webhook. Data: {@WebhookBody}", webhookBody);
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }

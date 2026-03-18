@@ -10,6 +10,7 @@ namespace QRDine.Domain.Billing
         public Guid MerchantId { get; set; }
         public Guid PlanId { get; set; }
         public decimal Amount { get; set; }
+        public string? FailureReason { get; set; }
         public PaymentStatus Status { get; set; }
 
         public virtual Merchant Merchant { get; set; } = default!;
