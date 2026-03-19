@@ -21,20 +21,20 @@ namespace QRDine.API.DependencyInjection
                 .GetRequiredService<ILoggerFactory>()
                 .CreateLogger("ApplicationSeeder");
 
+            var config = services.GetRequiredService<IConfiguration>();
+
             try
             {
                 var context = services.GetRequiredService<ApplicationDbContext>();
 
-                var runMigrations = Environment.GetEnvironmentVariable("RUN_MIGRATIONS");
+                var runMigrations = config.GetValue<bool>("RunMigrations");
 
-                if (string.Equals(runMigrations, "true", StringComparison.OrdinalIgnoreCase))
+                if (runMigrations)
                 {
                     if (context.Database.GetPendingMigrations().Any())
                     {
                         logger.LogInformation("Applying database migrations...");
-
                         context.Database.Migrate();
-
                         logger.LogInformation("Database migrations completed successfully.");
                     }
                     else
@@ -52,15 +52,11 @@ namespace QRDine.API.DependencyInjection
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
                 logger.LogInformation("Starting identity seeding...");
-
                 await IdentitySeeder.SeedAsync(userManager, roleManager, loggerFactory);
-
                 logger.LogInformation("Identity seeding completed.");
 
                 logger.LogInformation("Starting plan seeding...");
-
                 await PlanSeeder.SeedAsync(context, loggerFactory);
-
                 logger.LogInformation("Plan seeding completed.");
             }
             catch (Exception ex)
