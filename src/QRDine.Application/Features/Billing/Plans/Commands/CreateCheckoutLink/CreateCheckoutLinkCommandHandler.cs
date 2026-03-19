@@ -66,16 +66,14 @@ namespace QRDine.Application.Features.Billing.Plans.Commands.CreateCheckoutLink
                 PlanId = plan.Id,
                 Amount = plan.Price,
                 Status = PaymentStatus.Pending,
-                PlanSnapshotName = plan.Name // Lưu lại Tên gói cước để báo cáo sau này không bị lỗi
+                PlanSnapshotName = plan.Name
             };
 
             await _checkoutRepo.AddAsync(checkoutRecord, cancellationToken);
 
-            // Rút gọn mã Description cho PayOS (Tối đa 25 ký tự)
             var shortCode = merchantId.ToString().Substring(0, 6).ToUpper();
             var description = $"{prefix} {plan.Code} {shortCode}";
 
-            // Đảm bảo không bao giờ vượt quá 25 ký tự của PayOS
             if (description.Length > 25)
             {
                 description = description.Substring(0, 25).Trim();
