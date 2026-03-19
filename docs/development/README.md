@@ -22,6 +22,14 @@ Development guidelines, coding standards, and patterns.
   - Testing guidelines
   - Async/await best practices
 
+## Deployment
+
+Ready to deploy? See [Deployment Guides](../deployment/):
+
+- **[GitHub Actions CI/CD Setup](../deployment/github-actions-setup.md)** — Automated deployment to VPS
+- **[Build and Deployment](../deployment/build-and-deploy.md)** — Build process and strategies
+- **[Troubleshooting](../deployment/troubleshooting.md)** — Common issues and solutions
+
 ## Quick Links
 
 - First time setup? → [Getting Started](getting-started.md)

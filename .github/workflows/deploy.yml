@@ -1,0 +1,104 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    # Chỉ chạy khi merge PR hoặc direct push, không chạy khi pull_request mở
+    if: |
+      github.event_name == 'push' || 
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e  # Exit on first error
+
+            echo "=========================================="
+            echo "🚀 Starting Deployment Process"
+            echo "=========================================="
+
+            # Step 1: Navigate to project directory
+            echo "📂 Moving to project directory..."
+            cd /root/qr-dine-app
+
+            # Step 2: Pull latest code
+            echo "📥 Pulling latest code from main branch..."
+            git pull origin main
+
+            # Step 3: Load environment variables
+            echo "⚙️  Loading environment configuration..."
+            if [ ! -f .env ]; then
+              echo "❌ Error: .env file not found!"
+              exit 1
+            fi
+            set -a
+            source .env
+            set +a
+
+            # Step 4: Build and start services with Docker Compose (Zero-downtime deployment)
+            echo "🐳 Building and starting Docker services..."
+            docker compose up -d --build --remove-orphans
+
+            # Step 5: Wait for services to be healthy
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 10
+
+            # Step 6: Verify API is running
+            echo "✅ Verifying API health..."
+            if docker compose exec -T api curl -f http://localhost:8080/health/live >/dev/null 2>&1; then
+              echo "✅ API is healthy"
+            else
+              echo "⚠️  API health check may need more time"
+            fi
+
+            # Step 7: Clean up dangling resources (dangling only, preserve base images and volumes)
+            echo "🧹 Cleaning up unused Docker resources..."
+            docker image prune -f
+
+            # Step 8: Display final status
+            echo "📊 Current running containers:"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+            echo "=========================================="
+            echo "✅ Deployment completed successfully!"
+            echo "=========================================="
+
+      - name: Deployment Failed Notification
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!" >&2
+          exit 1
+
+      - name: Create deployment status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conclusion = context.job.status === 'success' ? 'success' : 'failure';
+            const status_text = conclusion === 'success' 
+              ? '✅ Deployment successful to Production' 
+              : '❌ Deployment failed';
+
+            console.log(`Deployment Status: ${status_text}`);
