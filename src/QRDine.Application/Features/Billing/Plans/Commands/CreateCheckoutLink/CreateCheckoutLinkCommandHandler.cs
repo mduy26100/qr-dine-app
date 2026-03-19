@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Common.Abstractions.Identity;
+﻿using QRDine.Application.Common.Abstractions.Configurations;
+using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Common.Abstractions.PayOS;
 using QRDine.Application.Common.Abstractions.PayOS.Models;
 using QRDine.Application.Features.Billing.Plans.Specifications;
@@ -15,19 +16,22 @@ namespace QRDine.Application.Features.Billing.Plans.Commands.CreateCheckoutLink
         private readonly ISubscriptionRepository _subscriptionRepo;
         private readonly ICurrentUserService _currentUserService;
         private readonly IPayOSService _payOSService;
+        private readonly IFrontendConfig _frontendConfig;
 
         public CreateCheckoutLinkCommandHandler(
             IPlanRepository planRepository,
             ISubscriptionCheckoutRepository checkoutRepo,
             ISubscriptionRepository subscriptionRepo,
             ICurrentUserService currentUserService,
-            IPayOSService payOSService)
+            IPayOSService payOSService,
+            IFrontendConfig frontendConfig)
         {
             _planRepository = planRepository;
             _checkoutRepo = checkoutRepo;
             _subscriptionRepo = subscriptionRepo;
             _currentUserService = currentUserService;
             _payOSService = payOSService;
+            _frontendConfig = frontendConfig;
         }
 
         public async Task<string> Handle(CreateCheckoutLinkCommand request, CancellationToken cancellationToken)
@@ -79,13 +83,15 @@ namespace QRDine.Application.Features.Billing.Plans.Commands.CreateCheckoutLink
                 description = description.Substring(0, 25).Trim();
             }
 
+            var frontendBaseUrl = _frontendConfig.BaseUrl.TrimEnd('/');
+
             var paymentData = new PaymentLinkRequestDto
             {
                 OrderCode = checkoutRecord.OrderCode,
                 Amount = (int)plan.Price,
                 Description = description,
-                CancelUrl = $"{request.Dto.ReturnDomain}/management/billing/cancel",
-                ReturnUrl = $"{request.Dto.ReturnDomain}/management/billing/success"
+                CancelUrl = $"{frontendBaseUrl}/management/billing/cancel",
+                ReturnUrl = $"{frontendBaseUrl}/management/billing/success"
             };
 
             var checkoutUrl = await _payOSService.CreatePaymentLinkAsync(paymentData);

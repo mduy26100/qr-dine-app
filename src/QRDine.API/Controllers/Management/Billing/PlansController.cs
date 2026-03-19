@@ -23,9 +23,9 @@ namespace QRDine.API.Controllers.Management.Billing
         }
 
         [HttpPost("{id}/checkout-link")]
-        public async Task<IActionResult> CreateCheckoutLink(Guid id, [FromBody] CreateCheckoutDto dto)
+        public async Task<IActionResult> CreateCheckoutLink(Guid id)
         {
-            var command = new CreateCheckoutLinkCommand(id, dto);
+            var command = new CreateCheckoutLinkCommand(id);
             var checkoutUrl = await _mediator.Send(command);
 
             return Ok(new { url = checkoutUrl });
