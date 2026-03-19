@@ -14,6 +14,14 @@ Build process, deployment procedures, CI/CD pipelines, and operations.
   - Security best practices
   - Rollback procedures
 
+- **[Workflows Quick Reference](workflows-quick-reference.md)** — Quick lookup for common tasks:
+  - GitHub workflows overview
+  - Quick start checklist
+  - Common tasks reference
+  - Deployment workflow stages
+  - Troubleshooting quick links
+  - Security reminders
+
 - **[Build & Deployment Guide](build-and-deploy.md)** — Complete deployment documentation including:
   - Build process (Debug vs Release)
   - Pre-deployment checklist (code quality, security, performance)
