@@ -18,6 +18,8 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Billing
             builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(30);
             builder.Property(x => x.Method).HasConversion<string>().HasMaxLength(30);
 
+            builder.Property(x => x.PlanSnapshotName).HasMaxLength(150);
+
             builder.HasOne(x => x.Merchant)
                    .WithMany()
                    .HasForeignKey(x => x.MerchantId)

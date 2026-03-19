@@ -12,6 +12,7 @@ namespace QRDine.Domain.Billing
         public decimal Amount { get; set; }
         public string? FailureReason { get; set; }
         public PaymentStatus Status { get; set; }
+        public string? PlanSnapshotName { get; set; }
 
         public virtual Merchant Merchant { get; set; } = default!;
         public virtual Plan Plan { get; set; } = default!;

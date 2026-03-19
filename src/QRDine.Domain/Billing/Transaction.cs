@@ -19,6 +19,7 @@ namespace QRDine.Domain.Billing
         public DateTime? PaidAt { get; set; }
 
         public string? AdminNote { get; set; }
+        public string? PlanSnapshotName { get; set; }
 
         public virtual Plan Plan { get; set; } = default!;
         public virtual Merchant Merchant { get; set; } = default!;

@@ -15,6 +15,8 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Billing
             builder.Property(x => x.Amount)
                 .HasColumnType("decimal(18,2)");
 
+            builder.Property(x => x.PlanSnapshotName).HasMaxLength(150);
+
             builder.HasOne(x => x.Merchant)
                 .WithMany()
                 .HasForeignKey(x => x.MerchantId)

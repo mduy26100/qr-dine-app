@@ -17,19 +17,55 @@ namespace QRDine.API.DependencyInjection
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
 
+            var logger = services
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("ApplicationSeeder");
+
             try
             {
                 var context = services.GetRequiredService<ApplicationDbContext>();
+
+                var runMigrations = Environment.GetEnvironmentVariable("RUN_MIGRATIONS");
+
+                if (string.Equals(runMigrations, "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        logger.LogInformation("Applying database migrations...");
+
+                        context.Database.Migrate();
+
+                        logger.LogInformation("Database migrations completed successfully.");
+                    }
+                    else
+                    {
+                        logger.LogInformation("No pending migrations. Database is already up to date.");
+                    }
+                }
+                else
+                {
+                    logger.LogInformation("Automatic database migrations are disabled.");
+                }
+
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
+                logger.LogInformation("Starting identity seeding...");
+
                 await IdentitySeeder.SeedAsync(userManager, roleManager, loggerFactory);
+
+                logger.LogInformation("Identity seeding completed.");
+
+                logger.LogInformation("Starting plan seeding...");
+
                 await PlanSeeder.SeedAsync(context, loggerFactory);
+
+                logger.LogInformation("Plan seeding completed.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"--> Error during startup seeding: {ex.Message}");
+                logger.LogError(ex, "An error occurred during application startup seeding.");
                 throw;
             }
         }
