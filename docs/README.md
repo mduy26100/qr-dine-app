@@ -23,6 +23,7 @@ Complete technical documentation for the QRDine multi-tenant SaaS backend.
 
 ### Deployment & Operations
 
+- **[Docker & Containerization](docker/)** — Production Docker setup, orchestration, deployment
 - **[Build & Deploy](deployment/)** — Azure, Docker, CI/CD pipelines
 - **[Troubleshooting](deployment/troubleshooting.md)** — 30+ common issues and solutions
 - **[External Services](external-services/)** — Cloudinary, third-party integrations
@@ -47,6 +48,7 @@ Complete technical documentation for the QRDine multi-tenant SaaS backend.
 | Understanding architecture? | [Architecture Overview](architecture/)            |
 | API usage?                  | [API Reference](api/)                             |
 | Setting up dev environment? | [Development Setup](development/)                 |
+| Using Docker?               | [Docker & Containerization](docker/)              |
 | Deploying to production?    | [Build & Deploy](deployment/)                     |
 | Having issues?              | [Troubleshooting](deployment/troubleshooting.md)  |
 | Understanding a feature?    | [Features Overview](features/)                    |

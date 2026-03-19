@@ -1,10 +1,9 @@
 ﻿using QRDine.API.Constants;
 using QRDine.API.Responses;
-using QRDine.API.Services;
 
 namespace QRDine.API.DependencyInjection.Presentation
 {
-    public static class PresentationServiceCollectionExtensions
+    public static class RateLimiterServiceCollectionExtensions
     {
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -12,15 +11,8 @@ namespace QRDine.API.DependencyInjection.Presentation
             WriteIndented = false
         };
 
-        public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAppRateLimiting(this IServiceCollection services)
         {
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-                options.KnownNetworks.Clear();
-                options.KnownProxies.Clear();
-            });
-
             services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -79,9 +71,6 @@ namespace QRDine.API.DependencyInjection.Presentation
                     });
                 });
             });
-
-            services.AddHttpContextAccessor();
-            services.AddScoped<IAuthCookieService, AuthCookieService>();
 
             return services;
         }

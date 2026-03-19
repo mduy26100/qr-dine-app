@@ -1,0 +1,114 @@
+services:
+  # Microsoft SQL Server Database
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: qrdine-sqlserver
+    environment:
+      - ACCEPT_EULA=${ACCEPT_EULA}
+      - SA_PASSWORD=${MSSQL_SA_PASSWORD}
+      - MSSQL_PID=Express
+      - MSSQL_MEMORY_LIMIT_MB=1536
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - qrdine-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${SA_PASSWORD}" -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: qrdine-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - qrdine-network
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}" --maxmemory 200mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # .NET API Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qrdine-api
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "${MSSQL_CONNECTION_STRING}"
+      Redis__ConnectionString: "${REDIS_CONNECTION_STRING}"
+      Jwt__Secret: "${JWT_SECRET}"
+      Jwt__ValidIssuer: "${JWT_VALID_ISSUER}"
+      Jwt__ValidAudience: "${JWT_VALID_AUDIENCE}"
+      Jwt__AccessTokenExpiryMinutes: "${JWT_ACCESS_TOKEN_EXPIRY_MINUTES}"
+      Jwt__RefreshTokenExpiryDays: "${JWT_REFRESH_TOKEN_EXPIRY_DAYS}"
+      Cloudinary__CloudName: "${CLOUDINARY_CLOUD_NAME}"
+      Cloudinary__ApiKey: "${CLOUDINARY_API_KEY}"
+      Cloudinary__ApiSecret: "${CLOUDINARY_API_SECRET}"
+      FrontendSettings__BaseUrl: "${FRONTEND_BASE_URL}"
+      Cors__AllowedOrigins__0: "${CORS_ALLOWED_ORIGIN_1}"
+      Cors__AllowedOrigins__1: "${CORS_ALLOWED_ORIGIN_2}"
+      Cors__AllowedOrigins__2: "${CORS_ALLOWED_ORIGIN_3}"
+      SecuritySettings__TokenHashSecret: "${SECURITY_TOKEN_HASH_SECRET}"
+      EmailSettings__SmtpServer: "${EMAIL_SMTP_SERVER}"
+      EmailSettings__Port: "${EMAIL_SMTP_PORT}"
+      EmailSettings__SenderEmail: "${EMAIL_SENDER_EMAIL}"
+      EmailSettings__SenderName: "${EMAIL_SENDER_NAME}"
+      EmailSettings__Password: "${EMAIL_SENDER_PASSWORD}"
+      PayOS__ClientId: "${PAYOS_CLIENT_ID}"
+      PayOS__ApiKey: "${PAYOS_API_KEY}"
+      PayOS__ChecksumKey: "${PAYOS_CHECKSUM_KEY}"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - qrdine-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: qrdine-nginx
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${NGINX_HTTP_PORT}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - qrdine-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+    driver: local
+  redis_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  qrdine-network:
+    driver: bridge

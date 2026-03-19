@@ -4,6 +4,7 @@ using QRDine.API.DependencyInjection.Features;
 using QRDine.API.DependencyInjection.Infrastructure;
 using QRDine.API.DependencyInjection.Presentation;
 using QRDine.API.DependencyInjection.Security;
+using QRDine.API.Services;
 
 namespace QRDine.API.DependencyInjection
 {
@@ -93,7 +94,14 @@ namespace QRDine.API.DependencyInjection
         /// </summary>
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddPresentationServices(configuration);
+            services.AddAppForwardedHeaders();
+            services.AddAppRateLimiting();
+            services.AddAppHealthChecks(configuration);
+
+            services.AddOutputCache();
+            services.AddHttpContextAccessor();
+            services.AddScoped<IAuthCookieService, AuthCookieService>();
+
             return services;
         }
     }

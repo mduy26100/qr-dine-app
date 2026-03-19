@@ -153,16 +153,16 @@ On first run, the system automatically seeds:
 
 ## 🎯 Quick Navigation
 
-| Need                             | Link                                           |
-| -------------------------------- | ---------------------------------------------- |
-| **First time setup?**            | [👉 Getting Started](docs/getting-started.md)  |
-| **Understanding the codebase?**  | [👉 Architecture Overview](docs/architecture/) |
-| **Looking for an API endpoint?** | [👉 API Reference](docs/api/)                  |
-| **Working on a feature?**        | [👉 Development Guidelines](docs/development/) |
-| **Deploying to production?**     | [👉 Build & Deploy](docs/deployment/)          |
-| **Having issues?**               | [👉 Troubleshooting](docs/troubleshooting.md)  |
-| **Multi-tenancy questions?**     | [👉 Database & Multi-Tenancy](docs/database/)  |
-| **Security concerns?**           | [👉 Security Overview](docs/security/)         |
+| Need                             | Link                                                      |
+| -------------------------------- | --------------------------------------------------------- |
+| **First time setup?**            | [👉 Getting Started](docs/development/getting-started.md) |
+| **Understanding the codebase?**  | [👉 Architecture Overview](docs/architecture/)            |
+| **Looking for an API endpoint?** | [👉 API Reference](docs/api/)                             |
+| **Working on a feature?**        | [👉 Development Guidelines](docs/development/)            |
+| **Deploying to production?**     | [👉 Docker & Deployment](docs/docker/)                    |
+| **Having issues?**               | [👉 Troubleshooting](docs/troubleshooting.md)             |
+| **Multi-tenancy questions?**     | [👉 Database & Multi-Tenancy](docs/database/)             |
+| **Security concerns?**           | [👉 Security Overview](docs/security/)                    |
 
 ---
 
@@ -175,8 +175,8 @@ Complete technical documentation is organized in the [`docs/`](docs/) directory 
 **Getting Started & Basics**
 
 - [📘 Complete Documentation Home](docs/README.md) — Entry point for all documentation
-- [🚀 Getting Started Guide](docs/getting-started.md) — 5-step local setup guide
-- [📁 Project Structure](docs/project-structure.md) — Folder organization and file structure
+- [🚀 Getting Started Guide](docs/development/getting-started.md) — 5-step local setup guide
+- [📁 Project Structure](docs/architecture/project-structure.md) — Folder organization and file structure
 
 **Architecture & Design**
 
@@ -193,8 +193,9 @@ Complete technical documentation is organized in the [`docs/`](docs/) directory 
 **Deployment & Operations**
 
 - [📦 Build & Deployment](docs/deployment/) — Azure, Docker, CI/CD, migrations
+- [🐳 Docker & Deployment](docs/docker/) — Production Docker setup, orchestration, deployment commands
 - [🔧 External Services](docs/external-services/) — Cloudinary, third-party integrations
-- [❓ Troubleshooting](docs/troubleshooting.md) — Common issues and solutions
+- [❓ Troubleshooting](docs/deployment/troubleshooting.md) — Common issues and solutions
 
 ### 🎯 Feature Modules
 

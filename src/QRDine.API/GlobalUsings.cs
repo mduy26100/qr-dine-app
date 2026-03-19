@@ -19,3 +19,6 @@ global using System.Threading.RateLimiting;
 global using Microsoft.AspNetCore.RateLimiting;
 global using PayOS;
 global using PayOS.Models.Webhooks;
+global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using HealthChecks.UI.Client;
+global using Microsoft.AspNetCore.Diagnostics.HealthChecks;

@@ -84,3 +84,23 @@ PublishProfiles/
 # ===================================
 wwwroot/uploads/
 wwwroot/temp/
+
+# ===================================
+# DOCKER
+# ===================================
+.dockerignore
+certs/*.key
+certs/*.crt
+certs/*.pem
+
+# ===================================
+# KEEP IN REPO
+# ===================================
+!.env.example
+!Dockerfile
+!docker-compose.yml
+!nginx.conf
+!setup.sh
+!setup.bat
+!DEPLOYMENT.md
+!.dockerignore
