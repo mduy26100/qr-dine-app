@@ -53,9 +53,6 @@ jobs:
               echo "❌ Error: .env file not found!"
               exit 1
             fi
-            set -a
-            source .env
-            set +a
 
             # Step 4: Build and start services with Docker Compose (Zero-downtime deployment)
             echo "🐳 Building and starting Docker services..."
