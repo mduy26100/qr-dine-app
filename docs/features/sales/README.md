@@ -8,21 +8,26 @@ The Sales module manages the order lifecycle, covering order creation, item trac
 
 ## Current Status
 
-- ✅ Domain entities defined
+- ✅ Domain entities fully implemented
 - ✅ EF Core configurations complete
 - ✅ Database schema implemented
-- 🟡 CQRS commands/queries partially implemented
-- 🟡 API endpoints in development
-- 🟡 SignalR real-time updates in development
+- ✅ CQRS commands & queries complete
+- ✅ API endpoints complete (Management & Storefront)
+- ✅ Business logic and validations complete
+- ✅ SignalR real-time updates integrated
 
 ## Key Features
 
-- ✅ Order creation with multiple items
-- ✅ Order lifecycle management (Pending → Cooking → Served → Paid)
-- ✅ Order item status tracking
-- ✅ Real-time order updates via SignalR
-- ✅ Table-based order association
+- ✅ Order creation with multiple items and toppings
+- ✅ Order lifecycle management (Pending → Cooking → Served → Paid/Cancelled)
+- ✅ Order item status transitions with state machine validation
+- ✅ Real-time order updates via SignalR notifications
+- ✅ Table-based order association with occupancy tracking
 - ✅ Session isolation (multiple orders per table in different sessions)
+- ✅ Product & topping snapshot at order time for accurate history
+- ✅ Batch item status updates for kitchen workflows
+- ✅ Order history pagination with search
+- ✅ Both Management (Staff) and Storefront (Customer) APIs
 
 ## Entities
 
@@ -41,12 +46,79 @@ The Sales module manages the order lifecycle, covering order creation, item trac
 
 ## Use Cases
 
-1. **Customer** creates order and adds items
-2. **Customer** submits order for payment
-3. **Kitchen** receives order notification via SignalR
-4. **Kitchen** updates item status as prepared
-5. **Staff** marks order as served
-6. **Customer** sees live order status updates (SignalR)
+1. **Customer** opens QR menu and creates order from storefront, selecting items and toppings
+2. **Customer** can add more items to same order during active session
+3. **Kitchen Staff** receives order notification via SignalR in real-time
+4. **Kitchen Staff** updates individual items to "Preparing" or mark as "Served"
+5. **Cashier/Owner** can close order as "Paid" (all items served), transitioning to payment
+6. **Cashier/Owner** can close order as "Cancelled" (void the order)
+7. **Customer** sees live order status updates (Pending → Cooking → Served) via real-time SignalR
+8. **Owner** views order history with pagination and search by order code or table name
+
+## API Endpoints
+
+### Management API (Staff)
+
+**Create Order** (Create or append to existing session)
+
+```http
+POST /api/v1.0/management/orders
+Auth: Merchant, Staff
+```
+
+**Get Active Order by Table**
+
+```http
+GET /api/v1.0/management/tables/{tableId:guid}/active-order
+Auth: Merchant, Staff
+```
+
+**Get Order Details**
+
+```http
+GET /api/v1.0/management/orders/{orderId:guid}
+Auth: Merchant, Staff
+```
+
+**Get Order History** (Paginated & searchable)
+
+```http
+GET /api/v1.0/management/orders/history
+Auth: Merchant, Staff
+QueryParams: searchTerm?, pageNumber=1, pageSize=10
+```
+
+**Close Order** (Mark as Paid or Cancelled)
+
+```http
+PUT /api/v1.0/management/orders/{orderId:guid}/close
+Auth: Merchant, Staff
+```
+
+**Update Order Items Status** (Batch update for kitchen)
+
+```http
+PUT /api/v1.0/management/order-items/status
+Auth: Merchant, Staff
+```
+
+### Storefront API (Public)
+
+**Create Order** (Customer places order)
+
+```http
+POST /api/v1.0/storefront/merchants/{merchantId:guid}/orders
+Auth: Public
+```
+
+**Get Active Order by Table** (Customer views order status)
+
+```http
+GET /api/v1.0/storefront/merchants/{merchantId:guid}/tables/{tableId:guid}/active-order?sessionId={sessionId}
+Auth: Public
+```
+
+## Documentation
 
 ## API Endpoints (In Development)
 

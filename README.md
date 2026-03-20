@@ -58,14 +58,14 @@ graph TD
 
 ## Domain Modules
 
-| Module       | Entities                                        | Status            | Tests | Documentation                              |
-| ------------ | ----------------------------------------------- | ----------------- | ----- | ------------------------------------------ |
-| **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete       | ✅ 12 | [Catalog Module](docs/features/catalog/)   |
-| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete       | 🔄    | [Identity Module](docs/features/identity/) |
-| **Tenant**   | Merchant                                        | ✅ Complete       | 🔄    | [Tenant Module](docs/features/tenant/)     |
-| **Sales**    | Order, OrderItem                                | 🟡 In Development | ✅ 6  | [Sales Module](docs/features/sales/)       |
-| **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete       | ✅ 5  | [Billing Module](docs/features/billing/)   |
-| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete       | 🔄    | [Staffs Module](docs/features/staffs/)     |
+| Module       | Entities                                        | Status      | Tests | Documentation                              |
+| ------------ | ----------------------------------------------- | ----------- | ----- | ------------------------------------------ |
+| **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete | ✅ 12 | [Catalog Module](docs/features/catalog/)   |
+| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete | 🔄    | [Identity Module](docs/features/identity/) |
+| **Tenant**   | Merchant                                        | ✅ Complete | 🔄    | [Tenant Module](docs/features/tenant/)     |
+| **Sales**    | Order, OrderItem                                | ✅ Complete | ✅ 6  | [Sales Module](docs/features/sales/)       |
+| **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete | ✅ 5  | [Billing Module](docs/features/billing/)   |
+| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete | 🔄    | [Staffs Module](docs/features/staffs/)     |
 
 **Test Status:** ✅ Complete | 🔄 Planned | 🟡 In Progress
 **Total: 36+ unit tests** covering command handlers and service layers
