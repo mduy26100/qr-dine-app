@@ -34,4 +34,11 @@
     <Using Include="AutoFixture.Xunit2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Catalog\Categories\Commands\" />
+    <Folder Include="Features\Catalog\Products\Commands\" />
+    <Folder Include="Features\Catalog\Tables\Commands\" />
+    <Folder Include="Features\Catalog\ToppingGroups\Commands\" />
+  </ItemGroup>
+
 </Project>
