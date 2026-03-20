@@ -4,6 +4,7 @@ using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Queries.GetRevenueSummary;
 using QRDine.Application.Features.Reports.Queries.GetRevenueChart;
 using QRDine.Application.Features.Reports.Queries.GetProductPerformance;
+using QRDine.Application.Features.Reports.Queries.GetToppingAnalytics;
 using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -51,6 +52,17 @@ namespace QRDine.API.Controllers.Management.Reports
         public async Task<IActionResult> GetProductPerformance([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] ProductPerformanceSortBy sortBy, [FromQuery] int top = 10, CancellationToken cancellationToken = default)
         {
             var query = new GetProductPerformanceQuery(startDate, endDate, sortBy, top);
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [HttpGet("topping-analytics")]
+        [CheckFeatureLimit(FeatureType.AdvancedReports)]
+        [ProducesResponseType(typeof(IEnumerable<ToppingAnalyticsDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetToppingAnalytics([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
+        {
+            var query = new GetToppingAnalyticsQuery(startDate, endDate);
             var result = await _mediator.Send(query, cancellationToken);
 
             return Ok(result);
