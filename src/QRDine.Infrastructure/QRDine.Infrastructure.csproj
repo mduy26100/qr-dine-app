@@ -21,6 +21,7 @@
     <PackageReference Include="payOS" Version="2.1.0" />
     <PackageReference Include="QRCoder" Version="1.7.0" />
     <PackageReference Include="SkiaSharp" Version="3.119.2" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,10 +4,11 @@ namespace QRDine.Infrastructure.ExternalServices.QrCode
 {
     public class QrCodeService : IQrCodeService
     {
-        public Task<byte[]> GenerateQrCodeAsync(string payload, CancellationToken cancellationToken = default)
+        public Task<byte[]> GenerateQrCodeAsync(string payload, string? logoPath = null, CancellationToken cancellationToken = default)
         {
             using var qrGenerator = new QRCodeGenerator();
-            using var qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
+
+            using var qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.H);
 
             int pixelsPerModule = 20;
             var size = qrCodeData.ModuleMatrix.Count * pixelsPerModule;
@@ -28,6 +29,24 @@ namespace QRDine.Infrastructure.ExternalServices.QrCode
                         canvas.DrawRect(rect, paint);
                     }
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(logoPath) && File.Exists(logoPath))
+            {
+                using var logoData = SKData.Create(logoPath);
+                using var logoBitmap = SKBitmap.Decode(logoData);
+
+                var logoSize = size / 5;
+                var xLogo = (size - logoSize) / 2;
+                var yLogo = (size - logoSize) / 2;
+
+                using var bgPaint = new SKPaint { Color = SKColors.White, IsAntialias = true };
+                var padding = pixelsPerModule;
+                var bgRect = new SKRect(xLogo - padding, yLogo - padding, xLogo + logoSize + padding, yLogo + logoSize + padding);
+                canvas.DrawRoundRect(bgRect, 15, 15, bgPaint);
+
+                var logoRect = new SKRect(xLogo, yLogo, xLogo + logoSize, yLogo + logoSize);
+                canvas.DrawBitmap(logoBitmap, logoRect);
             }
 
             using var image = surface.Snapshot();

@@ -30,8 +30,8 @@ WORKDIR /app
 # Copy published application
 COPY --from=publish /app/publish .
 
-# Install curl for health check (must be before switching to non-root user)
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install curl for health check AND libfontconfig1 for SkiaSharp
+RUN apt-get update && apt-get install -y curl libfontconfig1 && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app

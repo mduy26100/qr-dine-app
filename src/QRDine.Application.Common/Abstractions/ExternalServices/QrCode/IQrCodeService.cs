@@ -2,6 +2,6 @@
 {
     public interface IQrCodeService
     {
-        Task<byte[]> GenerateQrCodeAsync(string payload, CancellationToken cancellationToken = default);
+        Task<byte[]> GenerateQrCodeAsync(string payload, string? logoPath = null, CancellationToken cancellationToken = default);
     }
 }

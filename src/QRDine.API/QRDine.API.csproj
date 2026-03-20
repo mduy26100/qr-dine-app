@@ -23,4 +23,8 @@
     <ProjectReference Include="..\QRDine.Infrastructure\QRDine.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>
