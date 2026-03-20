@@ -1,4 +1,6 @@
-﻿using QRDine.Application.Features.Reports.DTOs;
+﻿using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Constants;
+using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
 using QRDine.Domain.Enums;
@@ -8,14 +10,22 @@ namespace QRDine.Application.Features.Reports.Queries.GetRevenueSummary
     public class GetRevenueSummaryQueryHandler : IRequestHandler<GetRevenueSummaryQuery, RevenueSummaryDto>
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly ICacheService _cacheService;
 
-        public GetRevenueSummaryQueryHandler(IOrderRepository orderRepository)
+        public GetRevenueSummaryQueryHandler(IOrderRepository orderRepository, ICacheService cacheService)
         {
             _orderRepository = orderRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<RevenueSummaryDto> Handle(GetRevenueSummaryQuery request, CancellationToken cancellationToken)
         {
+            var cacheKey = CacheKeys.RevenueSummary(request.StartDate, request.EndDate);
+            var cached = await _cacheService.GetAsync<RevenueSummaryDto>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return cached;
+            }
             var currentDuration = request.EndDate - request.StartDate;
             var previousStartDate = request.StartDate.Subtract(currentDuration);
             var previousEndDate = request.StartDate;
@@ -36,7 +46,7 @@ namespace QRDine.Application.Features.Reports.Queries.GetRevenueSummary
             var prevTotalOrdersCount = previousPaidOrServed.Count;
             var prevCancelCount = previousOrders.Count(o => o.Status == OrderStatus.Cancelled.ToString());
 
-            return new RevenueSummaryDto
+            var result = new RevenueSummaryDto
             {
                 TotalRevenue = new TrendValueDto
                 {
@@ -63,6 +73,9 @@ namespace QRDine.Application.Features.Reports.Queries.GetRevenueSummary
                         previousOrders.Count > 0 ? (decimal)prevCancelCount / previousOrders.Count : 0)
                 }
             };
+            
+            await _cacheService.SetAsync(cacheKey, result, CacheDurations.Reports, cancellationToken);
+            return result;
         }
 
         private decimal CalculateTrend(decimal current, decimal previous)

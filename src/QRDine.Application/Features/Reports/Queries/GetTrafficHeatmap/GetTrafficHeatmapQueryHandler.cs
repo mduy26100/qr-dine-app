@@ -1,3 +1,5 @@
+using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Constants;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
@@ -7,16 +9,25 @@ namespace QRDine.Application.Features.Reports.Queries.GetTrafficHeatmap
     public class GetTrafficHeatmapQueryHandler : IRequestHandler<GetTrafficHeatmapQuery, IEnumerable<TrafficHeatmapDto>>
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly ICacheService _cacheService;
 
-        public GetTrafficHeatmapQueryHandler(IOrderRepository orderRepository)
+        public GetTrafficHeatmapQueryHandler(IOrderRepository orderRepository, ICacheService cacheService)
         {
             _orderRepository = orderRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<IEnumerable<TrafficHeatmapDto>> Handle(
             GetTrafficHeatmapQuery request,
             CancellationToken cancellationToken)
         {
+            var cacheKey = CacheKeys.TrafficHeatmap(request.StartDate, request.EndDate);
+            var cached = await _cacheService.GetAsync<List<TrafficHeatmapDto>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return cached;
+            }
+
             var spec = new TrafficHeatmapOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 
@@ -32,6 +43,7 @@ namespace QRDine.Application.Features.Reports.Queries.GetTrafficHeatmap
                 .ThenBy(h => h.Hour)
                 .ToList();
 
+            await _cacheService.SetAsync(cacheKey, heatmap, CacheDurations.Reports, cancellationToken);
             return heatmap;
         }
 

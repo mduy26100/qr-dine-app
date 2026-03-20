@@ -1,3 +1,5 @@
+using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Constants;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
@@ -8,16 +10,25 @@ namespace QRDine.Application.Features.Reports.Queries.GetRevenueChart
     public class GetRevenueChartQueryHandler : IRequestHandler<GetRevenueChartQuery, IEnumerable<RevenueChartItemDto>>
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly ICacheService _cacheService;
 
-        public GetRevenueChartQueryHandler(IOrderRepository orderRepository)
+        public GetRevenueChartQueryHandler(IOrderRepository orderRepository, ICacheService cacheService)
         {
             _orderRepository = orderRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<IEnumerable<RevenueChartItemDto>> Handle(
             GetRevenueChartQuery request,
             CancellationToken cancellationToken)
         {
+            var cacheKey = CacheKeys.RevenueChart(request.StartDate, request.EndDate, (int)request.Grouping);
+            var cached = await _cacheService.GetAsync<List<RevenueChartItemDto>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return cached;
+            }
+
             var spec = new RevenueOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 
@@ -27,7 +38,9 @@ namespace QRDine.Application.Features.Reports.Queries.GetRevenueChart
 
             var groupedData = GroupByTimeFrame(merchantOrders, request.Grouping, request.StartDate, request.EndDate);
 
-            return groupedData.OrderBy(x => ExtractDateTime(x.Label, request.Grouping)).ToList();
+            var result = groupedData.OrderBy(x => ExtractDateTime(x.Label, request.Grouping)).ToList();
+            await _cacheService.SetAsync(cacheKey, result, CacheDurations.Reports, cancellationToken);
+            return result;
         }
 
         private List<RevenueChartItemDto> GroupByTimeFrame(

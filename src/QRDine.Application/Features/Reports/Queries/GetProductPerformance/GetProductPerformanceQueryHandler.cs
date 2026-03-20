@@ -1,3 +1,5 @@
+using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Constants;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
@@ -8,16 +10,25 @@ namespace QRDine.Application.Features.Reports.Queries.GetProductPerformance
     public class GetProductPerformanceQueryHandler : IRequestHandler<GetProductPerformanceQuery, IEnumerable<ProductPerformanceDto>>
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly ICacheService _cacheService;
 
-        public GetProductPerformanceQueryHandler(IOrderRepository orderRepository)
+        public GetProductPerformanceQueryHandler(IOrderRepository orderRepository, ICacheService cacheService)
         {
             _orderRepository = orderRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<IEnumerable<ProductPerformanceDto>> Handle(
             GetProductPerformanceQuery request,
             CancellationToken cancellationToken)
         {
+            var cacheKey = CacheKeys.ProductPerformance(request.StartDate, request.EndDate, (int)request.SortBy, request.Top);
+            var cached = await _cacheService.GetAsync<List<ProductPerformanceDto>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                return cached;
+            }
+
             var spec = new ProductPerformanceOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 
@@ -41,7 +52,9 @@ namespace QRDine.Application.Features.Reports.Queries.GetProductPerformance
                 _ => products.OrderByDescending(p => p.TotalRevenue)
             };
 
-            return sorted.Take(request.Top).ToList();
+            var result = sorted.Take(request.Top).ToList();
+            await _cacheService.SetAsync(cacheKey, result, CacheDurations.Reports, cancellationToken);
+            return result;
         }
     }
 }
