@@ -14,6 +14,7 @@ namespace QRDine.API.DependencyInjection.Features
 
             // Services
             services.AddScoped<IOrderCreationService, OrderCreationService>();
+            services.AddScoped<IOrderFormattingService, OrderFormattingService>();
 
             return services;
         }

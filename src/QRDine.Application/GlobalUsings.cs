@@ -6,3 +6,4 @@ global using AutoMapper;
 global using Ardalis.Specification;
 global using System.Text.Json.Serialization;
 global using System.Linq.Expressions;
+global using System.Text.Json;
