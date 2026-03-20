@@ -100,8 +100,8 @@ Complete technical documentation for the QRDine multi-tenant SaaS backend.
 | Security          | Auth, RBAC, data isolation           | Architects, DevOps     |
 | Configuration     | Environment setup                    | DevOps, Developers     |
 | Deployment        | Build, deploy, CI/CD                 | DevOps, Developers     |
-| Troubleshooting   | Common issues               | All                    |
-| Features          | Module overview             | Product, Developers    |
+| Troubleshooting   | Common issues                        | All                    |
+| Features          | Module overview                      | Product, Developers    |
 
 **Reference:**
 

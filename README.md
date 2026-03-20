@@ -5,7 +5,7 @@
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver)
 ![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?logo=redis)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-Image%20Upload-3448C5)
-![Tests](https://img.shields.io/badge/Tests-36%2B%20Passing-brightgreen?logo=xunit)
+![Tests](https://img.shields.io/badge/Tests-✔%20Passing-brightgreen?logo=xunit)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 **QR Dine API** is a modern **multi-tenant SaaS backend** built to power QR-based digital menu systems for restaurants, cafés, and retail stores.
@@ -61,11 +61,11 @@ graph TD
 | Module       | Entities                                        | Status            | Tests | Documentation                              |
 | ------------ | ----------------------------------------------- | ----------------- | ----- | ------------------------------------------ |
 | **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete       | ✅ 12 | [Catalog Module](docs/features/catalog/)   |
-| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete       | 🔄   | [Identity Module](docs/features/identity/) |
-| **Tenant**   | Merchant                                        | ✅ Complete       | 🔄   | [Tenant Module](docs/features/tenant/)     |
+| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete       | 🔄    | [Identity Module](docs/features/identity/) |
+| **Tenant**   | Merchant                                        | ✅ Complete       | 🔄    | [Tenant Module](docs/features/tenant/)     |
 | **Sales**    | Order, OrderItem                                | 🟡 In Development | ✅ 6  | [Sales Module](docs/features/sales/)       |
 | **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete       | ✅ 5  | [Billing Module](docs/features/billing/)   |
-| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete       | 🔄   | [Staffs Module](docs/features/staffs/)     |
+| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete       | 🔄    | [Staffs Module](docs/features/staffs/)     |
 
 **Test Status:** ✅ Complete | 🔄 Planned | 🟡 In Progress
 **Total: 36+ unit tests** covering command handlers and service layers

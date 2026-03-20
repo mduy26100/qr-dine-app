@@ -30,12 +30,14 @@ Tests ←→ CQRS Handlers/Services ←→ Repositories ←→ Database (Mocked)
 ```
 
 **What We Test:**
+
 - ✅ Command & Query handlers using CQRS
 - ✅ Service layer business logic
 - ✅ Validation and exception handling
 - ✅ Authorization and multi-tenancy
 
 **What We Don't Test:**
+
 - ❌ EF Core DbContext behavior
 - ❌ SQL queries or database schema
 - ❌ Repository implementation (use mocks)
@@ -175,6 +177,7 @@ public class CategoryBuilder
 ```
 
 **Key Points:**
+
 - Every builder has **default values** (sensible defaults)
 - Builders support **method chaining** (fluent API)
 - Builders use **public setters** for clarity
@@ -298,6 +301,7 @@ public class CatalogFixture : IDisposable
 ```
 
 **Benefits:**
+
 - Consistent IDs across all tests in a module
 - Easy to create related entities (category→products)
 - Enables verifying correct IDs passed to repositories
@@ -363,7 +367,7 @@ public async Task Handle_UpdateProduct_ShouldMaintainCategoryRelationship()
 
     _categoryRepo.Setup(x => x.GetByIdAsync(_fixture.CategoryId, It.IsAny<CancellationToken>()))
         .ReturnsAsync(category);
-    
+
     _productRepo.Setup(x => x.GetByIdAsync(_fixture.ProductId, It.IsAny<CancellationToken>()))
         .ReturnsAsync(product);
 
@@ -821,7 +825,7 @@ public async Task Handle_CompleteOrderFlow_ShouldUpdateMultipleEntities()
     item1.Status.Should().Be(OrderItemStatus.Served);
     item2.Status.Should().Be(OrderItemStatus.Served);
     order.Status.Should().Be(OrderStatus.Paid);
-    
+
     _orderRepository.Verify(x => x.UpdateAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Once);
 }
 ```
@@ -930,25 +934,25 @@ dotnet test tests/QRDine.Application.Tests/ /p:CollectCoverage=true /p:CoverageF
 
 ```json
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
-        },
-        {
-            "name": ".NET Core Test Debug",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/**/**/bin/Debug/**/dotnet",
-            "args": ["test", "${workspaceFolder}/tests/QRDine.Application.Tests/"],
-            "cwd": "${workspaceFolder}/tests/QRDine.Application.Tests/",
-            "stopAtEntry": false
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
+    },
+    {
+      "name": ".NET Core Test Debug",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/**/**/bin/Debug/**/dotnet",
+      "args": ["test", "${workspaceFolder}/tests/QRDine.Application.Tests/"],
+      "cwd": "${workspaceFolder}/tests/QRDine.Application.Tests/",
+      "stopAtEntry": false
+    }
+  ]
 }
 ```
 
@@ -961,6 +965,7 @@ dotnet test tests/QRDine.Application.Tests/ /p:CollectCoverage=true /p:CoverageF
 ### Before Submitting
 
 ✅ **Checklist:**
+
 - [ ] Test follows module naming convention
 - [ ] Uses Builders for all test data
 - [ ] Mocks external dependencies

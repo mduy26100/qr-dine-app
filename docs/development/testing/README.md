@@ -8,11 +8,11 @@ Our test suite covers **CQRS command handlers** and **service layer** across all
 
 ## Current Status
 
-| Module | Scope | Tests | Status |
-|--------|-------|-------|--------|
-| **Catalog** | Categories, Products, Tables, ToppingGroups | 12 | ✅ Complete |
-| **Sales** | Orders, OrderItems | 6 | ✅ Complete |
-| **Billing** | Plans, Subscriptions, FeatureLimits | 5 | ✅ Complete |
+| Module      | Scope                                       | Tests | Status      |
+| ----------- | ------------------------------------------- | ----- | ----------- |
+| **Catalog** | Categories, Products, Tables, ToppingGroups | 12    | ✅ Complete |
+| **Sales**   | Orders, OrderItems                          | 6     | ✅ Complete |
+| **Billing** | Plans, Subscriptions, FeatureLimits         | 5     | ✅ Complete |
 
 **Total: 36+ passing unit tests across command handlers and services**
 
@@ -172,6 +172,7 @@ var createOrderDto = new ManagementCreateOrderDtoBuilder()
 ```
 
 **Available Builders:**
+
 - **Catalog**: CategoryBuilder, ProductBuilder, TableBuilder, ToppingGroupBuilder, ...
 - **Sales**: OrderBuilder, OrderItemBuilder, OrderCreationDtoBuilder, ...
 - **Billing**: PlanBuilder, SubscriptionBuilder, TransactionBuilder, ...
@@ -190,6 +191,7 @@ var mapperMock = CatalogServiceMocks.CreateMapperMock();
 ```
 
 **Available Mocks:**
+
 - `CatalogRepositoryMocks` — Category, Product, Table repositories
 - `CatalogServiceMocks` — Mapper, notification services
 - `SalesRepositoryMocks` — Order, OrderItem repositories
@@ -240,7 +242,7 @@ public async Task Handle_CategoryNotFound_ShouldThrowNotFoundException()
 {
     var command = new DeleteCategoryCommand(nonExistentId);
     _categoryRepo.Setup(x => x.GetByIdAsync(...)).ReturnsAsync((Category?)null);
-    
+
     await Assert.ThrowsAsync<NotFoundException>(
         () => _handler.Handle(command, CancellationToken.None)
     );
@@ -258,9 +260,9 @@ public async Task Handle_DifferentMerchant_ShouldThrowForbiddenException()
     var otherMerchantId = Guid.NewGuid();
     var category = new CategoryBuilder().WithMerchantId(_fixture.MerchantId).Build();
     var command = new UpdateCategoryCommand(category.Id, updateDto) { MerchantId = otherMerchantId };
-    
+
     _categoryRepo.Setup(x => x.GetByIdAsync(...)).ReturnsAsync(category);
-    
+
     await Assert.ThrowsAsync<ForbiddenException>(
         () => _handler.Handle(command, CancellationToken.None)
     );
@@ -279,10 +281,10 @@ public async Task Handle_CancelOrder_ShouldMarkAllItemsSold()
     var item1 = new OrderItemBuilder().WithStatus(OrderItemStatus.Pending).Build();
     var item2 = new OrderItemBuilder().WithStatus(OrderItemStatus.Preparing).Build();
     order.AddItem(item1).AddItem(item2);
-    
+
     var command = new CloseOrderCommand(order.Id, OrderStatus.Cancelled);
     var result = await _handler.Handle(command, CancellationToken.None);
-    
+
     item1.Status.Should().Be(OrderItemStatus.Cancelled);
     item2.Status.Should().Be(OrderItemStatus.Cancelled);
     order.TotalAmount.Should().Be(0m);
@@ -299,9 +301,9 @@ public async Task Handle_WhenOrderCreated_ShouldNotifyStateChange()
 {
     var command = new StorefrontCreateOrderCommand(...);
     var mockNotificationService = new Mock<IOrderNotificationService>();
-    
+
     var result = await _handler.Handle(command, CancellationToken.None);
-    
+
     mockNotificationService.Verify(
         x => x.NotifyOrderUpdatedAsync(
             _fixture.MerchantId,
@@ -319,11 +321,13 @@ public async Task Handle_WhenOrderCreated_ShouldNotifyStateChange()
 ## Running Tests
 
 ### Run All Tests
+
 ```bash
 dotnet test tests/QRDine.Application.Tests/
 ```
 
 ### Run Tests by Module
+
 ```bash
 # Catalog tests only
 dotnet test tests/QRDine.Application.Tests/ --filter "Catalog"
@@ -333,11 +337,13 @@ dotnet test tests/QRDine.Application.Tests/ --filter "Sales"
 ```
 
 ### Run Specific Test Class
+
 ```bash
 dotnet test tests/QRDine.Application.Tests/ --filter "CreateCategoryCommandHandlerTests"
 ```
 
 ### Run with Coverage
+
 ```bash
 dotnet test tests/QRDine.Application.Tests/ --collect:"XPlat Code Coverage"
 ```
@@ -347,6 +353,7 @@ dotnet test tests/QRDine.Application.Tests/ --collect:"XPlat Code Coverage"
 ## Best Practices
 
 ✅ **DO:**
+
 - Use builders for all test data setup
 - Follow AAA pattern (Arrange, Act, Assert)
 - Test one scenario per test method
@@ -357,6 +364,7 @@ dotnet test tests/QRDine.Application.Tests/ --collect:"XPlat Code Coverage"
 - Use fixtures for consistent GUIDs across tests
 
 ❌ **DON'T:**
+
 - Test internal implementation (test behavior, not implementation)
 - Create circular dependencies between test classes
 - Use `Thread.Sleep()` for async wait
