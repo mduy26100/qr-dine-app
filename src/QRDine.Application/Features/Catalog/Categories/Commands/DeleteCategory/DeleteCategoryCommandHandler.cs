@@ -30,7 +30,8 @@ namespace QRDine.Application.Features.Catalog.Categories.Commands.DeleteCategory
                 throw new BusinessRuleException("Cannot delete this category because it contains active products. Please remove the products first.");
             }
 
-            await _categoryRepository.DeleteAsync(existingCategory, cancellationToken);
+            existingCategory.IsDeleted = true; 
+            await _categoryRepository.UpdateAsync(existingCategory, cancellationToken);
         }
     }
 }
