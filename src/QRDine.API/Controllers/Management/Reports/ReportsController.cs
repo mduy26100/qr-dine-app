@@ -3,6 +3,7 @@ using QRDine.API.Constants;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Queries.GetRevenueSummary;
 using QRDine.Application.Features.Reports.Queries.GetRevenueChart;
+using QRDine.Application.Features.Reports.Queries.GetProductPerformance;
 using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -39,6 +40,17 @@ namespace QRDine.API.Controllers.Management.Reports
         public async Task<IActionResult> GetRevenueChart([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] RevenueChartGrouping grouping, CancellationToken cancellationToken)
         {
             var query = new GetRevenueChartQuery(startDate, endDate, grouping);
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [HttpGet("product-performance")]
+        [CheckFeatureLimit(FeatureType.AdvancedReports)]
+        [ProducesResponseType(typeof(IEnumerable<ProductPerformanceDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProductPerformance([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] ProductPerformanceSortBy sortBy, [FromQuery] int top = 10, CancellationToken cancellationToken = default)
+        {
+            var query = new GetProductPerformanceQuery(startDate, endDate, sortBy, top);
             var result = await _mediator.Send(query, cancellationToken);
 
             return Ok(result);
