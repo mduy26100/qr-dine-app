@@ -1,16 +1,15 @@
+using QRDine.Application.Features.Reports.DTOs;
+using QRDine.Application.Features.Reports.Extensions;
 using QRDine.Domain.Sales;
 
 namespace QRDine.Application.Features.Reports.Specifications
 {
-    public class ProductPerformanceOrdersSpec : Specification<Order>
+    public class ProductPerformanceOrdersSpec : Specification<Order, OrderWithItemsForPerformanceDto>
     {
-        public ProductPerformanceOrdersSpec(Guid merchantId, DateTime startDate, DateTime endDate)
+        public ProductPerformanceOrdersSpec(DateTime startDate, DateTime endDate)
         {
-            Query.Where(o => o.MerchantId == merchantId
-                          && o.CreatedAt >= startDate
-                          && o.CreatedAt <= endDate
-                          && !o.IsDeleted)
-                 .Include(o => o.OrderItems);
+            Query.Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate);
+            Query.Select(ReportExtensions.ToOrderWithItemsForPerformanceDto);
         }
     }
 }

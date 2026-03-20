@@ -1,17 +1,15 @@
+using QRDine.Application.Features.Reports.DTOs;
+using QRDine.Application.Features.Reports.Extensions;
 using QRDine.Domain.Sales;
 
 namespace QRDine.Application.Features.Reports.Specifications
 {
-    public class ToppingAnalyticsOrdersSpec : Specification<Order>
+    public class ToppingAnalyticsOrdersSpec : Specification<Order, OrderWithItemsForToppingDto>
     {
-        public ToppingAnalyticsOrdersSpec(Guid merchantId, DateTime startDate, DateTime endDate)
+        public ToppingAnalyticsOrdersSpec(DateTime startDate, DateTime endDate)
         {
-            Query
-                .Where(o => o.MerchantId == merchantId
-                    && o.CreatedAt >= startDate
-                    && o.CreatedAt <= endDate
-                    && !o.IsDeleted)
-                .Include(o => o.OrderItems);
+            Query.Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate);
+            Query.Select(ReportExtensions.ToOrderWithItemsForToppingDto);
         }
     }
 }

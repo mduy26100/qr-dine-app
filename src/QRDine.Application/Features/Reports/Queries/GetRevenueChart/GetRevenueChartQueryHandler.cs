@@ -1,4 +1,3 @@
-using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
@@ -9,26 +8,16 @@ namespace QRDine.Application.Features.Reports.Queries.GetRevenueChart
     public class GetRevenueChartQueryHandler : IRequestHandler<GetRevenueChartQuery, IEnumerable<RevenueChartItemDto>>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ICurrentUserService _currentUserService;
 
-        public GetRevenueChartQueryHandler(
-            IOrderRepository orderRepository,
-            ICurrentUserService currentUserService)
+        public GetRevenueChartQueryHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _currentUserService = currentUserService;
         }
 
         public async Task<IEnumerable<RevenueChartItemDto>> Handle(
             GetRevenueChartQuery request,
             CancellationToken cancellationToken)
         {
-            var merchantId = _currentUserService.MerchantId;
-            if (!merchantId.HasValue)
-            {
-                return Enumerable.Empty<RevenueChartItemDto>();
-            }
-
             var spec = new RevenueOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 

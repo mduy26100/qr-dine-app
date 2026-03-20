@@ -13,5 +13,40 @@ namespace QRDine.Application.Features.Reports.Extensions
                 Status = o.Status.ToString(),
                 CreatedAt = o.CreatedAt
             };
+
+        public static Expression<Func<Order, OrderWithItemsForPerformanceDto>> ToOrderWithItemsForPerformanceDto =>
+            o => new OrderWithItemsForPerformanceDto
+            {
+                OrderItems = o.OrderItems
+                    .Select(oi => new OrderItemForPerformanceDto
+                    {
+                        ProductId = oi.ProductId,
+                        ProductName = oi.ProductName,
+                        Quantity = oi.Quantity,
+                        Amount = oi.Amount,
+                        Status = oi.Status.ToString(),
+                        IsDeleted = oi.IsDeleted
+                    })
+                    .ToList()
+            };
+
+        public static Expression<Func<Order, OrderWithItemsForToppingDto>> ToOrderWithItemsForToppingDto =>
+            o => new OrderWithItemsForToppingDto
+            {
+                OrderItems = o.OrderItems
+                    .Select(oi => new OrderItemForToppingDto
+                    {
+                        Quantity = oi.Quantity,
+                        ToppingsSnapshot = oi.ToppingsSnapshot
+                    })
+                    .ToList()
+            };
+
+        public static Expression<Func<Order, OrderForTrafficHeatmapDto>> ToOrderForTrafficHeatmapDto =>
+            o => new OrderForTrafficHeatmapDto
+            {
+                CreatedAt = o.CreatedAt
+            };
     }
 }
+

@@ -1,4 +1,4 @@
-using QRDine.Application.Common.Abstractions.Identity;
+using System.Text.Json;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Orders.DTOs;
@@ -9,27 +9,17 @@ namespace QRDine.Application.Features.Reports.Queries.GetToppingAnalytics
     public class GetToppingAnalyticsQueryHandler : IRequestHandler<GetToppingAnalyticsQuery, IEnumerable<ToppingAnalyticsDto>>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ICurrentUserService _currentUserService;
 
-        public GetToppingAnalyticsQueryHandler(
-            IOrderRepository orderRepository,
-            ICurrentUserService currentUserService)
+        public GetToppingAnalyticsQueryHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _currentUserService = currentUserService;
         }
 
         public async Task<IEnumerable<ToppingAnalyticsDto>> Handle(
             GetToppingAnalyticsQuery request,
             CancellationToken cancellationToken)
         {
-            var merchantId = _currentUserService.MerchantId;
-            if (!merchantId.HasValue)
-            {
-                return Enumerable.Empty<ToppingAnalyticsDto>();
-            }
-
-            var spec = new ToppingAnalyticsOrdersSpec(merchantId.Value, request.StartDate, request.EndDate);
+            var spec = new ToppingAnalyticsOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 
             var toppingData = new Dictionary<(Guid Id, string Name), (int Count, decimal Revenue)>();

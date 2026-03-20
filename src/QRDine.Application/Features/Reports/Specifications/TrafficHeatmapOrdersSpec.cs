@@ -1,16 +1,15 @@
+using QRDine.Application.Features.Reports.DTOs;
+using QRDine.Application.Features.Reports.Extensions;
 using QRDine.Domain.Sales;
 
 namespace QRDine.Application.Features.Reports.Specifications
 {
-    public class TrafficHeatmapOrdersSpec : Specification<Order>
+    public class TrafficHeatmapOrdersSpec : Specification<Order, OrderForTrafficHeatmapDto>
     {
-        public TrafficHeatmapOrdersSpec(Guid merchantId, DateTime startDate, DateTime endDate)
+        public TrafficHeatmapOrdersSpec(DateTime startDate, DateTime endDate)
         {
-            Query
-                .Where(o => o.MerchantId == merchantId
-                    && o.CreatedAt >= startDate
-                    && o.CreatedAt <= endDate
-                    && !o.IsDeleted);
+            Query.Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate);
+            Query.Select(ReportExtensions.ToOrderForTrafficHeatmapDto);
         }
     }
 }

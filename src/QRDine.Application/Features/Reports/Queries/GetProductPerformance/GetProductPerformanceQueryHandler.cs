@@ -1,4 +1,3 @@
-using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
@@ -9,32 +8,22 @@ namespace QRDine.Application.Features.Reports.Queries.GetProductPerformance
     public class GetProductPerformanceQueryHandler : IRequestHandler<GetProductPerformanceQuery, IEnumerable<ProductPerformanceDto>>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ICurrentUserService _currentUserService;
 
-        public GetProductPerformanceQueryHandler(
-            IOrderRepository orderRepository,
-            ICurrentUserService currentUserService)
+        public GetProductPerformanceQueryHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _currentUserService = currentUserService;
         }
 
         public async Task<IEnumerable<ProductPerformanceDto>> Handle(
             GetProductPerformanceQuery request,
             CancellationToken cancellationToken)
         {
-            var merchantId = _currentUserService.MerchantId;
-            if (!merchantId.HasValue)
-            {
-                return Enumerable.Empty<ProductPerformanceDto>();
-            }
-
-            var spec = new ProductPerformanceOrdersSpec(merchantId.Value, request.StartDate, request.EndDate);
+            var spec = new ProductPerformanceOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 
             var products = orders
                 .SelectMany(o => o.OrderItems)
-                .Where(oi => !oi.IsDeleted && oi.Status != OrderItemStatus.Cancelled)
+                .Where(oi => !oi.IsDeleted && oi.Status != OrderItemStatus.Cancelled.ToString())
                 .GroupBy(oi => new { oi.ProductId, oi.ProductName })
                 .Select(g => new ProductPerformanceDto
                 {

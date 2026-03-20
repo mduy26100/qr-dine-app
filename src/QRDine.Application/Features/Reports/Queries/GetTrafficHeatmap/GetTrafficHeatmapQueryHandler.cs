@@ -1,4 +1,3 @@
-using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Features.Reports.DTOs;
 using QRDine.Application.Features.Reports.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
@@ -8,27 +7,17 @@ namespace QRDine.Application.Features.Reports.Queries.GetTrafficHeatmap
     public class GetTrafficHeatmapQueryHandler : IRequestHandler<GetTrafficHeatmapQuery, IEnumerable<TrafficHeatmapDto>>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ICurrentUserService _currentUserService;
 
-        public GetTrafficHeatmapQueryHandler(
-            IOrderRepository orderRepository,
-            ICurrentUserService currentUserService)
+        public GetTrafficHeatmapQueryHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _currentUserService = currentUserService;
         }
 
         public async Task<IEnumerable<TrafficHeatmapDto>> Handle(
             GetTrafficHeatmapQuery request,
             CancellationToken cancellationToken)
         {
-            var merchantId = _currentUserService.MerchantId;
-            if (!merchantId.HasValue)
-            {
-                return Enumerable.Empty<TrafficHeatmapDto>();
-            }
-
-            var spec = new TrafficHeatmapOrdersSpec(merchantId.Value, request.StartDate, request.EndDate);
+            var spec = new TrafficHeatmapOrdersSpec(request.StartDate, request.EndDate);
             var orders = await _orderRepository.ListAsync(spec, cancellationToken);
 
             var heatmap = orders
