@@ -1,5 +1,7 @@
-﻿using QRDine.Application.Common.Abstractions.Identity;
+﻿using QRDine.Application.Common.Abstractions.Caching;
+using QRDine.Application.Common.Abstractions.Identity;
 using QRDine.Application.Common.Abstractions.Persistence;
+using QRDine.Application.Common.Constants;
 using QRDine.Application.Common.Exceptions;
 using QRDine.Domain.Billing;
 using QRDine.Domain.Catalog;
@@ -19,10 +21,12 @@ namespace QRDine.Infrastructure.Persistence
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext
     {
         private readonly ICurrentUserService _currentUserService = null!;
+        private readonly ICacheService _cacheService = null!;
 
-        public ApplicationDbContext(DbContextOptions options, ICurrentUserService currentUserService) : base(options)
+        public ApplicationDbContext(DbContextOptions options, ICurrentUserService currentUserService, ICacheService cacheService) : base(options)
         {
             _currentUserService = currentUserService;
+            _cacheService = cacheService;
         }
 
         protected ApplicationDbContext()
@@ -106,9 +110,22 @@ namespace QRDine.Infrastructure.Persistence
                 }
             }
 
+            var hasCatalogChanges = ChangeTracker.Entries()
+                .Any(e =>
+                    (e.State == EntityState.Added || e.State == EntityState.Modified || e.State == EntityState.Deleted) &&
+                    (e.Entity is Category || e.Entity is Product || e.Entity is ToppingGroup || e.Entity is Topping || e.Entity is ProductToppingGroup));
+
             try
             {
-                return await base.SaveChangesAsync(cancellationToken);
+                var result = await base.SaveChangesAsync(cancellationToken);
+
+                if (hasCatalogChanges && result > 0 && merchantId.HasValue)
+                {
+                    var cacheKey = CacheKeys.StorefrontMenu(merchantId.Value);
+                    await _cacheService.RemoveAsync(cacheKey, cancellationToken);
+                }
+
+                return result;
             }
             catch (DbUpdateConcurrencyException ex)
             {
