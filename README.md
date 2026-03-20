@@ -58,7 +58,7 @@ graph TD
 
 ## Domain Modules
 
-| Module       | Entities                                        | Status      | Tests | Documentation                              |
+| Module       | Entities / Data Sources                         | Status      | Tests | Documentation                              |
 | ------------ | ----------------------------------------------- | ----------- | ----- | ------------------------------------------ |
 | **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete | ✅ 12 | [Catalog Module](docs/features/catalog/)   |
 | **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete | 🔄    | [Identity Module](docs/features/identity/) |
@@ -66,6 +66,7 @@ graph TD
 | **Sales**    | Order, OrderItem                                | ✅ Complete | ✅ 6  | [Sales Module](docs/features/sales/)       |
 | **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete | ✅ 5  | [Billing Module](docs/features/billing/)   |
 | **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete | 🔄    | [Staffs Module](docs/features/staffs/)     |
+| **Reports**  | Order (read-only), OrderItem (read-only)        | ✅ Complete | 🔄    | [Reports Module](docs/features/reports/)   |
 
 **Test Status:** ✅ Complete | 🔄 Planned | 🟡 In Progress
 **Total: 36+ unit tests** covering command handlers and service layers
@@ -166,6 +167,7 @@ On first run, the system automatically seeds:
 | **Having issues?**               | [👉 Troubleshooting](docs/troubleshooting.md)             |
 | **Multi-tenancy questions?**     | [👉 Database & Multi-Tenancy](docs/database/)             |
 | **Security concerns?**           | [👉 Security Overview](docs/security/)                    |
+| **Looking for analytics?**       | [👉 Reports Module](docs/features/reports/)               |
 
 ---
 
@@ -211,6 +213,7 @@ Each feature module is fully documented with use cases and implementation detail
 - [💳 Billing Module](docs/features/billing/) — Subscription plans, feature limits
 - [🏢 Tenant Module](docs/features/tenant/) — Multi-tenancy, merchant isolation
 - [👥 Staffs Module](docs/features/staffs/) — Staff management, permissions, performance
+- [📊 Reports Module](docs/features/reports/) — Analytics, KPIs, business intelligence
 
 **Quick reference:** [Features Overview](docs/features/) for all modules
 

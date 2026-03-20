@@ -92,6 +92,22 @@ Staff member management within merchant accounts.
 
 ---
 
+### [Reports Module](reports/)
+
+Business intelligence and analytics for merchants.
+
+- Revenue summary with KPI trends
+- Revenue chart with flexible grouping (hourly, daily, monthly)
+- Product performance ranking by revenue or volume
+- Topping analytics - most popular customization options
+- Traffic heatmap - order patterns by day and hour
+
+**Key data sources:** Order, OrderItem (read-only queries)  
+**Use case:** Merchants analyze sales performance, identify trends, optimize staffing  
+[Learn more →](reports/)
+
+---
+
 ## Module Organization
 
 ```
@@ -101,7 +117,8 @@ Features/
 ├── Identity/          → Login, Register, Token management
 ├── Billing/           → Plans, Subscriptions, Feature limits
 ├── Tenant/            → Merchant data
-└── Staffs/            → Staff management
+├── Staffs/            → Staff management
+└── Reports/           → Analytics, KPIs, Business Intelligence
 ```
 
 Each module is self-contained and contains:
