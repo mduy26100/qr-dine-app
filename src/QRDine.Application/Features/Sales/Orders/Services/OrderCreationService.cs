@@ -8,6 +8,7 @@ using QRDine.Application.Features.Sales.Orders.Specifications;
 using QRDine.Application.Features.Sales.Repositories;
 using QRDine.Domain.Enums;
 using QRDine.Domain.Sales;
+using System.Text.Json;
 
 namespace QRDine.Application.Features.Sales.Orders.Services
 {
@@ -40,10 +41,10 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             if (table.IsOccupied)
             {
                 if (!model.SessionId.HasValue)
-                    throw new ConflictException("Bàn này đang có khách. Bắt buộc phải truyền SessionId để gọi thêm món. Vui lòng tải lại trang!");
+                    throw new ConflictException("Bàn này đang có khách. Bắt buộc phải truyền SessionId để gọi thêm món.");
 
                 if (model.SessionId.Value != table.CurrentSessionId)
-                    throw new ConflictException("SessionId không khớp với phiên ăn hiện tại của bàn. Vui lòng tải lại trang để tránh nhầm bill!");
+                    throw new ConflictException("SessionId không khớp với phiên ăn hiện tại. Vui lòng tải lại trang để tránh nhầm bill!");
 
                 activeSessionId = table.CurrentSessionId.Value;
             }
@@ -53,7 +54,7 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             }
 
             var productIds = model.Items.Select(x => x.ProductId).Distinct().ToList();
-            var productSpec = new GetProductsByIdsSpec(model.MerchantId, productIds);
+            var productSpec = new GetProductsWithToppingsByIdsSpec(model.MerchantId, productIds);
             var products = await _productRepository.ListAsync(productSpec, cancellationToken);
 
             if (products.Count != productIds.Count)
@@ -84,13 +85,9 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                     if (!string.IsNullOrWhiteSpace(model.Note))
                     {
                         if (string.IsNullOrWhiteSpace(existingOrder.Note))
-                        {
                             existingOrder.Note = model.Note;
-                        }
                         else if (!existingOrder.Note.Contains(model.Note))
-                        {
                             existingOrder.Note += $" | Lần gọi thêm: {model.Note}";
-                        }
                     }
 
                     if (string.IsNullOrWhiteSpace(existingOrder.CustomerName) && !string.IsNullOrWhiteSpace(model.CustomerName))
@@ -99,7 +96,8 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                     if (string.IsNullOrWhiteSpace(existingOrder.CustomerPhone) && !string.IsNullOrWhiteSpace(model.CustomerPhone))
                         existingOrder.CustomerPhone = model.CustomerPhone;
 
-                    AddItems(existingOrder, model, products);
+                    ValidateAndAddItems(existingOrder, model, products);
+
                     await _orderRepository.UpdateAsync(existingOrder, cancellationToken);
                     orderToReturn = existingOrder;
                 }
@@ -119,7 +117,8 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                         TotalAmount = 0
                     };
 
-                    AddItems(order, model, products);
+                    ValidateAndAddItems(order, model, products);
+
                     await _orderRepository.AddAsync(order, cancellationToken);
                     orderToReturn = order;
                 }
@@ -132,7 +131,7 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             catch (ConcurrencyException)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                throw new ConflictException("Bàn này vừa được mở Order bởi một khách hàng khác. Vui lòng tải lại trang để gọi chung hóa đơn!");
+                throw new ConflictException("Bàn này vừa được mở Order bởi một khách hàng khác.");
             }
             catch (Exception)
             {
@@ -141,17 +140,59 @@ namespace QRDine.Application.Features.Sales.Orders.Services
             }
         }
 
-        private void AddItems(Order order, OrderCreationDto model, List<ProductPriceDto> products)
+        private void ValidateAndAddItems(Order order, OrderCreationDto model, List<ProductWithToppingsDto> products)
         {
             foreach (var itemModel in model.Items)
             {
                 var product = products.First(p => p.Id == itemModel.ProductId);
-                var amountToAdd = (product.Price + itemModel.ToppingSurcharge) * itemModel.Quantity;
+                if (!product.IsAvailable)
+                    throw new BadRequestException($"Món '{product.Name}' hiện đang tạm hết.");
+
+                var selectedToppings = new List<ProductToppingDto>();
+                decimal calculatedToppingSurcharge = 0;
+
+                if (itemModel.SelectedToppingIds != null && itemModel.SelectedToppingIds.Any())
+                {
+                    var allowedToppings = product.ToppingGroups
+                        .Where(tg => tg.IsActive)
+                        .SelectMany(tg => tg.Toppings)
+                        .Where(t => t.IsAvailable)
+                        .ToList();
+
+                    foreach (var tId in itemModel.SelectedToppingIds)
+                    {
+                        var topping = allowedToppings.FirstOrDefault(x => x.Id == tId);
+                        if (topping == null)
+                            throw new BadRequestException($"Lựa chọn đính kèm không hợp lệ cho món '{product.Name}'.");
+
+                        selectedToppings.Add(topping);
+                        calculatedToppingSurcharge += topping.Price;
+                    }
+                }
+
+                foreach (var group in product.ToppingGroups)
+                {
+                    if (!group.IsActive) continue;
+
+                    var selectedCountInGroup = selectedToppings.Count(t => t.ToppingGroupId == group.Id);
+
+                    if (group.IsRequired && selectedCountInGroup < group.MinSelections)
+                        throw new BadRequestException($"Vui lòng chọn ít nhất {group.MinSelections} lựa chọn cho nhóm '{group.Name}' của món '{product.Name}'.");
+
+                    if (selectedCountInGroup > group.MaxSelections)
+                        throw new BadRequestException($"Nhóm '{group.Name}' của món '{product.Name}' chỉ cho phép chọn tối đa {group.MaxSelections} lựa chọn.");
+                }
+
+                var snapshotStr = selectedToppings.Any()
+                    ? JsonSerializer.Serialize(selectedToppings.Select(t => new { t.Id, t.Name, t.Price }))
+                    : null;
+
+                var amountToAdd = (product.Price + calculatedToppingSurcharge) * itemModel.Quantity;
 
                 var existingItem = order.OrderItems.FirstOrDefault(oi =>
                     oi.Status == OrderItemStatus.Pending &&
                     oi.ProductId == product.Id &&
-                    oi.ToppingsSnapshot == itemModel.ToppingsSnapshot &&
+                    oi.ToppingsSnapshot == snapshotStr &&
                     oi.Note == itemModel.Note);
 
                 if (existingItem != null)
@@ -166,7 +207,7 @@ namespace QRDine.Application.Features.Sales.Orders.Services
                         ProductId = product.Id,
                         ProductName = product.Name,
                         UnitPrice = product.Price,
-                        ToppingsSnapshot = itemModel.ToppingsSnapshot,
+                        ToppingsSnapshot = snapshotStr,
                         Quantity = itemModel.Quantity,
                         Amount = amountToAdd,
                         Status = OrderItemStatus.Pending,

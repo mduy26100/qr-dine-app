@@ -4,16 +4,15 @@ using QRDine.Domain.Catalog;
 
 namespace QRDine.Application.Features.Catalog.Products.Specifications
 {
-    public class GetProductsByIdsSpec : Specification<Product, ProductPriceDto>, ISingleResultSpecification<Product, ProductPriceDto>
+    public class GetProductsWithToppingsByIdsSpec : Specification<Product, ProductWithToppingsDto>
     {
-        public GetProductsByIdsSpec(Guid merchantId, IEnumerable<Guid> productIds)
+        public GetProductsWithToppingsByIdsSpec(Guid merchantId, IEnumerable<Guid> productIds)
         {
             Query.Where(p => p.MerchantId == merchantId
                           && productIds.Contains(p.Id)
-                          && p.IsAvailable
                           && !p.IsDeleted);
 
-            Query.Select(ProductExtensions.ToProductPriceDto);
+            Query.Select(ProductWithToppingsExtensions.ToProductWithToppingsDto);
         }
     }
 }

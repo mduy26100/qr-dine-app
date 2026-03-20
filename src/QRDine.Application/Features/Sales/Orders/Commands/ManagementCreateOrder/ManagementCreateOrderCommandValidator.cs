@@ -36,12 +36,6 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.ManagementCreateOrde
             RuleFor(x => x.Quantity)
                 .GreaterThan(0).WithMessage("Số lượng món ăn phải lớn hơn 0.");
 
-            RuleFor(x => x.ToppingSurcharge)
-                .GreaterThanOrEqualTo(0).WithMessage("Phụ phí Topping không được là số âm.");
-
-            RuleFor(x => x.ToppingsSnapshot)
-                .MaximumLength(1000).WithMessage("Chuỗi Topping không được vượt quá 1000 ký tự.");
-
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("Ghi chú món ăn không được vượt quá 500 ký tự.");
         }

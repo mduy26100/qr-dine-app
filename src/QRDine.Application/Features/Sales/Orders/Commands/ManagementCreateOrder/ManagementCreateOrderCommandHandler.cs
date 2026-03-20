@@ -42,8 +42,7 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.ManagementCreateOrde
                 {
                     ProductId = i.ProductId,
                     Quantity = i.Quantity,
-                    ToppingsSnapshot = i.ToppingsSnapshot,
-                    ToppingSurcharge = i.ToppingSurcharge,
+                    SelectedToppingIds = i.SelectedToppingIds ?? new List<Guid>(),
                     Note = i.Note
                 }).ToList()
             };

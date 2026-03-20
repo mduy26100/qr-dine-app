@@ -36,14 +36,12 @@ namespace QRDine.Application.Features.Sales.Orders.Commands.StorefrontCreateOrde
                 {
                     ProductId = i.ProductId,
                     Quantity = i.Quantity,
-                    ToppingsSnapshot = i.ToppingsSnapshot,
-                    ToppingSurcharge = i.ToppingSurcharge,
+                    SelectedToppingIds = i.SelectedToppingIds ?? new List<Guid>(),
                     Note = i.Note
                 }).ToList()
             };
 
             var order = await _orderCreationService.CreateOrAppendOrderAsync(orderModel, cancellationToken);
-
 
             _ = _notificationService.NotifyOrderUpdatedAsync(
                 request.MerchantId,
