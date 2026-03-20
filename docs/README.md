@@ -45,6 +45,7 @@ Complete technical documentation for the QRDine multi-tenant SaaS backend.
 | Need                        | Link                                              |
 | --------------------------- | ------------------------------------------------- |
 | First time setup?           | [Getting Started](development/getting-started.md) |
+| Want to write tests?        | [Unit Testing Guide](development/testing/)        |
 | Understanding architecture? | [Architecture Overview](architecture/)            |
 | API usage?                  | [API Reference](api/)                             |
 | Setting up dev environment? | [Development Setup](development/)                 |
@@ -87,17 +88,18 @@ Complete technical documentation for the QRDine multi-tenant SaaS backend.
 
 ## 🔍 Document Index
 
-| Document          | Purpose                     | Audience               |
-| ----------------- | --------------------------- | ---------------------- |
-| Getting Started   | Local setup steps           | Developers             |
-| Architecture      | System design & patterns    | Architects, Developers |
-| Project Structure | Folder organization         | All                    |
-| Development       | Coding standards & patterns | Developers             |
-| Database          | Schema & multi-tenancy      | DBAs, Developers       |
-| API Reference     | Endpoint documentation      | Backend, Frontend      |
-| Security          | Auth, RBAC, data isolation  | Architects, DevOps     |
-| Configuration     | Environment setup           | DevOps, Developers     |
-| Deployment        | Build, deploy, CI/CD        | DevOps, Developers     |
+| Document          | Purpose                              | Audience               |
+| ----------------- | ------------------------------------ | ---------------------- |
+| Getting Started   | Local setup steps                    | Developers             |
+| Unit Testing      | Test patterns, infrastructure, guide | Developers             |
+| Architecture      | System design & patterns             | Architects, Developers |
+| Project Structure | Folder organization                  | All                    |
+| Development       | Coding standards & patterns          | Developers             |
+| Database          | Schema & multi-tenancy               | DBAs, Developers       |
+| API Reference     | Endpoint documentation               | Backend, Frontend      |
+| Security          | Auth, RBAC, data isolation           | Architects, DevOps     |
+| Configuration     | Environment setup                    | DevOps, Developers     |
+| Deployment        | Build, deploy, CI/CD                 | DevOps, Developers     |
 | Troubleshooting   | Common issues               | All                    |
 | Features          | Module overview             | Product, Developers    |
 

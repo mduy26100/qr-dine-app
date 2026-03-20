@@ -5,6 +5,7 @@
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver)
 ![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?logo=redis)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-Image%20Upload-3448C5)
+![Tests](https://img.shields.io/badge/Tests-36%2B%20Passing-brightgreen?logo=xunit)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 **QR Dine API** is a modern **multi-tenant SaaS backend** built to power QR-based digital menu systems for restaurants, cafés, and retail stores.
@@ -57,16 +58,17 @@ graph TD
 
 ## Domain Modules
 
-| Module       | Entities                                        | Status            | Documentation                              |
-| ------------ | ----------------------------------------------- | ----------------- | ------------------------------------------ |
-| **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete       | [Catalog Module](docs/features/catalog/)   |
-| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete       | [Identity Module](docs/features/identity/) |
-| **Tenant**   | Merchant                                        | ✅ Complete       | [Tenant Module](docs/features/tenant/)     |
-| **Sales**    | Order, OrderItem                                | 🟡 In Development | [Sales Module](docs/features/sales/)       |
-| **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete       | [Billing Module](docs/features/billing/)   |
-| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete       | [Staffs Module](docs/features/staffs/)     |
+| Module       | Entities                                        | Status            | Tests | Documentation                              |
+| ------------ | ----------------------------------------------- | ----------------- | ----- | ------------------------------------------ |
+| **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete       | ✅ 12 | [Catalog Module](docs/features/catalog/)   |
+| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete       | 🔄   | [Identity Module](docs/features/identity/) |
+| **Tenant**   | Merchant                                        | ✅ Complete       | 🔄   | [Tenant Module](docs/features/tenant/)     |
+| **Sales**    | Order, OrderItem                                | 🟡 In Development | ✅ 6  | [Sales Module](docs/features/sales/)       |
+| **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete       | ✅ 5  | [Billing Module](docs/features/billing/)   |
+| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete       | 🔄   | [Staffs Module](docs/features/staffs/)     |
 
----
+**Test Status:** ✅ Complete | 🔄 Planned | 🟡 In Progress
+**Total: 36+ unit tests** covering command handlers and service layers
 
 ## API Groups
 
@@ -156,6 +158,7 @@ On first run, the system automatically seeds:
 | Need                             | Link                                                      |
 | -------------------------------- | --------------------------------------------------------- |
 | **First time setup?**            | [👉 Getting Started](docs/development/getting-started.md) |
+| **Writing unit tests?**          | [👉 Unit Testing Guide](docs/development/testing/)        |
 | **Understanding the codebase?**  | [👉 Architecture Overview](docs/architecture/)            |
 | **Looking for an API endpoint?** | [👉 API Reference](docs/api/)                             |
 | **Working on a feature?**        | [👉 Development Guidelines](docs/development/)            |
@@ -186,7 +189,8 @@ Complete technical documentation is organized in the [`docs/`](docs/) directory 
 
 **Development**
 
-- [💻 Development Guidelines](docs/development/) — CQRS patterns, coding standards, testing
+- [💻 Development Guidelines](docs/development/) — CQRS patterns, coding standards
+- [🧪 Unit Testing Guide](docs/development/testing/) — Test infrastructure, patterns, 36+ passing tests
 - [⚙️ Configuration Guide](docs/configuration/) — Environment setup, secrets management
 - [🔌 API Reference](docs/api/) — Endpoints, response formats, authentication
 
@@ -246,6 +250,13 @@ qr-dine-app/
 │       ├── ExternalServices/      # Cloudinary
 │       ├── Identity/              # ASP.NET Identity, JWT
 │       └── Persistence/           # DbContext, EF configs, migrations, seeding
+├── tests/
+│   └── QRDine.Application.Tests/  # 36+ unit tests (xUnit, Moq, FluentAssertions)
+│       ├── Features/              # Test files organized by module
+│       │   ├── Catalog/           # 12 Catalog tests
+│       │   ├── Sales/             # 6 Sales tests
+│       │   └── Billing/           # 5 Billing tests
+│       └── Common/                # Builders, Mocks, Fixtures
 ├── docs/                          # Technical documentation
 └── QRDine.sln
 ```

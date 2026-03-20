@@ -19,8 +19,13 @@ Development guidelines, coding standards, and patterns.
   - FluentValidation pattern
   - Exception handling hierarchy
   - Controller pattern (thin controllers)
-  - Testing guidelines
   - Async/await best practices
+
+- **[Unit Testing Guide](testing/)** — Complete testing documentation and patterns:
+  - [Quick Start](testing/README.md) — Test infrastructure, builders, mocks, quick examples
+  - [Complete Testing Guide](testing/testing-guide.md) — Deep dive into all patterns, advanced scenarios, contributing
+  - 36+ passing tests across Catalog, Sales, and Billing modules
+  - Command handler patterns, service layer tests, mocking strategies
 
 ## Deployment
 
@@ -38,7 +43,9 @@ Ready to deploy? See [Deployment Guides](../deployment/):
 - DTOs? → [Development Guidelines - DTO Organization](local-setup.md#dto-organization)
 - Validation? → [Development Guidelines - Validation](local-setup.md#validation)
 - Exception handling? → [Development Guidelines - Exceptions](local-setup.md#exception-handling)
-- Testing? → [Development Guidelines - Testing](local-setup.md#testing-guidelines)
+- **Writing tests?** → [Unit Testing Guide](testing/)
+- **Test quick start?** → [Testing README](testing/README.md)
+- **Advanced patterns?** → [Complete Testing Guide](testing/testing-guide.md)
 
 ## Development Workflow
 
