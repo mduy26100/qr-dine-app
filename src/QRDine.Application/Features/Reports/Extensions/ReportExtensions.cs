@@ -10,7 +10,8 @@ namespace QRDine.Application.Features.Reports.Extensions
             {
                 Id = o.Id,
                 TotalAmount = o.TotalAmount,
-                Status = o.Status.ToString()
+                Status = o.Status.ToString(),
+                CreatedAt = o.CreatedAt
             };
     }
 }
