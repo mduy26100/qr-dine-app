@@ -58,15 +58,17 @@ graph TD
 
 ## Domain Modules
 
-| Module       | Entities / Data Sources                         | Status      | Tests | Documentation                              |
-| ------------ | ----------------------------------------------- | ----------- | ----- | ------------------------------------------ |
-| **Catalog**  | Category, Product, Table, ToppingGroup, Topping | ✅ Complete | ✅ 12 | [Catalog Module](docs/features/catalog/)   |
-| **Identity** | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete | 🔄    | [Identity Module](docs/features/identity/) |
-| **Tenant**   | Merchant                                        | ✅ Complete | 🔄    | [Tenant Module](docs/features/tenant/)     |
-| **Sales**    | Order, OrderItem                                | ✅ Complete | ✅ 6  | [Sales Module](docs/features/sales/)       |
-| **Billing**  | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete | ✅ 5  | [Billing Module](docs/features/billing/)   |
-| **Staffs**   | ApplicationUser (Staff role)                    | ✅ Complete | 🔄    | [Staffs Module](docs/features/staffs/)     |
-| **Reports**  | Order (read-only), OrderItem (read-only)        | ✅ Complete | 🔄    | [Reports Module](docs/features/reports/)   |
+| Module         | Entities / Data Sources                         | Status      | Tests | Documentation                                  |
+| -------------- | ----------------------------------------------- | ----------- | ----- | ---------------------------------------------- |
+| **Catalog**    | Category, Product, Table, ToppingGroup, Topping | ✅ Complete | ✅ 12 | [Catalog Module](docs/features/catalog/)       |
+| **Identity**   | ApplicationUser, ApplicationRole, RefreshToken  | ✅ Complete | 🔄    | [Identity Module](docs/features/identity/)     |
+| **Tenant**     | Merchant                                        | ✅ Complete | 🔄    | [Tenant Module](docs/features/tenant/)         |
+| **Sales**      | Order, OrderItem                                | ✅ Complete | ✅ 6  | [Sales Module](docs/features/sales/)           |
+| **Billing**    | Plan, Subscription, FeatureLimit, Transaction   | ✅ Complete | ✅ 5  | [Billing Module](docs/features/billing/)       |
+| **Staffs**     | ApplicationUser (Staff role)                    | ✅ Complete | 🔄    | [Staffs Module](docs/features/staffs/)         |
+| **Reports**    | Order (read-only), OrderItem (read-only)        | ✅ Complete | 🔄    | [Reports Module](docs/features/reports/)       |
+| **Dashboards** | Order, OrderItem (aggregated)                   | ✅ Complete | 🔄    | [Dashboards Module](docs/features/dashboards/) |
+| **Real-Time**  | WebSocket, SignalR OrderHub                     | ✅ Complete | 🔄    | [Real-Time Module](docs/features/real-time/)   |
 
 **Test Status:** ✅ Complete | 🔄 Planned | 🟡 In Progress
 **Total: 36+ unit tests** covering command handlers and service layers
@@ -287,6 +289,8 @@ Each feature module is fully documented with use cases and implementation detail
 - [🏢 Tenant Module](docs/features/tenant/) — Multi-tenancy, merchant isolation
 - [👥 Staffs Module](docs/features/staffs/) — Staff management, permissions, performance
 - [📊 Reports Module](docs/features/reports/) — Analytics, KPIs, business intelligence
+- [📈 Dashboards Module](docs/features/dashboards/) — Real-time merchant KPI dashboard
+- [🚀 Real-Time Module](docs/features/real-time/) — WebSocket notifications, SignalR events
 
 **Quick reference:** [Features Overview](docs/features/) for all modules
 

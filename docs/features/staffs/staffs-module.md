@@ -1,53 +1,318 @@
 # Staffs Module - Complete Documentation
 
-Staff member management within merchant accounts.
+The Staffs module manages restaurant staff members, enabling merchants to list and manage their team with pagination and search capabilities. Staff members are represented using the ApplicationUser domain model with the Staff role assignment.
 
 ---
 
 ## Overview
 
-The Staffs module enables merchants to register and manage staff members (employees) within their organization. Staff members have restricted access limited to their employer merchant, creating a clear organizational hierarchy.
+Staff Management provides a single read operation (paginated listing) that enables merchants to view all staff members within their organization with flexible filtering and pagination.
+
+**Key Design:**
+
+- Leverages ApplicationUser entity (shared with Identity module)
+- Role-based identification via Staff role
+- Merchant scoped (multi-tenant isolation)
+- Expression-based DTOs (efficient database queries)
 
 ---
 
-## Staff Model
+## CQRS Query
 
-Staff members are represented by `ApplicationUser` with:
+### GetStaffsPagedQuery
 
-- `Role` = `Staff`
-- `MerchantId` = Associated merchant's ID
+**File:** `src/QRDine.Application/Features/Staffs/Queries/GetStaffsPaged/`
 
-| Property      | Type       | Purpose                 |
-| ------------- | ---------- | ----------------------- |
-| `Id`          | `Guid`     | Staff member identifier |
-| `Email`       | `string`   | Unique email address    |
-| `PhoneNumber` | `string?`  | Contact phone           |
-| `FirstName`   | `string?`  | First name              |
-| `LastName`    | `string?`  | Last name               |
-| `AvatarUrl`   | `string?`  | Profile image URL       |
-| `MerchantId`  | `Guid`     | Employer merchant ID    |
-| `IsActive`    | `bool`     | Employment status       |
-| `CreatedAt`   | `DateTime` | Hire date               |
+Retrieves paginated, filterable list of staff members for a merchant.
+
+**Request:**
+
+```csharp
+public class GetStaffsPagedQuery : PaginationRequest, IRequest<PagedResult<StaffDto>>
+{
+    public string? SearchTerm { get; set; }  // Optional search filter
+    public int PageNumber { get; set; } = 1;  // Default: 1
+    public int PageSize { get; set; } = 10;   // Default: 10, Max: 50
+}
+```
+
+**Response:**
+
+```csharp
+public class PagedResult<StaffDto>
+{
+    public List<StaffDto> Items { get; set; }
+    public int TotalCount { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+    public int TotalPages { get; set; }
+    public bool HasPreviousPage { get; set; }
+    public bool HasNextPage { get; set; }
+}
+```
+
+**Handler Logic:**
+
+1. Extract current user's `MerchantId` from `ICurrentUserService`
+2. Validate MerchantId is not null (throws if null)
+3. Call `IStaffService.GetStaffsPagedAsync(merchantId, query)`
+4. Return `PagedResult<StaffDto>`
+
+**Authentication:** Requires `Merchant` role  
+**Authorization:** Automatically scoped to current user's merchant  
+**Validation:**
+
+- `PageNumber` > 0
+- `PageSize` between 1-50
 
 ---
 
-## Staff Roles
+## Data Transfer Objects
 
-Staff members are assigned role-based permissions within their merchant:
+### StaffDto
 
-| Role         | Purpose                             | Permissions                                 |
-| ------------ | ----------------------------------- | ------------------------------------------- |
-| **Manager**  | Staff supervision, store operations | Full merchant access except billing         |
-| **Cashier**  | Payment processing                  | Process orders, record payments, view sales |
-| **Kitchen**  | Food preparation                    | View orders, update item status             |
-| **Waiter**   | Customer service                    | Take orders, track delivery                 |
-| **Delivery** | Order fulfillment                   | Manage deliveries (future feature)          |
+**File:** `src/QRDine.Application/Features/Staffs/DTOs/StaffDto.cs`
+
+```csharp
+public class StaffDto
+{
+    public Guid Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public bool IsActive { get; set; }
+}
+```
+
+**Purpose:** Represents a staff member in API responses  
+**Source:** Projected from ApplicationUser entity via expression
 
 ---
 
-## Staff Registration
+## Infrastructure Layer
 
-### Command: RegisterStaff
+### IStaffService
+
+**File:** `src/QRDine.Application/Features/Staffs/Services/IStaffService.cs`
+
+```csharp
+public interface IStaffService
+{
+    Task<PagedResult<StaffDto>> GetStaffsPagedAsync(
+        Guid merchantId,
+        GetStaffsPagedQuery request,
+        CancellationToken cancellationToken
+    );
+}
+```
+
+### StaffService Implementation
+
+**File:** `src/QRDine.Infrastructure/Staffs/Services/StaffService.cs`
+
+**Responsibilities:**
+
+1. Resolve Staff role ID from `Roles` table using `SystemRoles.Staff` constant
+2. Build base query: Users with Staff role assignment
+3. Create `GetStaffsPagedSpec` with filters and pagination
+4. Execute dual-query via `SpecificationEvaluator`:
+   - Count query (for total)
+   - Result query (for paginated items)
+5. Map to `PagedResult<StaffDto>`
+
+**Query Pattern:**
+
+- Retrieves staff from `Users` table
+- Joins with `UserRoles` to find Staff role members
+- Filters by `MerchantId`
+- Applies search if provided
+- Orders by `CreatedAt DESC`
+- Paginates with offset/take
+
+---
+
+## Specifications
+
+### GetStaffsPagedSpec
+
+**File:** `src/QRDine.Infrastructure/Staffs/Specifications/GetStaffsPagedSpec.cs`
+
+**Type:** `Specification<ApplicationUser, StaffDto>`
+
+**Filter Chain:**
+
+```
+1. Tenant Isolation:
+   Where(u => u.MerchantId == merchantId)
+
+2. Search Filter (optional):
+   If searchTerm provided:
+     Where FirstName contains term OR
+     Where LastName contains term OR
+     Where Email contains term OR
+     Where PhoneNumber contains term
+   (case-insensitive substring matching)
+
+3. Ordering:
+   OrderByDescending(u => u.CreatedAt)
+
+4. Pagination:
+   Skip((pageNumber - 1) * pageSize)
+   Take(pageSize)
+
+5. Projection:
+   Select(StaffExtensions.ToStaffDto)
+```
+
+**Caching:** None (real-time staff list)  
+**Execution:** Via `SpecificationEvaluator`
+
+---
+
+## Extensions
+
+### StaffExtensions
+
+**File:** `src/QRDine.Infrastructure/Staffs/Extensions/StaffExtensions.cs`
+
+Expression-based DTO projection:
+
+```csharp
+public static Expression<Func<ApplicationUser, StaffDto>> ToStaffDto =>
+  u => new StaffDto
+  {
+    Id = u.Id,
+    FirstName = u.FirstName ?? string.Empty,
+    LastName = u.LastName ?? string.Empty,
+    Email = u.Email ?? string.Empty,
+    PhoneNumber = u.PhoneNumber,
+    IsActive = u.IsActive
+  };
+```
+
+**Purpose:** Enable efficient EF Core projections (minimal database transfer)
+
+---
+
+## API Endpoint
+
+**Controller:** `src/QRDine.API/Controllers/Management/Staffs/StaffsController.cs`
+
+**Route:** `[Route("api/v{version:apiVersion}/management/staffs")]`  
+**API Version:** 1.0  
+**Swagger Group:** Management  
+**Authorization:** `[Authorize(Roles = SystemRoles.Merchant)]`
+
+### GET /api/v1.0/management/staffs
+
+**Method:** GET  
+**Query Parameters:**
+
+- `pageNumber` (int, default: 1) — Page number
+- `pageSize` (int, default: 10, max: 50) — Items per page
+- `searchTerm` (string?, optional) — Search filter
+
+**Status Codes:**
+
+- `200 OK` — Successfully retrieved staff list
+- `401 Unauthorized` — Not authenticated
+- `403 Forbidden` — Not Merchant role
+- `400 Bad Request` — Invalid pagination params
+
+**Response:**
+
+```json
+{
+  "items": [ StaffDto[] ],
+  "totalCount": 25,
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalPages": 3,
+  "hasPreviousPage": false,
+  "hasNextPage": true
+}
+```
+
+---
+
+## Business Rules
+
+✅ Merchants can only view their own staff members  
+✅ Staff identified via ApplicationUser + Staff role  
+✅ Search is case-insensitive, substring matching  
+✅ PageSize limited to 50 maximum (performance)  
+✅ Default ordering is by creation date (newest first)  
+✅ Pagination uses offset-based model (page number + size)  
+✅ IsActive flag tracks staff status  
+✅ No staff creation/deletion in this module (handled in Identity)
+
+---
+
+## Multi-Tenancy
+
+- **Isolation Level:** Query-based filtering by MerchantId
+- **Enforcement:** Specification includes merchant filter
+- **Additional Check:** ICurrentUserService validates MerchantId exists
+- **Data Leakage:** Impossible - all queries filtered by merchant context
+
+---
+
+## Error Scenarios
+
+| Scenario                           | Response                             | Status |
+| ---------------------------------- | ------------------------------------ | ------ |
+| User not authenticated             | Unauthorized error                   | 401    |
+| User not Merchant role             | Forbidden error                      | 403    |
+| MerchantId null (shouldn't happen) | BadRequest                           | 400    |
+| Invalid pageNumber (< 1)           | BadRequest                           | 400    |
+| Invalid pageSize (< 1 or > 50)     | BadRequest                           | 400    |
+| SearchTerm with special SQL chars  | Handled safely (parameterized query) | 200    |
+| No staff members found             | Empty items array, totalCount=0      | 200    |
+
+---
+
+## Example Workflows
+
+### List All Staff (First Page)
+
+```http
+GET /api/v1.0/management/staffs
+Authorization: Bearer <merchant_token>
+```
+
+Returns first 10 staff members sorted by newest first.
+
+### Search Staff by Name
+
+```http
+GET /api/v1.0/management/staffs?searchTerm=john&pageSize=20
+Authorization: Bearer <merchant_token>
+```
+
+Returns up to 20 staff members with "john" in name/email/phone.
+
+### Paginate Through Large Team
+
+```http
+GET /api/v1.0/management/staffs?pageNumber=2&pageSize=50
+Authorization: Bearer <merchant_token>
+```
+
+Returns second page of 50-item batches.
+
+---
+
+## Testing
+
+Staff module should be tested for:
+
+- ✓ Correct staff retrieval by merchant
+- ✓ Search across all fields (FirstName, LastName, Email, PhoneNumber)
+- ✓ Pagination accuracy (skip, take, totalCount)
+- ✓ Multi-tenant isolation (merchant A cannot see merchant B's staff)
+- ✓ Query performance with large staff lists
+- ✓ Edge cases (empty search, no matches, max page size)
 
 **Handler:** `src/QRDine.Application/Features/Identity/Commands/RegisterStaff/RegisterStaffCommandHandler.cs`
 

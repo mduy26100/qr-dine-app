@@ -108,17 +108,51 @@ Business intelligence and analytics for merchants.
 
 ---
 
+### [Dashboards Module](dashboards/)
+
+Real-time merchant dashboard with key performance indicators.
+
+- Today's revenue and monthly revenue KPIs
+- 7-day revenue trend chart with daily aggregation
+- Top products ranking by revenue
+- Product performance metrics (quantity sold, total revenue)
+- Subscription-aware metric calculations
+
+**Key data sources:** Order, OrderItem (aggregated)  
+**Use case:** Merchants monitor daily performance at a glance  
+[Learn more →](dashboards/)
+
+---
+
+### [Real-Time Module](real-time/)
+
+WebSocket-based real-time notifications using SignalR.
+
+- Push order updates to connected clients
+- Real-time order item status synchronization
+- Order closure notifications
+- Merchant group isolation
+- JWT-based authentication over WebSocket
+
+**Key technologies:** ASP.NET Core SignalR, WebSocket  
+**Use case:** Customers see live order progress, merchants receive instant updates  
+[Learn more →](real-time/)
+
+---
+
 ## Module Organization
 
 ```
 Features/
 ├── Catalog/           → Categories, Products, Tables, Toppings
-├── Sales/             → Orders, OrderItems, Real-time tracking
+├── Sales/             → Orders, OrderItems, Order code generation
 ├── Identity/          → Login, Register, Token management
 ├── Billing/           → Plans, Subscriptions, Feature limits
-├── Tenant/            → Merchant data
-├── Staffs/            → Staff management
-└── Reports/           → Analytics, KPIs, Business Intelligence
+├── Tenant/            → Merchant data, Restaurant profiles
+├── Staffs/            → Staff management, Role assignments
+├── Reports/           → Analytics, KPIs, Business Intelligence
+├── Dashboards/        → Real-time KPI dashboard
+└── Real-Time/         → WebSocket notifications via SignalR
 ```
 
 Each module is self-contained and contains:
@@ -138,17 +172,36 @@ Each module is self-contained and contains:
 │   Catalog   │─────────────────┐
 └─────────────┘                 │
                                 ├──────────▶ ┌──────────┐
-┌─────────────┐                 │            │  Sales   │
-│  Identity   │─────────────────┤            └──────────┘
-└─────────────┘                 │
-                                ├──────────▶ ┌──────────┐
-┌─────────────┐                 │            │  Tenant  │
-│  Billing    │─────────────────┘            └──────────┘
-└─────────────┘
-                    ┌──────────────────┐
-                    │  Dashboard       │
-                    │  Staffs          │
+┌─────────────┐                 │            │  Sales   │◀──────┐
+│  Identity   │─────────────────┤            └──────────┘       │
+└─────────────┘                 │                               │
+                                ├──────────▶ ┌──────────┐        │
+┌─────────────┐                 │            │  Tenant  │        │
+│  Billing    │─────────────────┘            └──────────┘        │
+└─────────────┘                                                   │
+                    ┌──────────────────────┐                     │
+                    │  Dashboard           │◀────────────────────┤
+                    │  (aggregates Sales)  │                     │
+                    └──────────────────────┘                     │
+                                                                  │
+                    ┌──────────────────────┐                     │
+                    │  Real-Time           │◀────────────────────┘
+                    │  (WebSocket events)  │
+                    └──────────────────────┘
+
+                    ┌──────────────────────┐
+                    │  Reports             │
+                    │  (Sales analytics)   │
+                    └──────────────────────┘
+
+                    ┌──────────────────────┐
+                    │  Staffs              │
+                    │  (Identity + Tenant) │
+                    └──────────────────────┘
+```
+
                     └──────────────────┘
+
 ```
 
 ## Feature Limiting
@@ -156,23 +209,28 @@ Each module is self-contained and contains:
 Different subscription plans have different feature limits:
 
 ```
+
 Free Plan:
-  - 10 products
-  - 50 orders/month
-  - 1 table
-  - 1 staff
+
+- 10 products
+- 50 orders/month
+- 1 table
+- 1 staff
 
 Basic Plan:
-  - 50 products
-  - 500 orders/month
-  - 5 tables
-  - 3 staff
+
+- 50 products
+- 500 orders/month
+- 5 tables
+- 3 staff
 
 Pro Plan:
-  - Unlimited products
-  - Unlimited orders
-  - Unlimited tables
-  - Unlimited staff
+
+- Unlimited products
+- Unlimited orders
+- Unlimited tables
+- Unlimited staff
+
 ```
 
 The system enforces these limits via:
@@ -209,3 +267,4 @@ Potential modules for expansion:
 ---
 
 **Reference:** See also [Architecture Overview](../architecture/) for system design and [Development Guidelines](../development/) for implementation patterns.
+```
