@@ -39,6 +39,8 @@
     <Folder Include="Features\Catalog\Products\Commands\" />
     <Folder Include="Features\Catalog\Tables\Commands\" />
     <Folder Include="Features\Catalog\ToppingGroups\Commands\" />
+    <Folder Include="Features\Sales\Orders\Commands\" />
+    <Folder Include="Features\Sales\Orders\Services\" />
   </ItemGroup>
 
 </Project>
