@@ -5,6 +5,7 @@ using QRDine.Application.Features.Reports.Queries.GetRevenueSummary;
 using QRDine.Application.Features.Reports.Queries.GetRevenueChart;
 using QRDine.Application.Features.Reports.Queries.GetProductPerformance;
 using QRDine.Application.Features.Reports.Queries.GetToppingAnalytics;
+using QRDine.Application.Features.Reports.Queries.GetTrafficHeatmap;
 using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -63,6 +64,17 @@ namespace QRDine.API.Controllers.Management.Reports
         public async Task<IActionResult> GetToppingAnalytics([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
         {
             var query = new GetToppingAnalyticsQuery(startDate, endDate);
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [HttpGet("traffic-heatmap")]
+        [CheckFeatureLimit(FeatureType.AdvancedReports)]
+        [ProducesResponseType(typeof(IEnumerable<TrafficHeatmapDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTrafficHeatmap([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, CancellationToken cancellationToken)
+        {
+            var query = new GetTrafficHeatmapQuery(startDate, endDate);
             var result = await _mediator.Send(query, cancellationToken);
 
             return Ok(result);
