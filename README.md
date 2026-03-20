@@ -96,20 +96,28 @@ Data isolation is enforced at three levels:
 
 ### Prerequisites
 
+**Core Development:**
+
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/) (LocalDB, Express, or full)
-- [Cloudinary account](https://cloudinary.com/) (for image uploads)
+- [SQL Server 2022+](https://www.microsoft.com/en-us/sql-server/) (LocalDB, Express, or full instance)
+- [Redis](https://redis.io/) (for caching layer)
 
-### Setup
+**External Services (Free tiers available):**
 
-1. **Clone the repository:**
+- [Cloudinary account](https://cloudinary.com/) — Image upload & storage
+- [Brevo account](https://www.brevo.com/) — Email delivery via SMTP
+- [PayOS account](https://payos.vn/) — Payment gateway integration
+
+### Quick Start (5 Steps)
+
+1. **Clone repository:**
 
    ```bash
    git clone https://github.com/mduy26100/qr-dine-app.git
    cd qr-dine-app
    ```
 
-2. **Configure `appsettings.json`** (`src/QRDine.API/appsettings.template.json`):
+2. **Configure environment** (`src/QRDine.API/appsettings.json`):
 
    ```json
    {
@@ -117,40 +125,105 @@ Data isolation is enforced at three levels:
        "DefaultConnection": "Server=YOUR_SERVER;Database=QRDine;Trusted_Connection=True;TrustServerCertificate=True;"
      },
      "Jwt": {
-       "Secret": "<your-256-bit-secret>",
-       "ValidIssuer": "http://localhost:xxxx",
-       "ValidAudience": "http://localhost:xxxx",
-       "AccessTokenExpiryMinutes": 15,
+       "Secret": "<generate-256-bit-base64-secret>",
+       "ValidIssuer": "http://localhost:7288",
+       "ValidAudience": "http://localhost:7288",
+       "AccessTokenExpiryMinutes": 10,
        "RefreshTokenExpiryDays": 7
      },
      "Cloudinary": {
        "CloudName": "<your-cloud-name>",
        "ApiKey": "<your-api-key>",
        "ApiSecret": "<your-api-secret>"
-     }
+     },
+     "EmailSettings": {
+       "SmtpServer": "smtp-relay.brevo.com",
+       "Port": 2525,
+       "SenderEmail": "<your-email>",
+       "SenderName": "QR Dine",
+       "Password": "<your-brevo-smtp-key>"
+     },
+     "PayOS": {
+       "ClientId": "<your-client-id>",
+       "ApiKey": "<your-api-key>",
+       "ChecksumKey": "<your-checksum-key>"
+     },
+     "Redis": {
+       "ConnectionString": "localhost:6379"
+     },
+     "SecuritySettings": {
+       "TokenHashSecret": "<generate-64-char-random-secret>"
+     },
+     "FrontendSettings": {
+       "BaseUrl": "http://localhost:5173"
+     },
+     "Cors": {
+       "AllowedOrigins": ["http://localhost:5173"]
+     },
+     "RunMigrations": true
    }
    ```
 
-3. **Apply database migrations:**
+3. **Ensure services are running:**
+
+   ```bash
+   # Start SQL Server (if not running as service)
+   # Start Redis: redis-server
+   ```
+
+4. **Apply database migrations:**
 
    ```bash
    dotnet ef database update --project src/QRDine.Infrastructure --startup-project src/QRDine.API
    ```
 
-4. **Run the application:**
+5. **Run the API:**
 
    ```bash
    dotnet run --project src/QRDine.API
    ```
 
-5. **Access Swagger UI:** `https://localhost:xxxx/swagger`
+   **Access points:**
+   - 🔗 Swagger UI: `https://localhost:7288/swagger`
+   - 🔗 API Base: `https://localhost:7288/api/v1`
+
+### Configuration Guide
+
+**JWT Secrets:**
+
+```bash
+# Generate 32-byte Base64 secret
+[Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+```
+
+**External Services Setup:**
+
+| Service        | Purpose                 | Get Started                                                                               |
+| -------------- | ----------------------- | ----------------------------------------------------------------------------------------- |
+| **Cloudinary** | Image uploads & storage | [Sign up](https://cloudinary.com/users/register/free) → copy CloudName, ApiKey, ApiSecret |
+| **Brevo**      | Email delivery          | [Sign up](https://www.brevo.com/) → SMTP config → copy SMTP key                           |
+| **PayOS**      | Payment processing      | [Sign up](https://payos.vn/) → create API credentials                                     |
 
 ### Seeded Data
 
-On first run, the system automatically seeds:
+On first database migration, the system automatically creates:
 
-- **Roles:** SuperAdmin, Merchant, Staff, Guest
-- **SuperAdmin account:** `admin@qrdine.com` / `Admin@123!`
+- **Default Roles:** SuperAdmin, Merchant, Staff, Guest
+- **SuperAdmin Account:**
+  - Email: `admin@qrdine.com`
+  - Password: `Admin@123!`
+
+---
+
+### Troubleshooting
+
+| Issue                      | Solution                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------ |
+| **Redis connection fails** | Ensure Redis is running: `redis-cli ping` should return `PONG`                 |
+| **SQL migrations fail**    | Verify SQL Server running, connection string valid: `sqlcmd -S YOUR_SERVER -E` |
+| **Cloudinary errors**      | Verify credentials in `appsettings.json` — check Brevo SMTP Server issue       |
+| **Port 7288 in use**       | Change `ValidIssuer/ValidAudience` and launch port in `launchSettings.json`    |
+| **CORS errors**            | Add frontend URL to `Cors.AllowedOrigins` in `appsettings.json`                |
 
 ---
 
