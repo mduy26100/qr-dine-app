@@ -52,44 +52,45 @@ jobs:
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
+          ACCEPT_EULA: ${{ secrets.ACCEPT_EULA }}
+          MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_SA_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
+          JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
+          JWT_ACCESS_TOKEN_EXPIRY_MINUTES: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRY_MINUTES }}
+          JWT_REFRESH_TOKEN_EXPIRY_DAYS: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRY_DAYS }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+          CORS_ALLOWED_ORIGIN_1: ${{ secrets.CORS_ALLOWED_ORIGIN_1 }}
+          CORS_ALLOWED_ORIGIN_2: ${{ secrets.CORS_ALLOWED_ORIGIN_2 }}
+          CORS_ALLOWED_ORIGIN_3: ${{ secrets.CORS_ALLOWED_ORIGIN_3 }}
+          SECURITY_TOKEN_HASH_SECRET: ${{ secrets.SECURITY_TOKEN_HASH_SECRET }}
+          EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
+          EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+          EMAIL_SENDER_EMAIL: ${{ secrets.EMAIL_SENDER_EMAIL }}
+          EMAIL_SENDER_NAME: ${{ secrets.EMAIL_SENDER_NAME }}
+          EMAIL_SENDER_PASSWORD: ${{ secrets.EMAIL_SENDER_PASSWORD }}
+          PAYOS_CLIENT_ID: ${{ secrets.PAYOS_CLIENT_ID }}
+          PAYOS_API_KEY: ${{ secrets.PAYOS_API_KEY }}
+          PAYOS_CHECKSUM_KEY: ${{ secrets.PAYOS_CHECKSUM_KEY }}
+          RUN_MIGRATIONS: ${{ secrets.RUN_MIGRATIONS }}
+          SEQ_ADMIN_PASSWORD: ${{ secrets.SEQ_ADMIN_PASSWORD }}
+          NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
+          NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          env:
-            IMAGE_TAG: ${{ github.sha }}
-            IMAGE_NAME: ${{ env.IMAGE_NAME }}
-            ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
-            ACCEPT_EULA: ${{ secrets.ACCEPT_EULA }}
-            MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_SA_PASSWORD }}
-            REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-            JWT_SECRET: ${{ secrets.JWT_SECRET }}
-            JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
-            JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
-            JWT_ACCESS_TOKEN_EXPIRY_MINUTES: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRY_MINUTES }}
-            JWT_REFRESH_TOKEN_EXPIRY_DAYS: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRY_DAYS }}
-            CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-            CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-            CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-            FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
-            CORS_ALLOWED_ORIGIN_1: ${{ secrets.CORS_ALLOWED_ORIGIN_1 }}
-            CORS_ALLOWED_ORIGIN_2: ${{ secrets.CORS_ALLOWED_ORIGIN_2 }}
-            CORS_ALLOWED_ORIGIN_3: ${{ secrets.CORS_ALLOWED_ORIGIN_3 }}
-            SECURITY_TOKEN_HASH_SECRET: ${{ secrets.SECURITY_TOKEN_HASH_SECRET }}
-            EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
-            EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
-            EMAIL_SENDER_EMAIL: ${{ secrets.EMAIL_SENDER_EMAIL }}
-            EMAIL_SENDER_NAME: ${{ secrets.EMAIL_SENDER_NAME }}
-            EMAIL_SENDER_PASSWORD: ${{ secrets.EMAIL_SENDER_PASSWORD }}
-            PAYOS_CLIENT_ID: ${{ secrets.PAYOS_CLIENT_ID }}
-            PAYOS_API_KEY: ${{ secrets.PAYOS_API_KEY }}
-            PAYOS_CHECKSUM_KEY: ${{ secrets.PAYOS_CHECKSUM_KEY }}
-            RUN_MIGRATIONS: ${{ secrets.RUN_MIGRATIONS }}
-            SEQ_ADMIN_PASSWORD: ${{ secrets.SEQ_ADMIN_PASSWORD }}
-            NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
-            NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
-            GHCR_USERNAME: ${{ github.actor }}
-            GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          envs: IMAGE_TAG,IMAGE_NAME,ASPNETCORE_ENVIRONMENT,ACCEPT_EULA,MSSQL_SA_PASSWORD,REDIS_PASSWORD,JWT_SECRET,JWT_VALID_ISSUER,JWT_VALID_AUDIENCE,JWT_ACCESS_TOKEN_EXPIRY_MINUTES,JWT_REFRESH_TOKEN_EXPIRY_DAYS,CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET,FRONTEND_BASE_URL,CORS_ALLOWED_ORIGIN_1,CORS_ALLOWED_ORIGIN_2,CORS_ALLOWED_ORIGIN_3,SECURITY_TOKEN_HASH_SECRET,EMAIL_SMTP_SERVER,EMAIL_SMTP_PORT,EMAIL_SENDER_EMAIL,EMAIL_SENDER_NAME,EMAIL_SENDER_PASSWORD,PAYOS_CLIENT_ID,PAYOS_API_KEY,PAYOS_CHECKSUM_KEY,RUN_MIGRATIONS,SEQ_ADMIN_PASSWORD,NGINX_HTTP_PORT,NGINX_HTTPS_PORT,GHCR_USERNAME,GHCR_TOKEN
           script: |
             set -e
 
