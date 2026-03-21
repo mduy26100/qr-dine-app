@@ -1,5 +1,6 @@
 ﻿using QRDine.API.Constants;
 using QRDine.API.DependencyInjection;
+using QRDine.API.DependencyInjection.Presentation;
 using QRDine.API.Filters;
 using QRDine.API.Middlewares;
 using QRDine.Infrastructure.SignalR.Hubs;
@@ -7,6 +8,8 @@ using QRDine.Infrastructure.SignalR.Hubs;
 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogging();
 
 // ===== Service Registration =====
 builder.Services
@@ -57,6 +60,8 @@ var app = builder.Build();
 app.UseForwardedHeaders();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

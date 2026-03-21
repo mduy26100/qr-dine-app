@@ -145,6 +145,8 @@ jobs:
             PAYOS_CHECKSUM_KEY=$PAYOS_CHECKSUM_KEY
             RUN_MIGRATIONS=$RUN_MIGRATIONS
             SEQ_ADMIN_PASSWORD=$SEQ_ADMIN_PASSWORD
+            SEQ_SERVER_URL=http://qrdine-seq:80
+            SEQ_API_KEY=$SEQ_API_KEY
             IMAGE_TAG=$IMAGE_TAG
             IMAGE_NAME=$IMAGE_NAME
             API_PORT=5000

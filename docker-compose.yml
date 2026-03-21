@@ -76,6 +76,8 @@ services:
       PayOS__ApiKey: "${PAYOS_API_KEY}"
       PayOS__ChecksumKey: "${PAYOS_CHECKSUM_KEY}"
       RunMigrations: "${RUN_MIGRATIONS}"
+      Seq__ServerUrl: "${SEQ_SERVER_URL}"
+      Seq__ApiKey: "${SEQ_API_KEY}"
     volumes:
       - ./logs:/app/logs
     networks:
