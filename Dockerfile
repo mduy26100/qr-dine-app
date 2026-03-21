@@ -33,6 +33,9 @@ COPY --from=publish /app/publish .
 # Install curl for health check AND libfontconfig1 for SkiaSharp
 RUN apt-get update && apt-get install -y curl libfontconfig1 && rm -rf /var/lib/apt/lists/*
 
+# Grant execute permissions for curl so non-root user can run healthcheck
+RUN chmod +x /usr/bin/curl
+
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser

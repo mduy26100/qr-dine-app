@@ -12,90 +12,165 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
-  deploy:
-    name: Deploy to VPS
+  build-and-deploy:
+    name: Build and Deploy to VPS
     runs-on: ubuntu-latest
-    # Chỉ chạy khi merge PR hoặc direct push, không chạy khi pull_request mở
     if: |
       github.event_name == 'push' || 
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/qr-dine-api
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          env:
+            IMAGE_TAG: ${{ github.sha }}
+            IMAGE_NAME: ${{ env.IMAGE_NAME }}
+            ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
+            ACCEPT_EULA: ${{ secrets.ACCEPT_EULA }}
+            MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_SA_PASSWORD }}
+            REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+            JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
+            JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
+            JWT_ACCESS_TOKEN_EXPIRY_MINUTES: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRY_MINUTES }}
+            JWT_REFRESH_TOKEN_EXPIRY_DAYS: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRY_DAYS }}
+            CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+            CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+            CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+            FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+            CORS_ALLOWED_ORIGIN_1: ${{ secrets.CORS_ALLOWED_ORIGIN_1 }}
+            CORS_ALLOWED_ORIGIN_2: ${{ secrets.CORS_ALLOWED_ORIGIN_2 }}
+            CORS_ALLOWED_ORIGIN_3: ${{ secrets.CORS_ALLOWED_ORIGIN_3 }}
+            SECURITY_TOKEN_HASH_SECRET: ${{ secrets.SECURITY_TOKEN_HASH_SECRET }}
+            EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
+            EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+            EMAIL_SENDER_EMAIL: ${{ secrets.EMAIL_SENDER_EMAIL }}
+            EMAIL_SENDER_NAME: ${{ secrets.EMAIL_SENDER_NAME }}
+            EMAIL_SENDER_PASSWORD: ${{ secrets.EMAIL_SENDER_PASSWORD }}
+            PAYOS_CLIENT_ID: ${{ secrets.PAYOS_CLIENT_ID }}
+            PAYOS_API_KEY: ${{ secrets.PAYOS_API_KEY }}
+            PAYOS_CHECKSUM_KEY: ${{ secrets.PAYOS_CHECKSUM_KEY }}
+            RUN_MIGRATIONS: ${{ secrets.RUN_MIGRATIONS }}
+            SEQ_ADMIN_PASSWORD: ${{ secrets.SEQ_ADMIN_PASSWORD }}
+            NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
+            NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
+            GHCR_USERNAME: ${{ github.actor }}
+            GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            set -e  # Exit on first error
+            set -e
 
             echo "=========================================="
-            echo "🚀 Starting Deployment Process"
+            echo "Starting Deployment Process"
             echo "=========================================="
 
             # Step 1: Navigate to project directory
-            echo "📂 Moving to project directory..."
+            echo "Moving to project directory..."
             cd /root/qr-dine-app
 
-            # Step 2: Pull latest code
-            echo "📥 Pulling latest code from main branch..."
-            git pull origin main
+            # Step 2: Generate .env file from environment variables
+            echo "Generating .env file..."
+            cat > .env << ENVEOF
+            ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+            ACCEPT_EULA=$ACCEPT_EULA
+            MSSQL_SA_PASSWORD=$MSSQL_SA_PASSWORD
+            MSSQL_PORT=1433
+            MSSQL_CONNECTION_STRING=Server=sql-server,1433;Database=QRDine;User Id=sa;Password=$MSSQL_SA_PASSWORD;TrustServerCertificate=True;
+            REDIS_PORT=6379
+            REDIS_PASSWORD=$REDIS_PASSWORD
+            REDIS_CONNECTION_STRING=redis:6379,password=$REDIS_PASSWORD
+            JWT_SECRET=$JWT_SECRET
+            JWT_VALID_ISSUER=$JWT_VALID_ISSUER
+            JWT_VALID_AUDIENCE=$JWT_VALID_AUDIENCE
+            JWT_ACCESS_TOKEN_EXPIRY_MINUTES=$JWT_ACCESS_TOKEN_EXPIRY_MINUTES
+            JWT_REFRESH_TOKEN_EXPIRY_DAYS=$JWT_REFRESH_TOKEN_EXPIRY_DAYS
+            CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+            CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+            CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
+            FRONTEND_BASE_URL=$FRONTEND_BASE_URL
+            CORS_ALLOWED_ORIGIN_1=$CORS_ALLOWED_ORIGIN_1
+            CORS_ALLOWED_ORIGIN_2=$CORS_ALLOWED_ORIGIN_2
+            CORS_ALLOWED_ORIGIN_3=$CORS_ALLOWED_ORIGIN_3
+            SECURITY_TOKEN_HASH_SECRET=$SECURITY_TOKEN_HASH_SECRET
+            EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER
+            EMAIL_SMTP_PORT=$EMAIL_SMTP_PORT
+            EMAIL_SENDER_EMAIL=$EMAIL_SENDER_EMAIL
+            EMAIL_SENDER_NAME=$EMAIL_SENDER_NAME
+            EMAIL_SENDER_PASSWORD=$EMAIL_SENDER_PASSWORD
+            PAYOS_CLIENT_ID=$PAYOS_CLIENT_ID
+            PAYOS_API_KEY=$PAYOS_API_KEY
+            PAYOS_CHECKSUM_KEY=$PAYOS_CHECKSUM_KEY
+            RUN_MIGRATIONS=$RUN_MIGRATIONS
+            SEQ_ADMIN_PASSWORD=$SEQ_ADMIN_PASSWORD
+            IMAGE_TAG=$IMAGE_TAG
+            IMAGE_NAME=$IMAGE_NAME
+            API_PORT=5000
+            NGINX_HTTP_PORT=$NGINX_HTTP_PORT
+            NGINX_HTTPS_PORT=$NGINX_HTTPS_PORT
+            ENVEOF
+            [ -f .env ] || exit 1
+            echo ".env file created successfully"
 
-            # Step 3: Load environment variables
-            echo "⚙️  Loading environment configuration..."
-            if [ ! -f .env ]; then
-              echo "❌ Error: .env file not found!"
-              exit 1
-            fi
+            # Step 3: Login to GitHub Container Registry
+            echo "Logging in to GitHub Container Registry..."
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
 
-            # Step 4: Build and start services with Docker Compose (Zero-downtime deployment)
-            echo "🐳 Building and starting Docker services..."
-            docker compose up -d --build --remove-orphans
+            # Step 4: Pull latest Docker images
+            echo "Pulling latest Docker images..."
+            docker compose pull
 
-            # Step 5: Wait for services to be healthy
-            echo "⏳ Waiting for services to be healthy..."
-            sleep 10
+            # Step 5: Start services and wait for them to be healthy (Zero-downtime deployment)
+            echo "Starting Docker services and waiting for health checks..."
+            docker compose up -d --wait --wait-timeout 120
+            echo "All services are healthy"
 
-            # Step 6: Verify API is running
-            echo "✅ Verifying API health..."
-            if docker compose exec -T api curl -f http://localhost:8080/health/live >/dev/null 2>&1; then
-              echo "✅ API is healthy"
-            else
-              echo "⚠️  API health check may need more time"
-            fi
-
-            # Step 7: Clean up dangling resources (dangling only, preserve base images and volumes)
-            echo "🧹 Cleaning up unused Docker resources..."
+            # Step 6: Clean up dangling resources
+            echo "Cleaning up unused Docker resources..."
             docker image prune -f
 
-            # Step 8: Display final status
-            echo "📊 Current running containers:"
+            # Step 7: Display final status
+            echo "Current running containers:"
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
             echo "=========================================="
-            echo "✅ Deployment completed successfully!"
+            echo "Deployment completed successfully!"
             echo "=========================================="
 
       - name: Deployment Failed Notification
         if: failure()
         run: |
-          echo "❌ Deployment failed!" >&2
+          echo "Deployment failed!" >&2
           exit 1
-
-      - name: Create deployment status
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const conclusion = context.job.status === 'success' ? 'success' : 'failure';
-            const status_text = conclusion === 'success' 
-              ? '✅ Deployment successful to Production' 
-              : '❌ Deployment failed';
-
-            console.log(`Deployment Status: ${status_text}`);
