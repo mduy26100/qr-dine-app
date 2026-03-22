@@ -121,5 +121,22 @@ namespace QRDine.Infrastructure.Identity.Services
                 throw new BadRequestException($"Failed to update profile: {errors}");
             }
         }
+
+        public async Task ChangePasswordAsync(string userId, ChangePasswordRequestDto request, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found.");
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new BadRequestException($"Failed to change password: {errors}");
+            }
+        }
     }
 }

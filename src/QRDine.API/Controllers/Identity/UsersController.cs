@@ -1,6 +1,7 @@
 ﻿using QRDine.API.Attributes;
 using QRDine.API.Constants;
 using QRDine.API.Requests.Identity;
+using QRDine.Application.Features.Identity.Commands.ChangePassword;
 using QRDine.Application.Features.Identity.Commands.Logout;
 using QRDine.Application.Features.Identity.Commands.RegisterStaff;
 using QRDine.Application.Features.Identity.Commands.UpdateProfile;
@@ -65,6 +66,16 @@ namespace QRDine.API.Controllers.Identity
             var result = await _mediator.Send(command, cancellationToken);
 
             return Ok(result);
+        }
+
+        [HttpPut("change-password")]
+        [SkipSubscriptionCheck]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto dto, CancellationToken cancellationToken)
+        {
+            var command = new ChangePasswordCommand(dto);
+            await _mediator.Send(command, cancellationToken);
+
+            return NoContent();
         }
     }
 }
