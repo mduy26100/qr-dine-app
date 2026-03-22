@@ -1,7 +1,9 @@
 ﻿using QRDine.API.Attributes;
 using QRDine.API.Constants;
+using QRDine.API.Requests.Identity;
 using QRDine.Application.Features.Identity.Commands.Logout;
 using QRDine.Application.Features.Identity.Commands.RegisterStaff;
+using QRDine.Application.Features.Identity.Commands.UpdateProfile;
 using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Queries.Profile;
 using QRDine.Domain.Enums;
@@ -52,6 +54,17 @@ namespace QRDine.API.Controllers.Identity
             var resule = await _mediator.Send(query, cancellationToken);
 
             return Ok(resule);
+        }
+
+        [HttpPut("update-profile")]
+        [Consumes("multipart/form-data")]
+        [SkipSubscriptionCheck]
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileForm form, CancellationToken cancellationToken)
+        {
+            var command = new UpdateProfileCommand(form.ToDto());
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return Ok(result);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Common.Exceptions;
+﻿using QRDine.Application.Common.Abstractions.ExternalServices.FileUpload;
+using QRDine.Application.Common.Exceptions;
 using QRDine.Application.Features.Billing.Subscriptions.DTOs;
 using QRDine.Application.Features.Identity.DTOs;
 using QRDine.Application.Features.Identity.Services;
@@ -14,13 +15,16 @@ namespace QRDine.Infrastructure.Identity.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMerchantRepository _merchantRepository;
+        private readonly IFileUploadService _fileUploadService;
 
         public ProfileService(
             UserManager<ApplicationUser> userManager,
-            IMerchantRepository merchantRepository)
+            IMerchantRepository merchantRepository,
+            IFileUploadService fileUploadService)
         {
             _userManager = userManager;
             _merchantRepository = merchantRepository;
+            _fileUploadService = fileUploadService;
         }
 
         public async Task<UserProfileDto> GetProfileAsync(string userId, CancellationToken cancellationToken = default)
@@ -84,6 +88,38 @@ namespace QRDine.Infrastructure.Identity.Services
             }
 
             return profile;
+        }
+
+        public async Task UpdateProfileAsync(string userId, UpdateProfileRequestDto request, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found.");
+            }
+
+            if (request.ImgContent != null && !string.IsNullOrWhiteSpace(request.ImgFileName))
+            {
+                var uploadRequest = new FileUploadRequest
+                {
+                    Content = request.ImgContent,
+                    FileName = request.ImgFileName,
+                };
+
+                user.AvatarUrl = await _fileUploadService.UploadAsync(uploadRequest, cancellationToken);
+            }
+
+            user.FirstName = request.FirstName.Trim();
+            user.LastName = request.LastName.Trim();
+            user.PhoneNumber = request.PhoneNumber?.Trim();
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new BadRequestException($"Failed to update profile: {errors}");
+            }
         }
     }
 }

@@ -5,5 +5,6 @@ namespace QRDine.Application.Features.Identity.Services
     public interface IProfileService
     {
         Task<UserProfileDto> GetProfileAsync(string userId, CancellationToken cancellationToken = default);
+        Task UpdateProfileAsync(string userId, UpdateProfileRequestDto request, CancellationToken cancellationToken = default);
     }
 }
