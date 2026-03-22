@@ -42,6 +42,7 @@ namespace QRDine.API.DependencyInjection.Security
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<ILogoutService, LogoutService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<IProfileService, ProfileService>();
 
             return services;
         }

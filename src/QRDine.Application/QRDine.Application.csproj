@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Identity\Queries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\QRDine.Application.Common\QRDine.Application.Common.csproj" />
     <ProjectReference Include="..\QRDine.Domain\QRDine.Domain.csproj" />
   </ItemGroup>

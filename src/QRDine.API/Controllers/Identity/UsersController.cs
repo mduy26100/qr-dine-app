@@ -3,6 +3,7 @@ using QRDine.API.Constants;
 using QRDine.Application.Features.Identity.Commands.Logout;
 using QRDine.Application.Features.Identity.Commands.RegisterStaff;
 using QRDine.Application.Features.Identity.DTOs;
+using QRDine.Application.Features.Identity.Queries.Profile;
 using QRDine.Domain.Enums;
 using QRDine.Infrastructure.Identity.Constants;
 
@@ -11,6 +12,7 @@ namespace QRDine.API.Controllers.Identity
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/users")]
+    [Authorize]
     [ApiExplorerSettings(GroupName = SwaggerGroups.Identity)]
     public class UsersController : ControllerBase
     {
@@ -32,7 +34,6 @@ namespace QRDine.API.Controllers.Identity
         }
 
         [HttpPost("logout")]
-        [Authorize]
         [SkipSubscriptionCheck]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
@@ -40,6 +41,17 @@ namespace QRDine.API.Controllers.Identity
             var result = await _mediator.Send(command, cancellationToken);
 
             return NoContent();
+        }
+
+        [HttpGet("profile")]
+        [SkipSubscriptionCheck]
+        [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProfile(CancellationToken cancellationToken)
+        {
+            var query = new ProfileQuery();
+            var resule = await _mediator.Send(query, cancellationToken);
+
+            return Ok(resule);
         }
     }
 }
