@@ -6,7 +6,8 @@ namespace QRDine.Application.Features.Identity.DTOs
     public class UserProfileDto
     {
         public Guid UserId { get; set; } = default!;
-        public string FullName { get; set; } = default!;
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string? PersonalPhoneNumber { get; set; }
         public string AvatarUrl { get; set; } = default!;

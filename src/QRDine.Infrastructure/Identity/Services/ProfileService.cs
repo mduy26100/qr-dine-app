@@ -37,7 +37,8 @@ namespace QRDine.Infrastructure.Identity.Services
             var profile = new UserProfileDto
             {
                 UserId = user.Id,
-                FullName = $"{user.FirstName} {user.LastName}",
+                FirstName = user.FirstName ?? string.Empty,
+                LastName = user.LastName ?? string.Empty,
                 Email = user.Email!,
                 PersonalPhoneNumber = user.PhoneNumber,
                 AvatarUrl = user.AvatarUrl ?? string.Empty,
