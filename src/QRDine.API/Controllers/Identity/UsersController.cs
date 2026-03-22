@@ -57,7 +57,7 @@ namespace QRDine.API.Controllers.Identity
             return Ok(resule);
         }
 
-        [HttpPut("update-profile")]
+        [HttpPut("profile")]
         [Consumes("multipart/form-data")]
         [SkipSubscriptionCheck]
         public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileForm form, CancellationToken cancellationToken)
