@@ -30,6 +30,7 @@ namespace QRDine.API.DependencyInjection.Infrastructure
             });
 
             services.AddSingleton<ICacheService, RedisCacheService>();
+            services.AddMemoryCache();
 
             return services;
         }

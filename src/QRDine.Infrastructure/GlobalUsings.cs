@@ -28,3 +28,4 @@ global using System.Linq.Expressions;
 global using Ardalis.Specification;
 global using PayOS;
 global using PayOS.Models.V2.PaymentRequests;
+global using Microsoft.Extensions.Caching.Memory;
