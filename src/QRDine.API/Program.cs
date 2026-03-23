@@ -103,22 +103,36 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
+var healthCheckOptions = new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Degraded] = StatusCodes.Status503ServiceUnavailable,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+    }
+};
+
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     Predicate = _ => true,
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    ResponseWriter = healthCheckOptions.ResponseWriter,
+    ResultStatusCodes = healthCheckOptions.ResultStatusCodes
 });
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
     Predicate = r => r.Tags.Contains("live"),
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    ResponseWriter = healthCheckOptions.ResponseWriter,
+    ResultStatusCodes = healthCheckOptions.ResultStatusCodes
 });
 
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
     Predicate = r => r.Tags.Contains("ready"),
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    ResponseWriter = healthCheckOptions.ResponseWriter,
+    ResultStatusCodes = healthCheckOptions.ResultStatusCodes
 });
 
 await app.SeedDataAsync();
