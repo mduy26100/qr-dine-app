@@ -56,7 +56,7 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml,nginx.conf"
+          source: "docker-compose.yml"
           target: "/root/qr-dine-app"
 
       - name: Deploy to VPS
@@ -91,15 +91,13 @@ jobs:
           PAYOS_CHECKSUM_KEY: ${{ secrets.PAYOS_CHECKSUM_KEY }}
           RUN_MIGRATIONS: ${{ secrets.RUN_MIGRATIONS }}
           SEQ_ADMIN_PASSWORD: ${{ secrets.SEQ_ADMIN_PASSWORD }}
-          NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
-          NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
           GHCR_USERNAME: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: IMAGE_TAG,IMAGE_NAME,ASPNETCORE_ENVIRONMENT,ACCEPT_EULA,MSSQL_SA_PASSWORD,REDIS_PASSWORD,JWT_SECRET,JWT_VALID_ISSUER,JWT_VALID_AUDIENCE,JWT_ACCESS_TOKEN_EXPIRY_MINUTES,JWT_REFRESH_TOKEN_EXPIRY_DAYS,CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET,FRONTEND_BASE_URL,CORS_ALLOWED_ORIGIN_1,CORS_ALLOWED_ORIGIN_2,CORS_ALLOWED_ORIGIN_3,SECURITY_TOKEN_HASH_SECRET,EMAIL_SMTP_SERVER,EMAIL_SMTP_PORT,EMAIL_SENDER_EMAIL,EMAIL_SENDER_NAME,EMAIL_SENDER_PASSWORD,PAYOS_CLIENT_ID,PAYOS_API_KEY,PAYOS_CHECKSUM_KEY,RUN_MIGRATIONS,SEQ_ADMIN_PASSWORD,NGINX_HTTP_PORT,NGINX_HTTPS_PORT,GHCR_USERNAME,GHCR_TOKEN
+          envs: IMAGE_TAG,IMAGE_NAME,ASPNETCORE_ENVIRONMENT,ACCEPT_EULA,MSSQL_SA_PASSWORD,REDIS_PASSWORD,JWT_SECRET,JWT_VALID_ISSUER,JWT_VALID_AUDIENCE,JWT_ACCESS_TOKEN_EXPIRY_MINUTES,JWT_REFRESH_TOKEN_EXPIRY_DAYS,CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET,FRONTEND_BASE_URL,CORS_ALLOWED_ORIGIN_1,CORS_ALLOWED_ORIGIN_2,CORS_ALLOWED_ORIGIN_3,SECURITY_TOKEN_HASH_SECRET,EMAIL_SMTP_SERVER,EMAIL_SMTP_PORT,EMAIL_SENDER_EMAIL,EMAIL_SENDER_NAME,EMAIL_SENDER_PASSWORD,PAYOS_CLIENT_ID,PAYOS_API_KEY,PAYOS_CHECKSUM_KEY,RUN_MIGRATIONS,SEQ_ADMIN_PASSWORD,GHCR_USERNAME,GHCR_TOKEN
           script: |
             set -e
 
@@ -107,11 +105,9 @@ jobs:
             echo "Starting Deployment Process"
             echo "=========================================="
 
-            # Step 1: Navigate to project directory
             echo "Moving to project directory..."
             cd /root/qr-dine-app
 
-            # Step 2: Generate .env file from environment variables
             echo "Generating .env file..."
             cat > .env << ENVEOF
             ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
@@ -150,30 +146,23 @@ jobs:
             IMAGE_TAG=$IMAGE_TAG
             IMAGE_NAME=$IMAGE_NAME
             API_PORT=5000
-            NGINX_HTTP_PORT=$NGINX_HTTP_PORT
-            NGINX_HTTPS_PORT=$NGINX_HTTPS_PORT
             ENVEOF
             [ -f .env ] || exit 1
             echo ".env file created successfully"
 
-            # Step 3: Login to GitHub Container Registry
             echo "Logging in to GitHub Container Registry..."
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
 
-            # Step 4: Pull latest Docker images
             echo "Pulling latest Docker images..."
             docker compose pull
 
-            # Step 5: Start services and wait for them to be healthy (Zero-downtime deployment)
             echo "Starting Docker services and waiting for health checks..."
             docker compose up -d --wait --wait-timeout 120
             echo "All services are healthy"
 
-            # Step 6: Clean up dangling resources
             echo "Cleaning up unused Docker resources..."
             docker image prune -f
 
-            # Step 7: Display final status
             echo "Current running containers:"
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
