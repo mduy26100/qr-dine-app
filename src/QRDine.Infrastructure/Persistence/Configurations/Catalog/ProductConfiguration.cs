@@ -35,6 +35,8 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
 
             builder.HasIndex(x => x.MerchantId);
             builder.HasIndex(x => x.CategoryId);
+            builder.HasIndex(p => p.CategoryId)
+                .IncludeProperties(p => new { p.Name, p.Price, p.Description, p.ImageUrl, p.IsAvailable, p.IsDeleted });
 
             builder.HasQueryFilter(x => !x.IsDeleted);
         }

@@ -24,6 +24,9 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
                    .HasForeignKey(x => x.ToppingGroupId)
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasIndex(ptg => ptg.ProductId);
+            builder.HasIndex(ptg => ptg.ToppingGroupId);
+
             builder.HasQueryFilter(x => !x.IsDeleted);
         }
     }

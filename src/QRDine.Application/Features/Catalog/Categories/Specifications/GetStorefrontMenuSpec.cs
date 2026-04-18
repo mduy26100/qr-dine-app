@@ -16,6 +16,8 @@ namespace QRDine.Application.Features.Catalog.Categories.Specifications
                  .ThenBy(c => c.DisplayOrder);
 
             Query.Select(CategoryExpressions.ToStorefrontMenuDto);
+
+            Query.AsSplitQuery();
         }
     }
 }

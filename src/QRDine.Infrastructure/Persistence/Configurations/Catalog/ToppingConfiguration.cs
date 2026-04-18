@@ -19,6 +19,9 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Catalog
             builder.HasIndex(x => x.ToppingGroupId);
 
             builder.HasQueryFilter(x => !x.IsDeleted);
+
+            builder.HasIndex(t => t.ToppingGroupId)
+                .IncludeProperties(t => new { t.Name, t.Price, t.DisplayOrder, t.IsAvailable });
         }
     }
 }
