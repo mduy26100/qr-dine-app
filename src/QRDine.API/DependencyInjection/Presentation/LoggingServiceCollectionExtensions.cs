@@ -12,9 +12,18 @@
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
                 .MinimumLevel.Information()
+
+                // Ép log chung của Microsoft và System xuống mức Warning để đỡ rác
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+
+                // 👉 THÊM DÒNG NÀY: Để xem chi tiết câu lệnh SQL do EF Core sinh ra
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Information)
+
+                // 👉 THÊM DÒNG NÀY: Để xem request gửi ra bên ngoài bằng HttpClient
+                .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Information)
+
                 .Enrich.FromLogContext()
                 .Enrich.WithEnvironmentName()
                 .Enrich.WithMachineName()
