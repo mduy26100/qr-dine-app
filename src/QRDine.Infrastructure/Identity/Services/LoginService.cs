@@ -51,10 +51,17 @@ namespace QRDine.Infrastructure.Identity.Services
                     .FirstOrDefaultAsync(u => u.PhoneNumber == dto.Identifier, cancellationToken);
             }
 
-            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+            if (user == null 
+                || !await _userManager.IsEmailConfirmedAsync(user) 
+                || !await _userManager.CheckPasswordAsync(user, dto.Password))
             {
                 throw new UnauthorizedAccessException("Thông tin đăng nhập không chính xác. Vui lòng thử lại.");
             }
+
+            //if(!user.IsActive)
+            //{
+            //    throw new UnauthorizedAccessException("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.");
+            //}
 
             var roles = await _userManager.GetRolesAsync(user);
 
