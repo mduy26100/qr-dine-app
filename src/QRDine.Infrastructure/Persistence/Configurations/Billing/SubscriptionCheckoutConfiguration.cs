@@ -1,4 +1,5 @@
 ﻿using QRDine.Domain.Billing;
+using QRDine.Infrastructure.Persistence.Constants;
 
 namespace QRDine.Infrastructure.Persistence.Configurations.Billing
 {
@@ -6,7 +7,7 @@ namespace QRDine.Infrastructure.Persistence.Configurations.Billing
     {
         public void Configure(EntityTypeBuilder<SubscriptionCheckout> builder)
         {
-            builder.ToTable("SubscriptionCheckouts");
+            builder.ToTable("SubscriptionCheckouts", SchemaNames.Billing);
 
             builder.HasKey(x => x.Id);
 
