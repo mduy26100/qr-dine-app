@@ -1,4 +1,5 @@
-﻿using QRDine.Application.Common.Abstractions.Caching;
+﻿using QRDine.Application.Common.Abstractions.BackgroundJobs;
+using QRDine.Application.Common.Abstractions.Caching;
 using QRDine.Application.Common.Abstractions.Email;
 using QRDine.Application.Common.Constants;
 using QRDine.Application.Common.Templates;
@@ -11,15 +12,18 @@ namespace QRDine.Application.Features.Identity.Commands.RegisterMerchant
         private readonly IRegisterService _registerService;
         private readonly ICacheService _cacheService;
         private readonly IEmailService _emailService;
+        private readonly IBackgroundJobService _backgroundJobService;
 
         public RegisterMerchantCommandHandler(
             IRegisterService registerService,
             ICacheService cacheService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IBackgroundJobService backgroundJobService)
         {
             _registerService = registerService;
             _cacheService = cacheService;
             _emailService = emailService;
+            _backgroundJobService = backgroundJobService;
         }
 
         public async Task<bool> Handle(RegisterMerchantCommand request, CancellationToken cancellationToken)
@@ -41,7 +45,12 @@ namespace QRDine.Application.Features.Identity.Commands.RegisterMerchant
                 verifyLink);
 
             var subject = "Kích hoạt tài khoản QRDine của bạn";
-            await _emailService.SendEmailAsync(request.Dto.Email, subject, htmlMessage, cancellationToken);
+
+            _backgroundJobService.Enqueue(() => _emailService.SendEmailAsync(
+                request.Dto.Email,
+                subject,
+                htmlMessage,
+                CancellationToken.None));
 
             return true;
         }
