@@ -42,6 +42,7 @@ namespace QRDine.API.DependencyInjection
             services.AddSignalRInfrastructure();
             services.AddEmailService(configuration);
             services.AddPayOS(configuration);
+            services.AddBackgroundJobs(configuration);
             return services;
         }
 
