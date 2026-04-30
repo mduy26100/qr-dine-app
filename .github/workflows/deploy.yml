@@ -141,7 +141,7 @@ jobs:
             PAYOS_CHECKSUM_KEY=$PAYOS_CHECKSUM_KEY
             RUN_MIGRATIONS=$RUN_MIGRATIONS
             SEQ_ADMIN_PASSWORD=$SEQ_ADMIN_PASSWORD
-            SEQ_SERVER_URL=http://qrdine-seq:80
+            SEQ_SERVER_URL=$SEQ_SERVER_URL
             SEQ_API_KEY=$SEQ_API_KEY
             IMAGE_TAG=$IMAGE_TAG
             IMAGE_NAME=$IMAGE_NAME
@@ -153,12 +153,18 @@ jobs:
             echo "Logging in to GitHub Container Registry..."
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
 
+            echo "Cleaning up dangling images BEFORE pull to free space..."
+            docker image prune -f
+
             echo "Pulling latest Docker images..."
             docker compose pull
 
             echo "Starting Docker services and waiting for health checks..."
             docker compose up -d --wait --wait-timeout 120
             echo "All services are healthy"
+
+            echo "Deep cleaning unused Docker resources..."
+            docker system prune -f
 
             echo "Cleaning up unused Docker resources..."
             docker image prune -f
