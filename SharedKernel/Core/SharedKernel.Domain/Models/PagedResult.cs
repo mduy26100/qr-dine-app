@@ -1,0 +1,29 @@
+﻿namespace SharedKernel.Domain.Models
+{
+    public class PagedResult<T>
+    {
+        public IReadOnlyList<T> Items { get; init; } = Array.Empty<T>();
+
+        public int TotalCount { get; init; }
+        public int PageNumber { get; init; }
+        public int PageSize { get; init; }
+
+        public int TotalPages => PageSize > 0 ? (int)Math.Ceiling(TotalCount / (double)PageSize) : 0;
+
+        public bool HasPreviousPage => PageNumber > 1;
+
+        public bool HasNextPage => PageNumber < TotalPages;
+
+        public PagedResult()
+        {
+        }
+
+        public PagedResult(IEnumerable<T> items, int totalCount, int pageNumber, int pageSize)
+        {
+            Items = items as IReadOnlyList<T> ?? items.ToList().AsReadOnly();
+            TotalCount = totalCount;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }
+    }
+}

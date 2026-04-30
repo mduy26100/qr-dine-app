@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRDine.Application.Common",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRDine.Application.Tests", "tests\QRDine.Application.Tests\QRDine.Application.Tests.csproj", "{CA520253-C95E-42EA-B749-8283FF6475BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.Domain", "SharedKernel\Core\SharedKernel.Domain\SharedKernel.Domain.csproj", "{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{CA520253-C95E-42EA-B749-8283FF6475BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA520253-C95E-42EA-B749-8283FF6475BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA520253-C95E-42EA-B749-8283FF6475BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
