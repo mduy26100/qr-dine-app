@@ -1,0 +1,8 @@
+﻿namespace SharedKernel.Application.Interfaces.ExternalServices.FileUpload
+{
+    public class FileUploadRequest
+    {
+        public Stream Content { get; set; } = default!;
+        public string FileName { get; set; } = default!;
+    }
+}

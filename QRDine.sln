@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRDine.Application.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.Domain", "SharedKernel\Core\SharedKernel.Domain\SharedKernel.Domain.csproj", "{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.Application", "SharedKernel\Core\SharedKernel.Application\SharedKernel.Application.csproj", "{7F0AE9CB-F234-4C9E-BF20-D1EE4E57D909}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C1C9444-5FFB-4FFD-B652-D196434A0ED2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0AE9CB-F234-4C9E-BF20-D1EE4E57D909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F0AE9CB-F234-4C9E-BF20-D1EE4E57D909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F0AE9CB-F234-4C9E-BF20-D1EE4E57D909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F0AE9CB-F234-4C9E-BF20-D1EE4E57D909}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
