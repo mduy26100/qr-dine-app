@@ -1,0 +1,12 @@
+﻿global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using System.Net.Http.Headers;
+global using System.Text;
+global using System.Text.Json;
+global using Microsoft.Extensions.Options;
+global using MailKit.Net.Smtp;
+global using MailKit.Security;
+global using MimeKit;
+global using SharedKernel.Application.Interfaces.Email;
+global using SharedKernel.Email.Services;
+global using SharedKernel.Email.Settings;
