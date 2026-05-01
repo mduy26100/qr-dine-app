@@ -1,0 +1,12 @@
+﻿global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Caching.Distributed;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using System.Text.Json;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using StackExchange.Redis;
+global using SharedKernel.Application.Interfaces.Caching;
+global using SharedKernel.Caching.Services.L1;
+global using SharedKernel.Caching.Services.L2;
+global using SharedKernel.Caching.Settings;
