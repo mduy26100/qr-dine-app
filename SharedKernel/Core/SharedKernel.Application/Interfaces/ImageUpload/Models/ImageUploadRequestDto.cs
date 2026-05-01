@@ -1,6 +1,6 @@
-﻿namespace SharedKernel.Application.Interfaces.FileUpload.Models
+﻿namespace SharedKernel.Application.Interfaces.ImageUpload.Models
 {
-    public class FileUploadRequestDto
+    public class ImageUploadRequestDto
     {
         public Stream Content { get; set; } = default!;
         public string FileName { get; set; } = default!;
