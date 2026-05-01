@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.Email", "Share
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.ImageUpload", "SharedKernel\Plugins\SharedKernel.ImageUpload\SharedKernel.ImageUpload.csproj", "{0C5B8BB0-FC63-4158-9FD9-28DA65A16ADA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.Payment", "SharedKernel\Plugins\SharedKernel.Payment\SharedKernel.Payment.csproj", "{4A0E2E0F-7C5C-47DC-8E58-FCA5AE326CD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{0C5B8BB0-FC63-4158-9FD9-28DA65A16ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C5B8BB0-FC63-4158-9FD9-28DA65A16ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C5B8BB0-FC63-4158-9FD9-28DA65A16ADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A0E2E0F-7C5C-47DC-8E58-FCA5AE326CD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A0E2E0F-7C5C-47DC-8E58-FCA5AE326CD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A0E2E0F-7C5C-47DC-8E58-FCA5AE326CD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A0E2E0F-7C5C-47DC-8E58-FCA5AE326CD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
