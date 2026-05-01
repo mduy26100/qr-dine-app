@@ -1,0 +1,12 @@
+﻿global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.AspNetCore.SignalR;
+global using System.Security.Claims;
+global using Microsoft.AspNetCore.Authorization;
+global using SharedKernel.Notifications.Providers;
+global using SharedKernel.Application.Interfaces.Notifications;
+global using SharedKernel.Notifications.Hubs;
+global using SharedKernel.Notifications.Services;
+global using SharedKernel.Notifications.Settings;
