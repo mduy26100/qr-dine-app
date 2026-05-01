@@ -1,0 +1,10 @@
+﻿global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;
+global using CloudinaryDotNet;
+global using CloudinaryDotNet.Actions;
+global using System.Net;
+global using SharedKernel.Application.Interfaces.ImageUpload.Models;
+global using SharedKernel.Application.Interfaces.ImageUpload;
+global using SharedKernel.ImageUpload.Services;
+global using SharedKernel.ImageUpload.Settings;
