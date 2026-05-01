@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.BackgroundJobs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.Notifications", "SharedKernel\Plugins\SharedKernel.Notifications\SharedKernel.Notifications.csproj", "{471E48FB-4DB5-47F3-A21D-30A3792928E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel.QrCode", "SharedKernel\Plugins\SharedKernel.QrCode\SharedKernel.QrCode.csproj", "{59E23D63-DFA4-4F8D-A002-81C592B71FF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{471E48FB-4DB5-47F3-A21D-30A3792928E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{471E48FB-4DB5-47F3-A21D-30A3792928E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{471E48FB-4DB5-47F3-A21D-30A3792928E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59E23D63-DFA4-4F8D-A002-81C592B71FF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59E23D63-DFA4-4F8D-A002-81C592B71FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59E23D63-DFA4-4F8D-A002-81C592B71FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59E23D63-DFA4-4F8D-A002-81C592B71FF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
