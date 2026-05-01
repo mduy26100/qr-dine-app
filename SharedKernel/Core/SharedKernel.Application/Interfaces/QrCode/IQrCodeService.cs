@@ -1,4 +1,4 @@
-﻿namespace SharedKernel.Application.Interfaces.ExternalServices.QrCode
+﻿namespace SharedKernel.Application.Interfaces.QrCode
 {
     public interface IQrCodeService
     {
