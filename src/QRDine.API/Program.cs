@@ -6,6 +6,7 @@ using QRDine.API.Middlewares;
 using QRDine.Infrastructure.SignalR.Hubs;
 
 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 var builder = WebApplication.CreateBuilder(args);
 
