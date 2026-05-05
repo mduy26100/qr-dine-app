@@ -91,6 +91,8 @@ jobs:
           PAYOS_CHECKSUM_KEY: ${{ secrets.PAYOS_CHECKSUM_KEY }}
           RUN_MIGRATIONS: ${{ secrets.RUN_MIGRATIONS }}
           SEQ_ADMIN_PASSWORD: ${{ secrets.SEQ_ADMIN_PASSWORD }}
+          SEQ_SERVER_URL: ${{ secrets.SEQ_SERVER_URL }}
+          SEQ_API_KEY: ${{ secrets.SEQ_API_KEY }}
           GHCR_USERNAME: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
