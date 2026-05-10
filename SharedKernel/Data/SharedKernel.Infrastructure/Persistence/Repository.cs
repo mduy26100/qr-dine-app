@@ -4,8 +4,13 @@ namespace SharedKernel.Infrastructure.Persistence
 {
     public class Repository<T> : RepositoryBase<T>, IRepository<T> where T : class
     {
-        public Repository(DbContext dbContext) : base(dbContext)
+        protected readonly SharedKernelDbContext _context;
+        protected readonly DbSet<T> _dbSet;
+
+        public Repository(SharedKernelDbContext context) : base(context)
         {
+            _context = context;
+            _dbSet = context.Set<T>();
         }
     }
 }

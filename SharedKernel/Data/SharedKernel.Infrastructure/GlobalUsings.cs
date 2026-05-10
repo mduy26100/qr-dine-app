@@ -1,5 +1,11 @@
 ﻿global using Microsoft.EntityFrameworkCore.Storage;
 global using Ardalis.Specification.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore;
-global using System.Data;
 global using Microsoft.EntityFrameworkCore.Diagnostics;
+global using Microsoft.AspNetCore.Identity;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.Extensions.Logging;
+global using System.Data.Common; 
+global using Microsoft.Extensions.DependencyInjection;
