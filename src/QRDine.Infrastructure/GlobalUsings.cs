@@ -30,3 +30,5 @@ global using PayOS;
 global using PayOS.Models.V2.PaymentRequests;
 global using Microsoft.Extensions.Caching.Memory;
 global using Hangfire;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
+global using System.Data.Common;
