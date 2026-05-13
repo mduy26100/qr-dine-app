@@ -25,3 +25,4 @@ global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using Serilog;
 global using Serilog.Events;
 global using Hangfire;
+global using Microsoft.Extensions.Caching.Memory;

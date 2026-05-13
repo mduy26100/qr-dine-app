@@ -60,6 +60,8 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 
+app.UseMiddleware<IpBlockMiddleware>();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSerilogRequestLogging();

@@ -19,41 +19,61 @@ namespace QRDine.API.DependencyInjection.Presentation
 
                 options.OnRejected = async (context, token) =>
                 {
-                    context.HttpContext.Response.ContentType = "application/json";
-                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    var httpContext = context.HttpContext;
+                    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown_ip";
+                    var path = httpContext.Request.Path.Value ?? string.Empty;
+
+                    if (!path.Contains("/auth/"))
+                    {
+                        var cache = httpContext.RequestServices.GetRequiredService<IMemoryCache>();
+                        cache.Set($"BlockedIP_{clientIp}", true, TimeSpan.FromHours(24));
+                    }
+
+                    httpContext.Response.ContentType = "application/json";
+                    httpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
 
                     var apiError = new ApiError
                     {
                         Type = "too-many-requests",
-                        Message = "Bạn thao tác quá nhanh. Vui lòng đợi vài phút rồi thử lại."
+                        Message = "Hệ thống phát hiện hành vi truy cập bất thường. Địa chỉ IP của bạn đã bị giới hạn."
                     };
 
                     var meta = new Meta
                     {
                         Timestamp = DateTime.UtcNow,
-                        Path = context.HttpContext.Request.Path,
-                        Method = context.HttpContext.Request.Method,
+                        Path = path,
+                        Method = httpContext.Request.Method,
                         StatusCode = StatusCodes.Status429TooManyRequests,
-                        TraceId = context.HttpContext.TraceIdentifier,
-                        ClientIp = context.HttpContext.Connection.RemoteIpAddress?.ToString()
+                        TraceId = httpContext.TraceIdentifier,
+                        ClientIp = clientIp
                     };
 
                     var response = ApiResponse.Fail(apiError);
                     response.Meta = meta;
 
                     var json = JsonSerializer.Serialize(response, JsonOptions);
-                    await context.HttpContext.Response.WriteAsync(json, cancellationToken: token);
+                    await httpContext.Response.WriteAsync(json, cancellationToken: token);
                 };
 
-                string GetClientIp(HttpContext httpContext) =>
-                    httpContext.Request.Headers["CF-Connecting-IP"].FirstOrDefault() ??
-                    httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim() ??
-                    httpContext.Connection.RemoteIpAddress?.ToString() ??
-                    "unknown_ip";
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                {
+                    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown_ip";
+
+                    return RateLimitPartition.GetFixedWindowLimiter(clientIp, partition => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 100,
+                        Window = TimeSpan.FromSeconds(10),
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        QueueLimit = 0,
+                        AutoReplenishment = true
+                    });
+                });
 
                 options.AddPolicy(RateLimitPolicies.Login, httpContext =>
                 {
-                    return RateLimitPartition.GetFixedWindowLimiter(GetClientIp(httpContext), partition => new FixedWindowRateLimiterOptions
+                    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown_ip";
+
+                    return RateLimitPartition.GetFixedWindowLimiter(clientIp, partition => new FixedWindowRateLimiterOptions
                     {
                         PermitLimit = 5,
                         Window = TimeSpan.FromMinutes(5),
@@ -63,7 +83,9 @@ namespace QRDine.API.DependencyInjection.Presentation
 
                 options.AddPolicy(RateLimitPolicies.Register, httpContext =>
                 {
-                    return RateLimitPartition.GetFixedWindowLimiter(GetClientIp(httpContext), partition => new FixedWindowRateLimiterOptions
+                    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown_ip";
+
+                    return RateLimitPartition.GetFixedWindowLimiter(clientIp, partition => new FixedWindowRateLimiterOptions
                     {
                         PermitLimit = 3,
                         Window = TimeSpan.FromMinutes(5),
